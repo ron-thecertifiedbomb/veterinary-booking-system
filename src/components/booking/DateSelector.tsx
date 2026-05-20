@@ -15,8 +15,7 @@ export default function DateSelector({
 }: Props) {
     return (
         <View>
-
-            {/* ✅ TITLE */}
+            {/* TITLE */}
             <Text className="text-hero text-text-primary font-semibold mb-2">
                 Book Appointment
             </Text>
@@ -25,11 +24,29 @@ export default function DateSelector({
                 Select a date to schedule your pet’s visit.
             </Text>
 
-            {/* ✅ CALENDAR */}
+            {/* SELECTED DATE */}
+            <View className="mt-4 mb-6">
+                <Text className="text-xs text-text-muted uppercase tracking-wide mb-1">
+                    Selected Date
+                </Text>
+
+                <Text className="text-lg font-semibold text-text-primary">
+                    {formatDate(date)}
+                </Text>
+            </View>
+
+            {/* CALENDAR */}
             <View className="bg-surface border border-border rounded-xl p-4">
                 <Calendar
                     current={date}
                     onDayPress={(day) => onDateChange(day.dateString)}
+                    markedDates={{
+                        [date]: {
+                            selected: true,
+                            selectedColor: "#111827",
+                            selectedTextColor: "#ffffff",
+                        },
+                    }}
                     theme={{
                         backgroundColor: "#ffffff",
                         calendarBackground: "#ffffff",
@@ -43,26 +60,18 @@ export default function DateSelector({
                 />
             </View>
 
-            {/* ✅ DATE DISPLAY */}
-            <View className="mb-6 mt-6">
-                <Text className="text-sm text-text-muted">Selected</Text>
-                <Text className="text-base font-medium text-text-primary">
-                    {formatDate(date)}
-                </Text>
-            </View>
-
-            {/* ✅ CTA */}
+            {/* CTA */}
             {onContinue && (
                 <TouchableOpacity
                     onPress={onContinue}
-                    className="bg-surfaceSoft border border-border rounded-xl py-4"
+                    className="bg-surfaceSoft border border-border rounded-xl py-4 mt-6"
                 >
                     <Text className="text-text-primary text-center font-medium">
                         Continue Booking
                     </Text>
                 </TouchableOpacity>
             )}
-
         </View>
     );
 }
+``

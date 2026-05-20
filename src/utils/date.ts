@@ -7,4 +7,11 @@ export const formatDate = (date: string) => {
     year: "numeric",
   });
 };
-``;
+
+
+
+export const getTodayDate = () => {
+  const today = new Date();
+  return today.toLocaleDateString("en-CA");
+};
+
