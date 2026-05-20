@@ -1,4 +1,4 @@
-import { API } from "utils/config/api";
+import { API } from "@/utils/config/api";
 
 export type Slot = {
   time: string;

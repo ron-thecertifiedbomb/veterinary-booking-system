@@ -9,37 +9,49 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // ⚫ Core System
-        background: "#000000",
-        surface: "#0a0a0a",
-        surfaceSoft: "#111111",
-        border: "#1a1a1a",
+        // 🌤️ BASE (DOCKER-LIKE LIGHT)
+        background: "#f9fafb", // very soft gray page background
+        surface: "#ffffff", // cards / panels
+        surfaceSoft: "#f3f4f6", // subtle sections
+        border: "#e5e7eb", // dividers
 
-        // 🧠 Text Hierarchy
+        // 🧠 TEXT SYSTEM
         text: {
-          primary: "#e5e7eb",
-          secondary: "#9ca3af",
-          muted: "#52525b",
-          subtle: "#71717a",
+          primary: "#111827", // strong but not pure black
+          secondary: "#6b7280", // description text
+          muted: "#9ca3af", // low priority text
         },
 
-        // ⚡ Rondev Accent (IMPORTANT)
-        accent: "#00e0ff",
-        accentSoft: "#00e0ff15",
-        accentBorder: "#00e0ff33",
+        // ⚡ SUBTLE ACCENT (DOCKER STYLE — NOT LOUD)
+        accent: "#2563eb", // soft professional blue
+        accentSoft: "#eff6ff", // background tint
+        accentBorder: "#dbeafe", // border tint
+
+        // ✅ STATUS COLORS (OPTIONAL)
+        success: "#10b981",
+        warning: "#f59e0b",
+        danger: "#ef4444",
       },
 
+      // ✅ SOFT MODERN RADIUS
       borderRadius: {
-        xl: "20px",
-        "2xl": "24px",
+        lg: "10px",
+        xl: "14px",
+        "2xl": "18px",
       },
 
+      // ✅ TYPOGRAPHY SCALE (CLEAN SaaS)
       fontSize: {
-        hero: ["36px", { lineHeight: "42px" }],
+        hero: ["30px", { lineHeight: "36px" }],
+        h1: ["24px", { lineHeight: "30px" }],
+        h2: ["20px", { lineHeight: "26px" }],
+        base: ["16px", { lineHeight: "22px" }],
+        sm: ["14px", { lineHeight: "20px" }],
       },
 
+      // ✅ SUBTLE BRAND CHARACTER
       letterSpacing: {
-        widePlus: "0.2em",
+        widePlus: "0.05em",
       },
     },
   },
