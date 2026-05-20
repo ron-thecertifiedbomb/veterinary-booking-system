@@ -3,17 +3,16 @@ import {
     Text,
     Modal,
     TouchableOpacity,
-    TextInput,
 } from "react-native";
 import { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 
 import { Slot } from "@/hooks/useBookingSystem";
 import { formatTime } from "@/utils/date";
+import BookingForm from "@/components/booking/BookingForm";
 
 type Props = {
     visible: boolean;
-    date: string;
     slots: Slot[];
     onClose: () => void;
     onSubmit: (data: {
@@ -26,7 +25,6 @@ type Props = {
 
 export default function BookingModal({
     visible,
-    date,
     slots,
     onClose,
     onSubmit,
@@ -35,6 +33,9 @@ export default function BookingModal({
     const [petName, setPetName] = useState("");
     const [serviceType, setServiceType] = useState("");
     const [selectedTime, setSelectedTime] = useState("");
+
+    const isValid =
+        ownerName && petName && serviceType && selectedTime;
 
     return (
         <Modal visible={visible} transparent animationType="fade">
@@ -45,6 +46,7 @@ export default function BookingModal({
                         Complete Booking
                     </Text>
 
+                    {/* ✅ TIME */}
                     <Text className="text-xs text-text-muted mb-2">
                         Select Time
                     </Text>
@@ -52,12 +54,13 @@ export default function BookingModal({
                     <View className="bg-surface border border-border rounded-xl mb-4">
                         <Picker
                             selectedValue={selectedTime}
-                            onValueChange={(value) => setSelectedTime(value)}
+                            onValueChange={setSelectedTime}
                         >
                             <Picker.Item label="Select a time..." value="" />
 
+
                             {slots
-                                .filter((slot) => slot.available)
+                                .filter((slot) => slot.available === true)
                                 .map((slot) => (
                                     <Picker.Item
                                         key={slot.time}
@@ -65,40 +68,34 @@ export default function BookingModal({
                                         value={slot.time}
                                     />
                                 ))}
+
                         </Picker>
                     </View>
 
-                    <TextInput
-                        placeholder="Owner Name"
-                        value={ownerName}
-                        onChangeText={setOwnerName}
-                        className="bg-surface border border-border rounded-xl px-4 py-3 mb-3"
+                    {/* ✅ FORM (EXTRACTED) */}
+                    <BookingForm
+                        ownerName={ownerName}
+                        petName={petName}
+                        serviceType={serviceType}
+                        setOwnerName={setOwnerName}
+                        setPetName={setPetName}
+                        setServiceType={setServiceType}
                     />
 
-                    <TextInput
-                        placeholder="Pet Name"
-                        value={petName}
-                        onChangeText={setPetName}
-                        className="bg-surface border border-border rounded-xl px-4 py-3 mb-3"
-                    />
-
-                    <TextInput
-                        placeholder="Service Type"
-                        value={serviceType}
-                        onChangeText={setServiceType}
-                        className="bg-surface border border-border rounded-xl px-4 py-3 mb-4"
-                    />
-
+                    {/* ✅ ACTIONS */}
                     <View className="flex-row gap-3">
+
                         <TouchableOpacity
                             onPress={onClose}
-                            className="flex-1 border rounded-lg py-3"
+                            className="flex-1 border border-border rounded-lg py-3"
                         >
-                            <Text className="text-center">Cancel</Text>
+                            <Text className="text-center text-text-secondary">
+                                Cancel
+                            </Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            disabled={!selectedTime}
+                            disabled={!isValid}
                             onPress={() => {
                                 onSubmit({
                                     ownerName,
@@ -110,16 +107,19 @@ export default function BookingModal({
                                 setOwnerName("");
                                 setPetName("");
                                 setServiceType("");
-                                setSelectedTime("");
-
+                                setSelectedTime("")
                                 onClose();
                             }}
-                            className="flex-1 border rounded-lg py-3"
+                            className={`flex-1 rounded-lg py-3 ${isValid
+                                    ? "bg-surfaceSoft border border-border"
+                                    : "bg-gray-300"
+                                }`}
                         >
-                            <Text className="text-center font-medium">
+                            <Text className="text-center text-text-primary font-medium">
                                 Confirm
                             </Text>
                         </TouchableOpacity>
+
                     </View>
 
                 </View>

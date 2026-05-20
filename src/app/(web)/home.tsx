@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import DateSelector from "@/components/booking/DateSelector";
 import BookingModal from "@/components/booking/BookingModal";
-
 import { createBooking } from "@/features/booking/api";
 import { getTodayDate } from "@/utils/date";
 import { useBookingBootstrap } from "@/hooks/useBookingBootstrap ";
@@ -23,7 +21,6 @@ export default function Home() {
       </View>
     );
   }
-
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className="max-w-md mx-auto w-full px-6 py-10">
@@ -32,11 +29,9 @@ export default function Home() {
           onDateChange={setDate}
           onContinue={() => setShowModal(true)}
         />
-
       </View>
       <BookingModal
         visible={showModal}
-        date={date}
         slots={slots}
         onClose={() => setShowModal(false)}
         onSubmit={async (data) => {

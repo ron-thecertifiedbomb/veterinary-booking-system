@@ -1,25 +1,27 @@
-import { Slot } from "@/features/booking/types";
+import { Slot, SlotsResponse } from "@/features/booking/types";
 import { API } from "@/utils/config/api";
-
-
-
-export type SlotsResponse = {
-  now: string;
-  slots: Slot[];
-};
+import { logger } from "@/utils/logger";
 
 export const getSlots = async (date: string): Promise<SlotsResponse> => {
   try {
+    logger.info("Fetching slots", { date });
+
     const res = await fetch(`${API}/appointments/slots?date=${date}`, {
-      cache: "no-store", 
+      cache: "no-store",
     });
 
     if (!res.ok) {
+      logger.error("Slots fetch failed (status)", res.status);
       throw new Error("Failed to fetch slots");
     }
 
-    return await res.json();
+    const data = await res.json();
+
+    logger.info("Slots fetched", data);
+
+    return data;
   } catch (error) {
+    logger.error("Error loading slots", error);
     throw new Error("Error loading slots");
   }
 };
@@ -32,20 +34,39 @@ export const createBooking = async (payload: {
   time: string;
 }) => {
   try {
+    logger.info("Creating booking", payload);
+
     const res = await fetch(`${API}/appointments`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        ownerName: payload.ownerName,   
+        petName: payload.petName,       
+        serviceType: payload.serviceType, 
+        date: payload.date,
+        time: payload.time,
+      }),
     });
 
     if (!res.ok) {
+      const errorBody = await res.text();
+      logger.error("Booking failed (status)", {
+        status: res.status,
+        body: errorBody,
+      });
+
       throw new Error("Booking failed");
     }
 
-    return await res.json();
+    const data = await res.json();
+    logger.info("Booking success", data);
+
+    return data;
   } catch (error) {
+    logger.error("Error creating booking", error);
     throw new Error("Error creating booking");
   }
 };
+
