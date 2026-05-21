@@ -15,14 +15,14 @@ export default function Navbar({ items }: NavbarProps) {
     const path = usePathname();
 
     return (
-        <View className="w-full bg-surface  ">
+        <View className="w-full items-center mt-6">
 
-            {/* ✅ CENTERED CONTAINER */}
-            <View className="max-w-md mx-auto w-full px-6 py-4 flex-row items-center justify-between">
+            {/* ✅ CENTERED CONTENT */}
+            <View className="flex-row items-center justify-between w-full max-w-md px-4">
 
                 {/* ✅ BRAND */}
-                <Text className="text-text-primary text-base font-semibold">
-                    Vet Booking
+                <Text className="text-text-primary font-semibold text-base">
+                    🐾 VetBook
                 </Text>
 
                 {/* ✅ NAV LINKS */}
@@ -36,27 +36,28 @@ export default function Navbar({ items }: NavbarProps) {
                                 onPress={() => router.push(item.path)}
                             >
                                 <View className="items-center">
+
                                     <Text
                                         className={`text-sm font-medium ${active
-                                                ? "text-text-primary"
-                                                : "text-text-secondary"
-                                            }`}
-                                    >
-                                        {item.label}
-                                    </Text>
+                                                ? "text-black"        
+                                    : "text-text-secondary"
+                    }`}
+                  >
+                                    {item.label}
+                                </Text>
 
-                                    {/* ✅ subtle underline */}
-                                    {active && (
-                                        <View className="h-[1px] w-full bg-text-primary rounded-full" />
-                                    )}
-                                </View>
-                            </TouchableOpacity>
-                        );
-                    })}
-                </View>
+                                {/* ✅ subtle indicator */}
+                                {active && (
+                                    <View className="mt-1 h-[2px] w-4 bg-black rounded-full" />
+                                )}
+                            </View>
 
+              </TouchableOpacity>
+                );
+          })}
             </View>
+
         </View>
-    );
+    </View >
+  );
 }
-``

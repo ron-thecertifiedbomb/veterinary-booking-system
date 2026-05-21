@@ -1,83 +1,102 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 import DateSelector from "@/components/booking/DateSelector";
 import BookingModal from "@/components/booking/BookingModal";
+
 import { getTodayDate } from "@/utils/date";
 import { useCreateBooking } from "@/hooks/useCreateBooking";
-import { useBookingBootstrap } from "@/hooks/useBookingBootstrap ";
+import { useBookingBootstrap } from "@/hooks/useBookingBootstrap";
 
 export default function Home() {
     const [date, setDate] = useState(getTodayDate());
     const [showModal, setShowModal] = useState(false);
+    const [modalChecking, setModalChecking] = useState(false);
 
     const { slots, loading } = useBookingBootstrap(date);
 
     const {
         createBooking,
-        loading: creating,
         error,
         success,
         resetSuccess,
     } = useCreateBooking();
 
-    // ✅ Auto-hide success tooltip
     useEffect(() => {
-        if (success) {
-            const timer = setTimeout(() => {
-                resetSuccess();
-            }, 2500);
+        if (!success) return;
 
-            return () => clearTimeout(timer);
-        }
-    }, [success]);
+        const timer = setTimeout(() => {
+            resetSuccess();
+        }, 2500);
 
-    if (loading) {
+        return () => clearTimeout(timer);
+    }, [success, resetSuccess]);
+
+    useEffect(() => {
+        if (!showModal) return;
+        if (loading) return;
+
+        setModalChecking(false);
+    }, [showModal, loading]);
+
+    if (loading && !showModal) {
         return (
-            <View className="flex-1 justify-center items-center">
-                <Text>Loading...</Text>
+            <View className="flex-1 justify-center items-center bg-background">
+                <Text className="text-text-secondary">
+                    Loading...
+                </Text>
             </View>
         );
     }
 
     return (
         <SafeAreaView className="flex-1 bg-background">
-
-            {/* ✅ SUCCESS TOOLTIP */}
             {success && (
                 <View className="absolute top-10 left-0 right-0 items-center z-50">
                     <View className="bg-green-500 px-4 py-3 rounded-xl shadow">
                         <Text className="text-white font-medium">
-                            ✅ Booking successful!
+                            Booking successful!
                         </Text>
                     </View>
                 </View>
             )}
 
-            {/* ✅ MAIN CONTENT */}
             <View className="max-w-md mx-auto w-full px-6 py-10">
                 <DateSelector
                     date={date}
-                    onDateChange={setDate}
-                    onContinue={() => setShowModal(true)}
+                    onDateChange={(newDate) => {
+                        setModalChecking(true);
+                        setShowModal(true);
+                        setDate(newDate);
+                    }}
                 />
             </View>
 
-            {/* ✅ MODAL */}
             <BookingModal
                 visible={showModal}
                 slots={slots}
-                onClose={() => setShowModal(false)}
+                checking={modalChecking || loading}
+                onClose={() => {
+                    setShowModal(false);
+                    setModalChecking(false);
+                }}
                 onSubmit={async (data) => {
-                    await createBooking({ ...data, date });
-                    setShowModal(false); // ✅ close modal on success
+                    await createBooking({
+                        ...data,
+                        date,
+                    });
+
+                    setShowModal(false);
+                    setModalChecking(false);
                 }}
             />
 
-            {/* ✅ OPTIONAL ERROR DISPLAY */}
             {error && (
                 <View className="absolute bottom-10 left-0 right-0 items-center">
-                    <Text className="text-red-500">{error}</Text>
+                    <Text className="text-red-500">
+                        {error}
+                    </Text>
                 </View>
             )}
         </SafeAreaView>

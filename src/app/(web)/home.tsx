@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import DateSelector from "@/components/booking/DateSelector";
 import BookingModal from "@/components/booking/BookingModal";
+import DateSelector from "@/components/booking/DateSelector";
 
 import { getTodayDate } from "@/utils/date";
 
+import { useBookingBootstrap } from "@/hooks/useBookingBootstrap";
 import { useCreateBooking } from "@/hooks/useCreateBooking";
-import { useBookingBootstrap } from "@/hooks/useBookingBootstrap ";
 
 export default function Home() {
   const [date, setDate] = useState(getTodayDate());
@@ -64,9 +64,9 @@ export default function Home() {
           date={date}
           onDateChange={(d) => {
             setDate(d);
-            setShowModal(true); 
-  }}
-/>
+            setShowModal(true);
+          }}
+        />
 
       </View>
 

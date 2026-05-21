@@ -5,6 +5,6 @@ const platform = Platform.OS;
 console.log("Running on platform:", platform);
 
 export const API =
-  platform === "android" ? "http://10.0.2.2:3000" : "http://localhost:3000";
-
-console.log("Using API base URL:", API);
+  Platform.OS === "web"
+    ? "http://localhost:3000"
+    : "http://192.168.100.43:3000";

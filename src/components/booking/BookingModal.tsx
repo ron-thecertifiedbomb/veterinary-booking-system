@@ -7,25 +7,29 @@ import {
 import { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 
-import { Slot } from "@/hooks/useBookingSystem";
+import { Slot } from "@/features/booking/types";
 import { formatTime } from "@/utils/date";
 import BookingForm from "@/components/booking/BookingForm";
 
 type Props = {
     visible: boolean;
     slots: Slot[];
+    checking: boolean;
     onClose: () => void;
     onSubmit: (data: {
         ownerName: string;
         petName: string;
         serviceType: string;
         time: string;
-    }) => void;
+    }) => Promise<void> | void;
 };
+
+
 
 export default function BookingModal({
     visible,
-    slots,
+    slots = [],
+    checking,
     onClose,
     onSubmit,
 }: Props) {
@@ -34,52 +38,80 @@ export default function BookingModal({
     const [serviceType, setServiceType] = useState("");
     const [selectedTime, setSelectedTime] = useState("");
 
-    const isValid =
-        ownerName && petName && serviceType && selectedTime;
-
-    const availableSlots = slots.filter(
+    const availableSlots = (slots ?? []).filter(
         (slot) => slot.available === true
     );
-    const noSlots = availableSlots.length === 0;
+
+    const hasAvailableSlots = availableSlots.length > 0;
+
+    const isValid =
+        ownerName &&
+        petName &&
+        serviceType &&
+        selectedTime;
+
+
+    const resetForm = () => {
+        setOwnerName("");
+        setPetName("");
+        setServiceType("");
+        setSelectedTime("");
+    };
+
+    const handleSubmit = async () => {
+        if (!isValid) return;
+
+        await onSubmit({
+            ownerName,
+            petName,
+            serviceType,
+            time: selectedTime,
+        });
+
+        resetForm();
+        onClose();
+    };
+
     return (
-
         <Modal visible={visible} transparent animationType="fade">
-            {/* ✅ OVERLAY */}
             <View className="flex-1 bg-black/30 justify-center items-center px-4">
-
-                {/* ✅ MODAL CARD */}
-                <View className="bg-surface border border-border rounded-xl p-6 w-full max-w-md">
-
-                    <Text className="text-text-primary font-semibold text-lg mb-4">
-                        {noSlots ? "No Slots Available" : "Complete Booking"}
-                    </Text>
-
-                    {noSlots ? (
+                <View className="bg-surface border border-border rounded-2xl p-6 w-full max-w-md">
+                    {checking ? (
                         <>
-                            {/* ✅ EMPTY STATE */}
-                            <View className="py-8 items-center">
-                                <Text className="text-lg text-text-primary mb-2">
-                                    😔 Fully Booked
-                                </Text>
+                            <Text className="text-text-primary font-semibold text-xl mb-2 text-center">
+                                Checking Availability
+                            </Text>
 
-                                <Text className="text-sm text-text-muted text-center">
-                                    No available slots for this day.
-                                    {"\n"}Please choose another date.
-                                </Text>
-                            </View>
+                            <Text className="text-text-muted text-sm text-center">
+                                Please wait while available appointment slots are being checked.
+                            </Text>
+                        </>
+                    ) : !hasAvailableSlots ? (
+                        <>
+                            <Text className="text-text-primary font-semibold text-xl mb-2 text-center">
+                                No Slots Available
+                            </Text>
+
+                            <Text className="text-text-muted text-sm text-center mb-6">
+                                All appointment slots for this date are unavailable.
+                                {"\n"}Please choose another date.
+                            </Text>
 
                             <TouchableOpacity
                                 onPress={onClose}
-                                className="bg-surfaceSoft border border-border rounded-lg py-3 mt-4"
+                                className="bg-black rounded-xl py-3"
                             >
-                                <Text className="text-center text-text-primary font-medium">
+                                <Text className="text-white text-center font-medium">
                                     Choose Another Date
                                 </Text>
                             </TouchableOpacity>
                         </>
                     ) : (
                         <>
-                            {/* ✅ TIME */}
+                            <Text className="text-text-primary font-semibold text-lg mb-4">
+                                Complete Booking
+                            </Text>
+
                             <Text className="text-xs text-text-muted mb-2">
                                 Select Time
                             </Text>
@@ -87,7 +119,7 @@ export default function BookingModal({
                             <View className="bg-surface border border-border rounded-xl mb-4">
                                 <Picker
                                     selectedValue={selectedTime}
-                                    onValueChange={setSelectedTime}
+                                    onValueChange={(value) => setSelectedTime(String(value))}
                                 >
                                     <Picker.Item label="Select a time..." value="" />
 
@@ -101,7 +133,6 @@ export default function BookingModal({
                                 </Picker>
                             </View>
 
-                            {/* ✅ FORM */}
                             <BookingForm
                                 ownerName={ownerName}
                                 petName={petName}
@@ -111,7 +142,6 @@ export default function BookingModal({
                                 setServiceType={setServiceType}
                             />
 
-                            {/* ✅ ACTIONS */}
                             <View className="flex-row gap-3">
                                 <TouchableOpacity
                                     onPress={onClose}
@@ -124,26 +154,11 @@ export default function BookingModal({
 
                                 <TouchableOpacity
                                     disabled={!isValid}
-                                    onPress={() => {
-                                        onSubmit({
-                                            ownerName,
-                                            petName,
-                                            serviceType,
-                                            time: selectedTime,
-                                        });
-
-                                        setOwnerName("");
-                                        setPetName("");
-                                        setServiceType("");
-                                        setSelectedTime("");
-                                        onClose();
-                                    }}
-                                    className={`flex-1 rounded-lg py-3 ${isValid
-                                            ? "bg-surfaceSoft border border-border"
-                                            : "bg-gray-300"
+                                    onPress={handleSubmit}
+                                    className={`flex-1 rounded-lg py-3 ${isValid ? "bg-black" : "bg-gray-300"
                                         }`}
                                 >
-                                    <Text className="text-center text-text-primary font-medium">
+                                    <Text className="text-center text-white font-medium">
                                         Confirm
                                     </Text>
                                 </TouchableOpacity>
@@ -153,6 +168,5 @@ export default function BookingModal({
                 </View>
             </View>
         </Modal>
-    
     );
 }
