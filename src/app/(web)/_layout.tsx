@@ -13,9 +13,9 @@ export default function WebLayout() {
     <SafeAreaView className="flex-1 bg-gray-100">
       {/* {!hideNavbar && <Navbar items={customerNav} />} */}
 
-      <View className="flex-1">
+ 
         <Slot />
-      </View>
+
     </SafeAreaView>
   );
 }

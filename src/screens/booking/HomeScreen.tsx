@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Text, View, Platform } from "react-native";
+
 import { useRouter } from "expo-router";
-import { Platform } from "react-native";
+
 import DateSelector from "@/components/booking/DateSelector";
 import BookingModal from "@/components/booking/BookingModal";
+
 import { formatDate, getTodayDate } from "@/utils/date";
 import { useCreateBooking } from "@/hooks/useCreateBooking";
 import { useBookingBootstrap } from "@/hooks/useBookingBootstrap";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function Home() {
+export default function HomeScreen() {
     const router = useRouter();
 
     const [date, setDate] = useState(getTodayDate());
@@ -54,37 +56,41 @@ export default function Home() {
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-background">
-            <View className="w-full max-w-md mx-auto px-6 pt-8 pb-10">
+        <SafeAreaView className="flex-1 bg-background pt-24">
+            <View
+                className={`flex-1 items-center px-6 pb-10 ${Platform.OS === "web" ? "pt-24" : "pt-10"
+                    }`}
+            >
+                <View className="w-full max-w-md">
+                    <View className="mb-6">
+                        <Text className="text-4xl font-semibold text-text-primary">
+                            Book Appointment
+                        </Text>
 
-                <View className="mb-6">
-                    <Text className="text-2xl font-semibold text-text-primary">
-                        Book Appointment
-                    </Text>
+                        <Text className="text-sm leading-5 text-text-secondary mt-1.5">
+                            Select a date to schedule your pet’s visit.
+                        </Text>
+                    </View>
 
-                    <Text className="text-sm leading-5 text-text-secondary mt-1.5">
-                        Select a date to schedule your pet’s visit.
-                    </Text>
+                    <View className="bg-surface border border-border rounded-2xl px-5 py-4 mb-5">
+                        <Text className="text-[11px] text-text-muted uppercase tracking-wide mb-1.5">
+                            Selected Date
+                        </Text>
+
+                        <Text className="text-base font-semibold text-text-primary">
+                            {formatDate(date)}
+                        </Text>
+                    </View>
+
+                    <DateSelector
+                        date={date}
+                        onDateChange={(newDate) => {
+                            setModalChecking(true);
+                            setShowModal(true);
+                            setDate(newDate);
+                        }}
+                    />
                 </View>
-
-                <View className="bg-surface border border-border rounded-2xl px-5 py-4 mb-5">
-                    <Text className="text-[11px] text-text-muted uppercase tracking-wide mb-1.5">
-                        Selected Date
-                    </Text>
-
-                    <Text className="text-base font-semibold text-text-primary">
-                        {formatDate(date)}
-                    </Text>
-                </View>
-
-                <DateSelector
-                    date={date}
-                    onDateChange={(newDate) => {
-                        setModalChecking(true);
-                        setShowModal(true);
-                        setDate(newDate);
-                    }}
-                />
             </View>
 
             <BookingModal
@@ -120,7 +126,6 @@ export default function Home() {
                             time: data.time,
                         },
                     });
-
                 }}
             />
 
