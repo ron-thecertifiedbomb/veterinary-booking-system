@@ -1,5 +1,6 @@
 import { parse } from "date-fns";
 import { fromZonedTime, toZonedTime } from "date-fns-tz";
+import { logger } from "@/utils/logger";
 
 export const checkSystemTime = (serverNow: string): boolean => {
   try {
@@ -11,15 +12,16 @@ export const checkSystemTime = (serverNow: string): boolean => {
     const diffMinutes =
       Math.abs(serverTime.getTime() - clientPH.getTime()) / 60000;
 
-    console.log("RAW SERVER:", serverNow);
-    console.log("SERVER TIME:", serverTime.toString());
-    console.log("CLIENT TIME:", clientPH.toString());
-    console.log("DIFF MINUTES:", diffMinutes);
+    logger.info("System time check", {
+      rawServer: serverNow,
+      serverTime: serverTime.toString(),
+      clientTime: clientPH.toString(),
+      diffMinutes,
+    });
 
     return diffMinutes > 5;
   } catch (err) {
-    console.log("Time check util failed", err);
+    logger.error("Time check util failed", err);
     return false;
   }
 };
-``;
