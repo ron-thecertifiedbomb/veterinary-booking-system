@@ -3,6 +3,9 @@ import {
     Text,
     Modal,
     TouchableOpacity,
+    ActivityIndicator,
+    Keyboard,
+    Pressable,
 } from "react-native";
 import { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
@@ -15,6 +18,7 @@ type Props = {
     visible: boolean;
     slots: Slot[];
     checking: boolean;
+    creating: boolean;
     onClose: () => void;
     onSubmit: (data: {
         ownerName: string;
@@ -24,12 +28,11 @@ type Props = {
     }) => Promise<void> | void;
 };
 
-
-
 export default function BookingModal({
     visible,
     slots = [],
     checking,
+    creating,
     onClose,
     onSubmit,
 }: Props) {
@@ -38,10 +41,7 @@ export default function BookingModal({
     const [serviceType, setServiceType] = useState("");
     const [selectedTime, setSelectedTime] = useState("");
 
-    const availableSlots = (slots ?? []).filter(
-        (slot) => slot.available === true
-    );
-
+    const availableSlots = slots.filter((slot) => slot.available === true);
     const hasAvailableSlots = availableSlots.length > 0;
 
     const isValid =
@@ -50,7 +50,6 @@ export default function BookingModal({
         serviceType &&
         selectedTime;
 
-
     const resetForm = () => {
         setOwnerName("");
         setPetName("");
@@ -58,8 +57,17 @@ export default function BookingModal({
         setSelectedTime("");
     };
 
+    const handleClose = () => {
+        if (creating) return;
+
+        Keyboard.dismiss();
+        onClose();
+    };
+
     const handleSubmit = async () => {
-        if (!isValid) return;
+        if (!isValid || creating) return;
+
+        Keyboard.dismiss();
 
         await onSubmit({
             ownerName,
@@ -69,23 +77,30 @@ export default function BookingModal({
         });
 
         resetForm();
-        onClose();
     };
 
     return (
         <Modal visible={visible} transparent animationType="fade">
-            <View className="flex-1 bg-black/30 justify-center items-center px-4">
-                <View className="bg-surface border border-border rounded-2xl p-6 w-full max-w-md">
+            <Pressable
+                className="flex-1 bg-black/30 justify-center items-center px-4"
+                onPress={handleClose}
+            >
+                <Pressable
+                    className="bg-surface border border-border rounded-2xl p-6 w-full max-w-md"
+                    onPress={(event) => event.stopPropagation()}
+                >
                     {checking ? (
-                        <>
-                            <Text className="text-text-primary font-semibold text-xl mb-2 text-center">
+                        <View className="items-center py-6">
+                            <ActivityIndicator size="large" color="#000000" />
+
+                            <Text className="text-text-primary font-semibold text-xl mt-4 mb-2 text-center">
                                 Checking Availability
                             </Text>
 
                             <Text className="text-text-muted text-sm text-center">
                                 Please wait while available appointment slots are being checked.
                             </Text>
-                        </>
+                        </View>
                     ) : !hasAvailableSlots ? (
                         <>
                             <Text className="text-text-primary font-semibold text-xl mb-2 text-center">
@@ -98,7 +113,7 @@ export default function BookingModal({
                             </Text>
 
                             <TouchableOpacity
-                                onPress={onClose}
+                                onPress={handleClose}
                                 className="bg-black rounded-xl py-3"
                             >
                                 <Text className="text-white text-center font-medium">
@@ -119,6 +134,7 @@ export default function BookingModal({
                             <View className="bg-surface border border-border rounded-xl mb-4">
                                 <Picker
                                     selectedValue={selectedTime}
+                                    enabled={!creating}
                                     onValueChange={(value) => setSelectedTime(String(value))}
                                 >
                                     <Picker.Item label="Select a time..." value="" />
@@ -144,7 +160,8 @@ export default function BookingModal({
 
                             <View className="flex-row gap-3">
                                 <TouchableOpacity
-                                    onPress={onClose}
+                                    disabled={creating}
+                                    onPress={handleClose}
                                     className="flex-1 border border-border rounded-lg py-3"
                                 >
                                     <Text className="text-center text-text-secondary">
@@ -153,20 +170,24 @@ export default function BookingModal({
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
-                                    disabled={!isValid}
+                                    disabled={!isValid || creating}
                                     onPress={handleSubmit}
-                                    className={`flex-1 rounded-lg py-3 ${isValid ? "bg-black" : "bg-gray-300"
+                                    className={`flex-1 rounded-lg py-3 ${isValid && !creating ? "bg-black" : "bg-gray-300"
                                         }`}
                                 >
-                                    <Text className="text-center text-white font-medium">
-                                        Confirm
-                                    </Text>
+                                    {creating ? (
+                                        <ActivityIndicator size="small" color="#ffffff" />
+                                    ) : (
+                                        <Text className="text-center text-white font-medium">
+                                            Confirm
+                                        </Text>
+                                    )}
                                 </TouchableOpacity>
                             </View>
                         </>
                     )}
-                </View>
-            </View>
+                </Pressable>
+            </Pressable>
         </Modal>
     );
 }

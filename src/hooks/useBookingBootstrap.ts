@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
 import { usePathname, useRouter } from "expo-router";
-
 import { API } from "@/utils/config/api";
 import { checkSystemTime } from "@/utils/time/checkSystemTime";
 import { Slot } from "@/features/booking/types";
