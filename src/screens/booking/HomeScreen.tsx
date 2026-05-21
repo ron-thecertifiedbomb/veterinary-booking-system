@@ -56,14 +56,14 @@ export default function HomeScreen() {
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-background pt-24">
+        <SafeAreaView className="flex-1 bg-background">
             <View
-                className={`flex-1 items-center px-6 pb-10 ${Platform.OS === "web" ? "pt-24" : "pt-10"
+                className={`flex-1 items-center px-6 pb-10 ${Platform.OS === "web" ? "pt-8" : "pt-8"
                     }`}
             >
                 <View className="w-full max-w-md">
                     <View className="mb-6">
-                        <Text className="text-4xl font-semibold text-text-primary">
+                        <Text className="text-2xl font-semibold text-text-primary">
                             Book Appointment
                         </Text>
 
