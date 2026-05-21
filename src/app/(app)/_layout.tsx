@@ -1,6 +1,6 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
 import { Platform } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function AppLayout() {
@@ -42,6 +42,15 @@ export default function AppLayout() {
                 name="schedule"
                 options={{
                     title: "Schedule",
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="list" size={size} color={color} />
+                    ),
+                }}
+            />
+            <Tabs.Screen
+                name="history-screen"
+                options={{
+                    title: "History",
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="list-outline" size={size} color={color} />
                     ),
