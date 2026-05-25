@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function AppUserLayout() {
     if (Platform.OS === "web") {
-        return <Redirect href="/(web)/dashboard" />;
+        return <Redirect href="/(web)/home" />;
     }
     const insets = useSafeAreaInsets();
 

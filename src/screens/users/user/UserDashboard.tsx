@@ -1,127 +1,118 @@
-import BookingModal from "@/components/booking/BookingModal";
-import DateSelector from "@/components/booking/DateSelector";
 import ScreenContainer from "@/components/common/layout/ScreenContainer";
-import { useBookingBootstrap } from "@/hooks/appointments/useBookingBootstrap";
-import { useCreateBooking } from "@/hooks/appointments/useCreateBooking";
-import { formatDate, getTodayDate } from "@/utils/date";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { Platform, Text, View } from "react-native";
+import { useLogin } from "@/features/auth/hooks/useLogin";
+import { useState } from "react";
+import {
+    ActivityIndicator,
+    Pressable,
+    Text,
+    TextInput,
+    View,
+} from "react-native";
+import Toast from "react-native-toast-message";
 
-export default function UserDashBoard() {
+export default function Login() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    const router = useRouter();
-    const [date, setDate] = useState(getTodayDate());
-    const [showModal, setShowModal] = useState(false);
-    const [modalChecking, setModalChecking] = useState(false);
-    const { slots, loading, error: fetchError } = useBookingBootstrap(date);
+    const { login, loading } = useLogin();
 
-    const {
-        createBooking,
-        loading: creating,
-        error: createError,
-        success,
-        resetSuccess,
-    } = useCreateBooking();
+    const handleLogin = async () => {
+        const response = await login({
+            email,
+            password,
+        });
 
-    useEffect(() => {
-        if (!success) return;
-        const timer = setTimeout(() => {
-            resetSuccess();
-        }, 2500);
-        return () => clearTimeout(timer);
-    }, [success, resetSuccess]);
+        if (!response) {
+            Toast.show({
+                type: "error",
+                text1: "Login Failed",
+                text2: "Invalid email or password",
+            });
 
-    useEffect(() => {
-        if (!showModal) return;
-        if (loading) return;
-        setModalChecking(false);
-    }, [showModal, loading]);
+            return;
+        }
 
-    if (loading && !showModal) {
-        return (
-            <View className="flex-1 justify-center items-center bg-background px-6">
-                <Text className="text-sm text-text-secondary">
-                    Loading appointments...
-                </Text>
-            </View>
-        );
-    }
+        Toast.show({
+            type: "success",
+            text1: "Success",
+            text2: response.message,
+        });
+
+        console.log(response.data.access_token);
+        console.log(response.data.user);
+    };
 
     return (
         <ScreenContainer>
             <>
-                <View className="mb-6">
-                    <Text className="text-2xl font-semibold text-text-primary">
-                        Book an appointment
+                <View className="mb-8">
+                    <Text className="text-3xl font-semibold text-text-primary">
+                        Welcome Back
                     </Text>
 
                     <Text className="text-sm leading-5 text-text-secondary mt-1.5">
-                        Select a date to schedule your pet’s visit.
+                        Login to continue managing your pet
+                        appointments and schedules.
                     </Text>
                 </View>
 
-                <View className="bg-surface border border-border rounded-2xl px-5 py-4 mb-5">
+                <View className="bg-surface border border-border rounded-2xl px-5 py-5 mb-5">
                     <Text className="text-[11px] text-text-muted uppercase tracking-wide mb-1.5">
-                        Selected Date
+                        Account Access
                     </Text>
 
                     <Text className="text-base font-semibold text-text-primary">
-                        {formatDate(date)}
+                        Secure Login Portal
                     </Text>
                 </View>
 
-                <DateSelector
-                    date={date}
-                    onDateChange={(newDate) => {
-                        setModalChecking(true);
-                        setShowModal(true);
-                        setDate(newDate);
-                    }}
-                />
+                <View className="gap-4">
+                    <View>
+                        <Text className="text-sm font-medium text-text-primary mb-2">
+                            Email
+                        </Text>
 
-                <BookingModal
-                    visible={showModal}
-                    slots={slots}
-                    checking={modalChecking || loading}
-                    creating={creating}
-                    error={fetchError || createError}
-                    onClose={() => {
-                        setShowModal(false);
-                        setModalChecking(false);
-                    }}
-                    onSubmit={async (data) => {
-                        const response = await createBooking({
-                            ...data,
-                            date,
-                        });
+                        <TextInput
+                            value={email}
+                            onChangeText={setEmail}
+                            placeholder="Enter your email"
+                            placeholderTextColor="#94A3B8"
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            className="bg-surface border border-border rounded-2xl px-4 py-4 text-text-primary"
+                        />
+                    </View>
 
-                        if (!response) return;
+                    <View>
+                        <Text className="text-sm font-medium text-text-primary mb-2">
+                            Password
+                        </Text>
 
-                        setShowModal(false);
-                        setModalChecking(false);
+                        <TextInput
+                            value={password}
+                            onChangeText={setPassword}
+                            placeholder="Enter your password"
+                            placeholderTextColor="#94A3B8"
+                            secureTextEntry
+                            className="bg-surface border border-border rounded-2xl px-4 py-4 text-text-primary"
+                        />
+                    </View>
 
-                        const successPath =
-                            Platform.OS === "web"
-                                ? "/(web)/booking-success"
-                                : "/(app)/booking-success";
-
-                        router.push({
-                            pathname: successPath,
-                            params: {
-                                bookingCode: response.bookingCode,
-                                ownerName: response.ownerName,
-                                petName: response.petName,
-                                serviceType: response.serviceType,
-                                date,
-                                time: response.time,
-                            },
-                        });
-                    }}
-                />
+                    <Pressable
+                        onPress={handleLogin}
+                        disabled={loading}
+                        className="bg-cyan-500 rounded-2xl py-4 items-center mt-2 active:opacity-80"
+                    >
+                        {loading ? (
+                            <ActivityIndicator color="#FFFFFF" />
+                        ) : (
+                            <Text className="text-white font-semibold text-base">
+                                Login
+                            </Text>
+                        )}
+                    </Pressable>
+                </View>
             </>
         </ScreenContainer>
     );
-
-
 }

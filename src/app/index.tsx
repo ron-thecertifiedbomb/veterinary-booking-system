@@ -1,16 +1,89 @@
 // src/app/index.tsx
 
-import { Platform } from "react-native";
+import { getStorageItem } from "@/features/auth/storage";
+import { logger } from "@/utils/logger";
 import { Redirect } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Platform, View } from "react-native";
+
+type User = {
+  role: "USER" | "ADMIN";
+};
 
 export default function Index() {
-  // ✅ temporary routing test
-  const isLoggedIn = true;
-  const isAdmin = false;
+  const [loading, setLoading] = useState(true);
 
-  // ✅ not logged in
+  const [accessToken, setAccessToken] =
+    useState<string | null>(null);
+
+  const [user, setUser] =
+    useState<User | null>(null);
+
+  useEffect(() => {
+    const bootstrap = async () => {
+      try {
+        logger.info("Bootstrapping auth session");
+
+        // ✅ retrieve token
+        const token = await getStorageItem(
+          "access_token",
+        );
+
+        // ✅ retrieve user
+        const storedUser =
+          await getStorageItem("user");
+
+        setAccessToken(token);
+
+        if (storedUser) {
+          const parsedUser =
+            JSON.parse(storedUser);
+
+          setUser(parsedUser);
+
+          logger.info(
+            "User session restored",
+            parsedUser,
+          );
+        }
+
+        logger.info(
+          "Access token restored",
+        );
+      } catch (error) {
+        logger.error(
+          "Failed to restore auth session",
+          error,
+        );
+      } finally {
+        setLoading(false);
+
+        logger.info(
+          "Auth bootstrap completed",
+        );
+      }
+    };
+
+    bootstrap();
+  }, []);
+
+  // ✅ loading screen
+  if (loading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-background">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  const isLoggedIn = !!accessToken;
+  const isAdmin = user?.role === "ADMIN";
+
+  // ✅ not authenticated
   if (!isLoggedIn) {
-    return <Redirect href="/(auth)/login" />;
+    return (
+      <Redirect href="/(auth)/login" />
+    );
   }
 
   // ✅ admin routing
@@ -31,8 +104,8 @@ export default function Index() {
     <Redirect
       href={
         Platform.OS === "web"
-          ? "/(web)/dashboard"
-          : "/(app)/dashboard"
+          ? "/(web)/home"
+          : "/(app)/home"
       }
     />
   );
