@@ -39,39 +39,33 @@ export default function AppUserLayout() {
             />
 
             <Tabs.Screen
-                name="schedule"
+                name="appointments"
                 options={{
-                    title: "Schedule",
+                    title: "Appointments",
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="list" size={size} color={color} />
                     ),
                 }}
             />
             <Tabs.Screen
-                name="history"
+                name="Profile"
                 options={{
-                    title: "History",
+                    title: "profile",
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="list-outline" size={size} color={color} />
                     ),
                 }}
             />
             <Tabs.Screen
-                name="user"
+                name="users"
                 options={{
-                    title: "Profile",
+                    title: "Users",
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="list-outline" size={size} color={color} />
                     ),
                 }}
             />
 
-            <Tabs.Screen
-                name="booking-success"
-                options={{
-                    href: null,
-                }}
-            />
         </Tabs>
     );
 
