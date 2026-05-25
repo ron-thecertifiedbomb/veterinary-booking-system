@@ -7,8 +7,6 @@ import { logger } from "@/utils/logger";
 import { setStorageItem } from "@/features/auth/storage";
 import { LoginPayload, LoginResponse } from "@/features/auth/types";
 
-
-
 export function useLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +49,6 @@ export function useLogin() {
       return response;
     } catch (err: any) {
       logger.error("Login failed", err);
-
       const errorMessage = err?.message || "Failed to login";
       setError(errorMessage);
       Toast.show({

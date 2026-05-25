@@ -42,7 +42,6 @@ export async function api<T>(
 
   if (!response.ok) {
     logger.error("API Error", data);
-
     throw new Error(data?.message || "Something went wrong");
   }
 
