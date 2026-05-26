@@ -120,7 +120,7 @@ export default function Registration() {
                     {/* HEADER */}
                     <View className="mb-8 items-center">
                         <Text className="text-3xl font-semibold text-text-primary">
-                            Create Account
+                            Create an Account
                         </Text>
                         <Text className="text-sm leading-5 text-text-secondary mt-1.5 text-center">
                             Register to start booking appointments
@@ -274,7 +274,7 @@ export default function Registration() {
                                 onPress={() => router.push("/(auth)/login")}
                             >
                                 <Text className="text-sm font-semibold text-secondary mt-1">
-                                    Login here
+                                    Sign in here
                                 </Text>
                             </Pressable>
                         </View>

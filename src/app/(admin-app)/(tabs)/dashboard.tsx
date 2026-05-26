@@ -228,7 +228,7 @@ export default function AdminDashBoardWeb() {
             </View>
 
             <View
-                style={{ pointerEvents: "box-none" }}
+     
                 className="absolute bottom-6 right-6"
             >
                 <TouchableOpacity

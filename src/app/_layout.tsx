@@ -11,7 +11,7 @@ export default function RootLayout() {
       <Toast
         config={toastConfig}
         position="top"
-        topOffset={500} // ✅ balanced center
+        topOffset={500} 
       />
     </>
   );

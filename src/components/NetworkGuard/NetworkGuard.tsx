@@ -141,7 +141,7 @@ export const NetworkGuard: React.FC<NetworkGuardProps> = ({
             )}
 
             {status === 'offline' && (
-                <View className="bg-white border border-x-zinc-500 rounded-2xl p-8 w-full max-w-[400px] items-center shadow-2xl">
+                <View className="bg-white border border-x-zinc-500 rounded-2xl p-8 w-full max-w-[400px] items-center boxShadow-2xl">
                     <Text className="text-[48px] mb-4">📡</Text>
                     <Text className="text-zinc-300 mt-4 mb-2 text-2xl font-bold text-center">Connection Failed</Text>
                     <Text className="text-zinc-600 mb-8 text-[15px] text-center leading-[22px]">{errorDetails}</Text>
@@ -157,7 +157,7 @@ export const NetworkGuard: React.FC<NetworkGuardProps> = ({
             )}
 
             {status === 'time-desync' && (
-                <View className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 w-full max-w-[400px] items-center shadow-2xl">
+                <View className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 w-full max-w-[400px] items-center boxShadow-2xl">
                     <Text className="text-[48px] mb-4">⏳</Text>
                     <Text className="text-zinc-300 mt-4 mb-2 text-2xl font-bold text-center">Time Sync Error</Text>
                     <Text className="text-zinc-600 mb-8 text-[15px] text-center leading-[22px]">{errorDetails}</Text>
