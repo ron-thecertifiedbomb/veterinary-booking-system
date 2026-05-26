@@ -1,5 +1,5 @@
 {
-  "name": "rondev-vet-system-app",
+  "name": "veterinary-booking-system-admin-dashboard",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
