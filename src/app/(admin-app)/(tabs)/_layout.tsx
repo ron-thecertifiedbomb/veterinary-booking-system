@@ -5,16 +5,16 @@ import { Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
 
-export default function AppAdminLayout() {
+export default function AppAdminTabsLayout() {
     const insets = useSafeAreaInsets();
 
     const [loading, setLoading] = useState(true);
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const [user, setUser] = useState<any>(null);
 
-    // ✅ block web
+    // ✅ block web (FIXED path)
     if (Platform.OS === "web") {
-        return <Redirect href="/(admin-web))/dashboard" />;
+        return <Redirect href="/(admin-web)/dashboard" />;
     }
 
     useEffect(() => {
@@ -34,21 +34,22 @@ export default function AppAdminLayout() {
         bootstrap();
     }, []);
 
-    // ✅ wait for storage load
+    // ✅ wait for loading
     if (loading) return null;
 
-    // ✅ not authenticated
+    // ✅ not logged in
     if (!accessToken) {
         return <Redirect href="/(auth)/login" />;
     }
 
-    // ✅ not USER → redirect
-    if (user?.role !== "USER") {
-        return <Redirect href="/(admin-app)/dashboard" />;
+    // ✅ ✅ FIXED: ONLY ADMIN allowed
+    if (user?.role !== "ADMIN") {
+        return <Redirect href="/(web)/home" />;
     }
 
     return (
         <Tabs
+            initialRouteName="dashboard"
             screenOptions={{
                 headerShown: false,
                 tabBarActiveTintColor: "#111827",
@@ -67,11 +68,15 @@ export default function AppAdminLayout() {
             }}
         >
             <Tabs.Screen
-                name="home"
+                name="dashboard"
                 options={{
-                    title: "Home",
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="home-outline" size={size} color={color} />
+                    title: "Dashboard",
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <Ionicons
+                            name={focused ? "grid" : "grid-outline"}
+                            size={size}
+                            color={color}
+                        />
                     ),
                 }}
             />
@@ -80,18 +85,40 @@ export default function AppAdminLayout() {
                 name="schedule"
                 options={{
                     title: "Schedule",
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="calendar-outline" size={size} color={color} />
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <Ionicons
+                            name={focused ? "calendar" : "calendar-outline"}
+                            size={size}
+                            color={color}
+                        />
                     ),
                 }}
             />
 
             <Tabs.Screen
-                name="history"
+                name="appointments"
                 options={{
-                    title: "History",
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="time-outline" size={size} color={color} />
+                    title: "Appointments",
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <Ionicons
+                            name={focused ? "clipboard" : "clipboard-outline"}
+                            size={size}
+                            color={color}
+                        />
+                    ),
+                }}
+            />
+
+            <Tabs.Screen
+                name="users"
+                options={{
+                    title: "Users",
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <Ionicons
+                            name={focused ? "people" : "people-outline"}
+                            size={size}
+                            color={color}
+                        />
                     ),
                 }}
             />
@@ -100,8 +127,12 @@ export default function AppAdminLayout() {
                 name="profile"
                 options={{
                     title: "Profile",
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="person-outline" size={size} color={color} />
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <Ionicons
+                            name={focused ? "person-circle" : "person-circle-outline"}
+                            size={size}
+                            color={color}
+                        />
                     ),
                 }}
             />

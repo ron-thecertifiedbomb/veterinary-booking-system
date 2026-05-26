@@ -46,7 +46,7 @@ export default function AppLayout() {
 
     // ✅ ADMIN USERS → ADMIN DASHBOARD
     if (user?.role === "ADMIN") {
-        return <Redirect href="/(admin-app)/dashboard" />;
+        return <Redirect href="/(admin-app)/(tabs)/dashboard" />;
     }
 
     // ✅ NORMAL USERS → ALLOW APP ACCESS

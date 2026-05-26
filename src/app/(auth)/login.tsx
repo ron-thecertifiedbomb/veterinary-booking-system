@@ -16,7 +16,9 @@ export default function Login() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
     const { login, loading } = useLogin();
+
     const [emailError, setEmailError] = useState<string | null>(null);
     const [passwordError, setPasswordError] = useState<string | null>(null);
 
@@ -26,7 +28,6 @@ export default function Login() {
 
         let hasError = false;
 
-        // ✅ required checks
         if (!email) {
             setEmailError("Email is required");
             hasError = true;
@@ -37,9 +38,7 @@ export default function Login() {
             hasError = true;
         }
 
-        // ✅ email format check
-        const emailRegex =
-            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (email && !emailRegex.test(email)) {
             setEmailError("Invalid email format");
@@ -48,36 +47,29 @@ export default function Login() {
 
         if (hasError) return;
 
-        const response = await login({
-            email,
-            password,
-        });
-
+        const response = await login({ email, password });
 
         if (!response) return;
 
-        // ✅ wait for storage to persist
-        setTimeout(() => {
-            const isWeb = Platform.OS === "web";
+        const isWeb = Platform.OS === "web";
 
-            if (response.user.role === "ADMIN") {
-                router.replace(
-                    isWeb
-                        ? "/(admin-web)/dashboard"
-                        : "/(admin-app)/dashboard"
-                );
-                return;
-            }
-
+        if (response.user.role === "ADMIN") {
             router.replace(
                 isWeb
-                    ? "/(web)/home"
-                    : "/(app)/home"
+                    ? "/(admin-web)/dashboard"
+                    : "/(admin-app)/dashboard"
             );
-        }, 100);
+            return;
+        }
 
+        router.replace(
+            isWeb
+                ? "/(web)/home"
+                : "/(app)/home"
+        );
     };
 
+    // ✅ ✅ RETURN MUST BE HERE
     return (
         <ScreenContainer>
             <View className="flex-1 justify-center items-center">
@@ -87,15 +79,17 @@ export default function Login() {
                             Welcome
                         </Text>
                         <Text className="text-sm leading-5 text-text-secondary mt-1.5">
-                            Login to continue managing your pet
-                            appointments.
+                            Login to continue managing your pet appointments.
                         </Text>
                     </View>
+
                     <View className="gap-4">
+                        {/* EMAIL */}
                         <View>
                             <Text className="text-sm font-medium text-text-primary mb-2">
                                 Email
                             </Text>
+
                             <TextInput
                                 value={email}
                                 onChangeText={(text) => {
@@ -106,16 +100,18 @@ export default function Login() {
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                                 autoCorrect={false}
-                                // Added focus:border-[0.5px] (or focus:border) to control the selected width
-                                className={`bg-surface rounded-2xl px-4 py-4 text-text-primary border-[0.5px] focus:border-[0.5px] ${passwordError ? "border-red-500" : "border-border"
+                                className={`bg-surface rounded-2xl px-4 py-4 text-text-primary border-[0.5px] ${emailError ? "border-red-500" : "border-border"
                                     }`}
                             />
+
                             {emailError && (
                                 <Text className="text-red-500 text-xs mt-2">
                                     {emailError}
                                 </Text>
                             )}
                         </View>
+
+                        {/* PASSWORD */}
                         <View>
                             <Text className="text-sm font-medium text-text-primary mb-2">
                                 Password
@@ -128,9 +124,8 @@ export default function Login() {
                                     setPasswordError(null);
                                 }}
                                 placeholder="Enter your password"
-
                                 secureTextEntry
-                                className={`bg-surface rounded-2xl px-4 py-4 border-[0.5px] text-text-primary  ${passwordError ? "border-red-500" : "border-border"
+                                className={`bg-surface rounded-2xl px-4 py-4 border-[0.5px] text-text-primary ${passwordError ? "border-red-500" : "border-border"
                                     }`}
                             />
 
@@ -141,6 +136,7 @@ export default function Login() {
                             )}
                         </View>
 
+                        {/* LOGIN BUTTON */}
                         <Pressable
                             onPress={handleLogin}
                             disabled={loading}
@@ -155,10 +151,12 @@ export default function Login() {
                             )}
                         </Pressable>
 
+                        {/* REGISTER */}
                         <View className="mt-6 items-center">
                             <Text className="text-sm text-text-secondary">
                                 Don’t have an account?
                             </Text>
+
                             <Pressable
                                 onPress={() => router.push("/(auth)/register")}
                             >

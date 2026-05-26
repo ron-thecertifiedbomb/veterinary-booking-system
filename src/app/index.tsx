@@ -68,7 +68,7 @@ export default function Index() {
         href={
           Platform.OS === "web"
             ? "/(admin-web)/dashboard"
-            : "/(admin-app)(tabs)/dashboard"
+            : "/(admin-app)/dashboard"
         }
       />
     );
