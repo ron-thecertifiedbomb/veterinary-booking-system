@@ -3,6 +3,8 @@ import { useRegister } from "@/features/auth/hooks/useRegister";
 import { logger } from "@/utils/logger";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import Toast from "react-native-toast-message";
+
 import {
     ActivityIndicator,
     Platform,
@@ -19,11 +21,23 @@ export default function Registration() {
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
-
+    const [confirmPassword, setConfirmPassword] = useState("");
     const { register, loading } = useRegister();
 
     const handleRegister = async () => {
         logger.info("Submitting registration form");
+
+        // ✅ password match validation
+        if (password !== confirmPassword) {
+            logger.warn("Password mismatch");
+
+            Toast.show({
+                type: "error",
+                text1: "Passwords do not match",
+            });
+
+            return;
+        }
 
         const response = await register({
             name,
@@ -39,8 +53,8 @@ export default function Registration() {
 
         logger.info("Registration successful", response.user);
 
-        // ✅ auto-route after registration
         const isWeb = Platform.OS === "web";
+
         if (response.user.role === "ADMIN") {
             router.replace(
                 isWeb
@@ -49,12 +63,14 @@ export default function Registration() {
             );
             return;
         }
+
         router.replace(
             isWeb
                 ? "/(web)/home"
                 : "/(app)/home",
         );
     };
+
 
     return (
         <ScreenContainer>
@@ -119,6 +135,19 @@ export default function Registration() {
                             className="bg-surface border border-border rounded-2xl px-4 py-4 text-text-primary"
                         />
                     </View>
+
+                        <View>
+                            <Text className="text-sm font-medium text-text-primary mb-2">
+                                Retype Password
+                            </Text>
+                            <TextInput
+                                value={confirmPassword}
+                                onChangeText={setConfirmPassword}
+                                placeholder="Retype your password"
+                                secureTextEntry
+                                className="bg-surface border border-border rounded-2xl px-4 py-4 text-text-primary"
+                            />
+                        </View>
 
                     <Pressable
                         onPress={handleRegister}
