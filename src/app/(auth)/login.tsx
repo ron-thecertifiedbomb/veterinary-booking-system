@@ -152,7 +152,7 @@ export default function Login() {
                             onPress={() => router.push("/(auth)/register")}
                         >
                             <Text className="text-sm font-semibold text-secondary mt-1">
-                                Create one here
+                                Register here
                             </Text>
                         </Pressable>
                     </View>
