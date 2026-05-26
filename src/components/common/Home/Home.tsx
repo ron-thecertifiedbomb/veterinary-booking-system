@@ -66,7 +66,7 @@ export default function Home() {
     return (
         <View className="flex-1 bg-background items-center px-6">
 
-            <View className="w-full max-w-md pt-24">
+            <View className="w-full max-w-xl pt-24">
 
                 {/* ✅ HEADER */}
                 <View className="mb-6">
