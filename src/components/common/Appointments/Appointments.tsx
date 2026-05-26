@@ -45,58 +45,66 @@ export default function Appointments() {
     }
 
     return (
-        <View style={{ flex: 1 }}>
-            <FlatList
-                data={appointments}
-                keyExtractor={(item) => item.bookingCode}
+        <View className="flex-1 bg-background items-center">
+            <View className="w-full max-w-xl flex-1">
 
-                // ✅ spacing inside scroll
-                contentContainerStyle={{
-                    paddingHorizontal: 16,
-                    paddingTop: 24,
-                    paddingBottom: 24,
-                }}
+                <FlatList
+                    data={appointments}
+                    keyExtractor={(item) => item.bookingCode}
+                    // ✅ FORCE SCROLL AREA
+                    contentContainerStyle={{
+                        paddingHorizontal: 16,
+                        paddingTop: 24,
+                        paddingBottom: 40,
+                        flexGrow: 1, // 🔥 THIS FIXES YOUR ISSUE
+                    }}
 
-                renderItem={({ item }) => (
-                    <View
-                        style={{
-                            padding: 16,
-                            marginBottom: 12,
-                            borderRadius: 12,
-                            backgroundColor: "#f9fafb",
-                            borderWidth: 1,
-                            borderColor: "#e5e7eb",
-                        }}
-                    >
-                        <Text style={{ fontWeight: "700", fontSize: 16 }}>
-                            {item.petName}
-                        </Text>
+                    // ✅ SHOW SCROLLBAR
+                    showsVerticalScrollIndicator={true}
 
-                        <Text style={{ color: "#555", marginTop: 4 }}>
-                            {item.serviceType}
-                        </Text>
-
-                        <Text style={{ marginTop: 6 }}>
-                            {new Date(item.appointmentDate).toLocaleString()}
-                        </Text>
-
-                        <Text
+                    renderItem={({ item }) => (
+                        <View
                             style={{
-                                marginTop: 6,
-                                fontWeight: "600",
-                                color:
-                                    item.status === "booked"
-                                        ? "green"
-                                        : item.status === "cancelled"
-                                            ? "red"
-                                            : "gray",
+                                padding: 16,
+                                marginBottom: 12,
+                                borderRadius: 12,
+                                backgroundColor: "#f9fafb",
+                                borderWidth: 1,
+                                borderColor: "#e5e7eb",
                             }}
                         >
-                            {item.status.toUpperCase()}
-                        </Text>
-                    </View>
-                )}
-            />
+                            <Text style={{ fontWeight: "700", fontSize: 16 }}>
+                                {item.petName}
+                            </Text>
+
+                            <Text style={{ color: "#555", marginTop: 4 }}>
+                                {item.serviceType}
+                            </Text>
+
+                            <Text style={{ marginTop: 6 }}>
+                                {new Date(item.appointmentDate).toLocaleString()}
+                            </Text>
+
+                            <Text
+                                style={{
+                                    marginTop: 6,
+                                    fontWeight: "600",
+                                    color:
+                                        item.status === "booked"
+                                            ? "green"
+                                            : item.status === "cancelled"
+                                                ? "red"
+                                                : "gray",
+                                }}
+                            >
+                                {item.status.toUpperCase()}
+                            </Text>
+                        </View>
+                    )}
+                />
+
+            </View>
         </View>
     );
+
 }

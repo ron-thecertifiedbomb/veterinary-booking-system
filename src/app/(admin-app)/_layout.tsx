@@ -1,5 +1,5 @@
 import { getStorageItem } from "@/features/auth/storage";
-import { Redirect, Slot } from "expo-router";
+import { Redirect, Slot, usePathname } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, ActivityIndicator, Platform } from "react-native";
 
@@ -7,6 +7,8 @@ export default function AppAdminLayout() {
     const [loading, setLoading] = useState(true);
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const [user, setUser] = useState<any>(null);
+
+    const pathname = usePathname();
 
     useEffect(() => {
         const bootstrap = async () => {
@@ -25,7 +27,6 @@ export default function AppAdminLayout() {
         bootstrap();
     }, []);
 
-    // ✅ SHOW LOADING (NO BLANK SCREEN)
     if (loading) {
         return (
             <View className="flex-1 justify-center items-center bg-background">
@@ -34,21 +35,20 @@ export default function AppAdminLayout() {
         );
     }
 
-    // ✅ NOT AUTHENTICATED → GO TO LOGIN
+    // ✅ NOT AUTH
     if (!accessToken) {
         return <Redirect href="/(auth)/login" />;
     }
 
-    // ✅ WEB USERS → SEPARATE EXPERIENCE
-    if (Platform.OS === "web") {
+    // ✅ ✅ FIXED: only redirect if NOT already inside admin-web
+    if (Platform.OS === "web" && !pathname.startsWith("/(admin-web)")) {
         return <Redirect href="/(admin-web)/home" />;
     }
 
-    // ✅ ADMIN USERS → ADMIN DASHBOARD
+    // ✅ ADMIN users (mobile app)
     if (user?.role === "ADMIN") {
         return <Redirect href="/(admin-app)/dashboard" />;
     }
 
-    // ✅ NORMAL USERS → ALLOW APP ACCESS
     return <Slot />;
 }

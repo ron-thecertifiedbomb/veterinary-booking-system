@@ -23,12 +23,19 @@ export default function WebUserLayout() {
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
+
       setLoading(false);
     }
+
     loadSession();
   }, []);
 
-  // ✅ prevent flicker / premature redirect
+  // ✅ ✅ IMPORTANT: only apply inside (web)
+  if (!pathname.startsWith("/(web)")) {
+    return <Slot />;
+  }
+
+  // ✅ prevent flicker
   if (loading) return null;
 
   // ✅ not authenticated
@@ -36,13 +43,13 @@ export default function WebUserLayout() {
     return <Redirect href="/(auth)/login" />;
   }
 
-  // ✅ NOT a USER → block access
+  // ✅ NOT a USER → go to admin
   if (user?.role !== "USER") {
     return <Redirect href="/(admin-web)/dashboard" />;
   }
 
-  // ✅ prevent root reroute only
-  if (pathname === "/") {
+  // ✅ root redirect
+  if (pathname === "/" || pathname === "/(web)") {
     return <Redirect href="/(web)/home" />;
   }
 
