@@ -22,6 +22,7 @@ const SERVICES = [
 
 const PLACEHOLDER_COLOR = "#9CA3AF";
 
+
 export default function BookingForm({
     petName,
     serviceType,
