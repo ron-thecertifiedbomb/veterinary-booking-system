@@ -3,8 +3,6 @@ export const formatBookingCode = (code: string | undefined): string => {
   return code.substring(0, 5).toUpperCase();
 };
 
-
-
 export const formatSlotTime = (time: string) => {
   const [hour, minute] = time.split(":");
   const h = Number(hour);

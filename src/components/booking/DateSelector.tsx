@@ -1,6 +1,5 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View } from "react-native";
 import { Calendar } from "react-native-calendars";
-import { formatDate } from "@/utils/date";
 
 type Props = {
     date: string;
@@ -15,7 +14,7 @@ export default function DateSelector({
 }: Props) {
     return (
         <View>
-           
+
 
             {/* ✅ Calendar */}
             <View className="bg-surface border border-border rounded-xl p-4">
@@ -38,8 +37,8 @@ export default function DateSelector({
                     // ✅ ADD THIS
                     theme={{
                         arrowColor: "#000000",
-  }}
-/>
+                    }}
+                />
 
             </View>
 

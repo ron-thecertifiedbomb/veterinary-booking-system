@@ -1,16 +1,13 @@
-import { useEffect } from "react";
-import { View, Text, Pressable, Alert } from "react-native";
-import { useRouter } from "expo-router";
-import { formatDate, getTodayDate } from "@/utils/date";
-import { useGetUserProfile } from "@/features/users/hook/useGetUserProfile";
-import { useLogout } from "@/features/auth/hooks/useLogout";
 import Loader from "@/components/common/Loader/Loader";
+import { useLogout } from "@/features/auth/hooks/useLogout";
+import { useGetUserProfile } from "@/features/users/hook/useGetUserProfile";
+import { getInitials } from "@/utils/getInitials/getInitials";
+import { useRouter } from "expo-router";
+import { useEffect } from "react";
+import { Alert, Pressable, Text, View } from "react-native";
 
 export default function Profile() {
     const router = useRouter();
-
-    const date = getTodayDate();
-    const now = new Date();
 
     const { fetchUserProfile, profile, loading, error } = useGetUserProfile();
     const { logout, loading: logoutLoading } = useLogout();
@@ -19,25 +16,20 @@ export default function Profile() {
         fetchUserProfile();
     }, []);
 
-    // ✅ Logout with confirmation
+    // ✅ Logout confirmation
     const confirmLogout = () => {
-        Alert.alert(
-            "Logout",
-            "Are you sure you want to logout?",
-            [
-                { text: "Cancel", style: "cancel" },
-                {
-                    text: "Logout",
-                    style: "destructive",
-                    onPress: handleLogout,
-                },
-            ]
-        );
+        Alert.alert("Logout", "Are you sure you want to logout?", [
+            { text: "Cancel", style: "cancel" },
+            {
+                text: "Logout",
+                style: "destructive",
+                onPress: handleLogout,
+            },
+        ]);
     };
 
     const handleLogout = async () => {
         const success = await logout();
-
         if (!success) return;
 
         router.replace("/(auth)/login");
@@ -69,83 +61,90 @@ export default function Profile() {
                     </Text>
                 </View>
 
-                {/* ✅ DATE CARD */}
-                <View className="bg-surface border border-border rounded-2xl px-5 py-4 mb-5">
-                    <Text className="text-[11px] uppercase tracking-wide text-text-muted mb-1">
-                        Today
-                    </Text>
-
-                    <Text className="text-base font-semibold text-text-primary">
-                        {formatDate(date)}
-                    </Text>
-
-                    <Text className="text-xs text-text-secondary mt-1">
-                        {now.toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                        })}
-                    </Text>
-                </View>
-
                 {/* ✅ PROFILE CARD */}
-                <View className="bg-surface border border-border rounded-2xl px-5 py-5">
+                <View className="bg-surface border border-border rounded-2xl p-5">
 
-                    {/* Name */}
-                    <View className="mb-4">
-                        <Text className="text-[11px] uppercase text-text-muted mb-1">
-                            Full Name
+                    {/* ✅ TOP BAR (EDIT BUTTON RIGHT) */}
+                    <View className="flex-row justify-between items-center mb-4">
+                        <Text className="text-sm font-semibold text-text-muted">
+                            Account Details
                         </Text>
-                        <Text className="text-base font-semibold text-text-primary">
-                            {profile?.name || "-"}
-                        </Text>
+
+                        <Pressable
+                            onPress={() => router.push("/edit-profile")}
+                            className="px-3 py-1 rounded-full border border-border active:opacity-80"
+                        >
+                            <Text className="text-xs font-medium text-text-primary">
+                                Edit
+                            </Text>
+                        </Pressable>
                     </View>
 
-                    {/* Email */}
-                    <View className="mb-4">
-                        <Text className="text-[11px] uppercase text-text-muted mb-1">
-                            Email
+                    {/* ✅ PROFILE HEADER */}
+                    <View className="items-center mb-5">
+
+                        <View className="bg-gray-200 rounded-full w-16 h-16 items-center justify-center">
+                            <Text className="text-xl font-semibold text-gray-600">
+                                {getInitials(profile?.name)}
+                            </Text>
+                        </View>
+
+                        <Text className="text-base font-semibold text-text-primary mt-3">
+                            {profile?.name || "User"}
                         </Text>
-                        <Text className="text-sm text-text-primary">
+
+                        <Text className="text-xs text-text-secondary mt-1">
                             {profile?.email || "-"}
                         </Text>
                     </View>
 
-                    {/* Phone */}
-                    <View>
-                        <Text className="text-[11px] uppercase text-text-muted mb-1">
-                            Phone
-                        </Text>
-                        <Text className="text-sm text-text-primary">
-                            {profile?.phone || "Not provided"}
-                        </Text>
-                    </View>
+                    {/* ✅ DIVIDER */}
+                    <View className="border-t border-border my-4" />
 
+                    {/* ✅ DETAILS */}
+                    <View className="gap-4">
+
+                        <View>
+                            <Text className="text-[11px] uppercase text-text-muted mb-1">
+                                Full Name
+                            </Text>
+                            <Text className="text-sm text-text-primary">
+                                {profile?.name || "-"}
+                            </Text>
+                        </View>
+
+                        <View>
+                            <Text className="text-[11px] uppercase text-text-muted mb-1">
+                                Email
+                            </Text>
+                            <Text className="text-sm text-text-primary">
+                                {profile?.email || "-"}
+                            </Text>
+                        </View>
+
+                        <View>
+                            <Text className="text-[11px] uppercase text-text-muted mb-1">
+                                Phone
+                            </Text>
+                            <Text className="text-sm text-text-primary">
+                                {profile?.phone || "Not provided"}
+                            </Text>
+                        </View>
+
+                    </View>
                 </View>
 
-                {/* ✅ ACTIONS */}
-                <View className="mt-6 gap-3">
-
-                    {/* ✅ EDIT PROFILE */}
-                    <Pressable
-                        onPress={() => router.push("/edit-profile")}
-                        className="border border-border rounded-2xl py-3 items-center bg-surface active:opacity-80"
-                    >
-                        <Text className="text-sm font-semibold text-text-primary">
-                            Edit Profile
-                        </Text>
-                    </Pressable>
-
-                    {/* ✅ LOGOUT */}
+                {/* ✅ FOOTER ACTION */}
+                <View className="mt-10">
                     <Pressable
                         onPress={confirmLogout}
                         disabled={logoutLoading}
-                        className="bg-black rounded-2xl py-3 items-center active:opacity-80"
+                        className="bg-black rounded-2xl py-4 items-center active:opacity-80"
                     >
                         <Text className="text-white font-semibold text-sm">
                             {logoutLoading ? "Logging out..." : "Logout"}
                         </Text>
                     </Pressable>
-
                 </View>
 
             </View>

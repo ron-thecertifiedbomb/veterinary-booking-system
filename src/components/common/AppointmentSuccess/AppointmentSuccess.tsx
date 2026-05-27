@@ -1,11 +1,11 @@
-import { formatDate, formatTime } from "@/utils/date";
+import Loader from "@/components/common/Loader/Loader";
+import { getStorageItem } from "@/features/auth/storage";
+import { formatDate, formatTime } from "@/utils/dateandtime/date";
 import { formatBookingCode } from "@/utils/formatter";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getStorageItem } from "@/features/auth/storage";
-import Loader from "@/components/common/Loader/Loader";
 
 export default function AppoinmentSuccess() {
 

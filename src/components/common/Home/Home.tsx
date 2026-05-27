@@ -1,24 +1,34 @@
 import BookingModal from "@/components/booking/BookingModal";
 import DateSelector from "@/components/booking/DateSelector";
+import Loader from "@/components/common/Loader/Loader";
+
 import { useCreateAppointment } from "@/features/appointment/hooks/useCreateAppointment";
 import { useBookingBootstrap } from "@/hooks/appointments/useBookingBootstrap";
 
-import { formatDate, getTodayDate } from "@/utils/date";
-import { useEffect, useState } from "react";
-import { Text, View, ActivityIndicator } from "react-native";
+import { parseServerNow } from "@/utils/dateandtime/serverTime";
+import { getTodayDate } from "@/utils/dateandtime/date";
+
 import { useRouter } from "expo-router";
-import Loader from "@/components/common/Loader/Loader";
+import { useEffect, useState } from "react";
+import { Text, View } from "react-native";
 
 export default function Home() {
-
     const router = useRouter();
 
     const [date, setDate] = useState(getTodayDate());
     const [showModal, setShowModal] = useState(false);
     const [modalChecking, setModalChecking] = useState(false);
 
-    const { slots, loading, error: fetchError } = useBookingBootstrap(date);
-    const now = new Date();
+    const {
+        slots,
+        loading,
+        error: fetchError,
+        serverNow,
+    } = useBookingBootstrap(date);
+
+    // ✅ ✅ ✅ SINGLE SOURCE OF TIME
+    const now = parseServerNow(serverNow);
+
     const {
         createAppointment,
         loading: creating,
@@ -27,40 +37,44 @@ export default function Home() {
         resetSuccess,
     } = useCreateAppointment();
 
-    // ✅ ✅ ✅ NEW: initial loading guard
     const [initialLoading, setInitialLoading] = useState(true);
-console.log('date', date)
-console.log('slots', slots)
+
+    // ✅ Initial loading (prevent flicker)
     useEffect(() => {
         if (!loading) {
             setInitialLoading(false);
         }
     }, [loading]);
 
-    // ✅ reset success flag
+    // ✅ Reset success state
     useEffect(() => {
         if (!success) return;
+
         const timer = setTimeout(() => {
             resetSuccess();
         }, 2500);
+
         return () => clearTimeout(timer);
     }, [success, resetSuccess]);
 
-    // ✅ modal loading sync
+    // ✅ Modal loading sync
     useEffect(() => {
         if (!showModal) return;
         if (loading) return;
+
         setModalChecking(false);
     }, [showModal, loading]);
 
-    // ✅ ✅ ✅ FIXED: initial loading screen (NO FLICKER)
+    // ✅ Loading screen
     if (initialLoading) {
-        return <Loader fullScreen />   
+        return <Loader fullScreen />;
     }
 
     return (
         <View className="flex-1 bg-background items-center">
             <View className="w-full max-w-xl flex-1 px-6">
+
+                {/* ✅ HEADER */}
                 <View className="pt-24 mb-6">
                     <Text className="text-3xl font-semibold text-text-primary">
                         Book an Appointment
@@ -69,22 +83,25 @@ console.log('slots', slots)
                         Select a service and choose your preferred schedule.
                     </Text>
                 </View>
+
+                {/* ✅ DATE / TIME CARD */}
                 <View className="bg-surface border border-border rounded-2xl px-5 py-4 mb-5">
                     <Text className="text-[11px] uppercase tracking-wide text-text-muted mb-1">
                         Today is
                     </Text>
+
+                    {/* ✅ DATE (SERVER) */}
                     <Text className="text-base font-semibold text-text-primary">
-                        {formatDate(date)}
+                        {now.date}
                     </Text>
 
-                    {/* ✅ Time */}
+                    {/* ✅ TIME (SERVER) */}
                     <Text className="text-xs text-text-secondary mt-1">
-                        Time: {now.toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                        })}
+                        {now.time}
                     </Text>
                 </View>
+
+                {/* ✅ DATE SELECTOR */}
                 <DateSelector
                     date={date}
                     onDateChange={(newDate) => {
@@ -107,6 +124,10 @@ console.log('slots', slots)
                     setModalChecking(false);
                 }}
                 onSubmit={async (formData) => {
+                    if (!formData.time) {
+                        return; // optional: add Alert here
+                    }
+
                     try {
                         const appointment = await createAppointment({
                             petName: formData.petName,
@@ -116,11 +137,9 @@ console.log('slots', slots)
                             notes: formData.notes || "",
                         });
 
-                        // ✅ close modal immediately
                         setShowModal(false);
                         setModalChecking(false);
 
-                        // ✅ delay navigation (for toast visibility)
                         setTimeout(() => {
                             router.push({
                                 pathname: "/success",
@@ -128,14 +147,13 @@ console.log('slots', slots)
                                     code: appointment.bookingCode,
                                 },
                             });
-                        }, 800);
+                        }, 600);
 
                     } catch {
                         // handled in hook
                     }
                 }}
             />
-
         </View>
     );
 }

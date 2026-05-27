@@ -11,9 +11,8 @@ import {
 } from "react-native";
 
 import BookingForm from "@/components/booking/BookingForm";
-import { Slot } from "@/features/appointment/types";
-import { formatTime } from "@/utils/date";
 import Loader from "@/components/common/Loader/Loader";
+import { Slot } from "@/features/appointment/types";
 import { formatSlotTime } from "@/utils/formatter";
 
 type Props = {
@@ -111,7 +110,7 @@ export default function BookingModal({
                     {/* ✅ LOADING */}
                     {checking ? (
                         <View className="items-center py-6">
-                            <Loader fullScreen={false} size="small" />
+                            <Loader fullScreen={false}  />
                         </View>
 
                     ) : error && !hasAvailableSlots ? (
@@ -166,21 +165,21 @@ export default function BookingModal({
                                 Complete Appointment
                             </Text>
 
-                                        <View className="bg-surface mt-1  mb-4">
+                            <View className="bg-surface mt-1  mb-4">
 
-                                    
 
-                                            <Text className="text-xs text-text-secondary mt-1">
-                                                {displayDate}
-                                            </Text>
 
-                                            <Text className="text-xs text-text-secondary mt-1">
-                                                {displayTime}
-                                            </Text>
+                                <Text className="text-xs text-text-secondary mt-1">
+                                    {displayDate}
+                                </Text>
 
-                                        </View>
+                                <Text className="text-xs text-text-secondary mt-1">
+                                    {displayTime}
+                                </Text>
 
-                                        
+                            </View>
+
+
 
                             {/* ✅ TIME SELECT */}
                             <Text className="text-xs text-text-muted mb-2">
@@ -208,17 +207,17 @@ export default function BookingModal({
                                     ))}
                                 </Picker>
                             </View>
-                                    
+
                             {/* ✅ FORM */}
 
-                                        <BookingForm
-                                            petName={petName}
-                                            serviceType={serviceType}
-                                            notes={notes}
-                                            setPetName={setPetName}
-                                            setServiceType={setServiceType}
-                                            setNotes={setNotes}
-                                        />
+                            <BookingForm
+                                petName={petName}
+                                serviceType={serviceType}
+                                notes={notes}
+                                setPetName={setPetName}
+                                setServiceType={setServiceType}
+                                setNotes={setNotes}
+                            />
 
 
                             {/* ✅ ERROR DISPLAY */}
@@ -246,8 +245,8 @@ export default function BookingModal({
                                     disabled={!isValid || creating}
                                     onPress={handleSubmit}
                                     className={`flex-1 rounded-lg py-3 ${isValid && !creating
-                                            ? "bg-black"
-                                            : "bg-gray-400"
+                                        ? "bg-black"
+                                        : "bg-gray-400"
                                         }`}
                                 >
                                     {creating ? (

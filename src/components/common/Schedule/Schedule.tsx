@@ -9,7 +9,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import Loader from "@/components/common/Loader/Loader";
 import { useGetUserAppointments } from "@/features/users/hook/useGetUserAppointemts";
-import { formatDate, getTodayDate } from "@/utils/date";
+import { formatDate, getTodayDate } from "@/utils/dateandtime/date";
+import { formatBookingCode } from "@/utils/formatter";
+import { formatPHDate } from "@/utils/dateandtime/time";
 
 export default function Schedule() {
     const {
@@ -86,7 +88,7 @@ export default function Schedule() {
                 </View>
 
                 {/* ✅ Label */}
-                <Text className="text-xs text-text-muted mb-2">
+                <Text className="text-sm text-text-muted mb-2">
                     Upcoming Appointments
                 </Text>
 
@@ -99,9 +101,9 @@ export default function Schedule() {
 
                     renderSectionHeader={({ section: { title } }) => (
                         <Text
-                            className={`text-xs uppercase mt-4 mb-2 ${title === "Today"
-                                    ? "text-primary font-semibold"
-                                    : "text-text-muted"
+                            className={`text-sm uppercase mt-2 mb-2 ${title === "Today"
+                                ? "text-primary font-semibold"
+                                : "text-text-muted"
                                 }`}
                         >
                             {title}
@@ -109,33 +111,38 @@ export default function Schedule() {
                     )}
 
                     renderItem={({ item }) => {
-                        const time = new Date(item.appointmentDate).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                        });
 
+
+
+        
                         return (
                             <View className="bg-surface border border-border rounded-2xl p-4 mb-3">
 
                                 {/* ✅ Top row */}
+
                                 <View className="flex-row justify-between items-center">
+
                                     <Text className="text-base font-semibold text-text-primary">
                                         {item.petName}
                                     </Text>
 
-                                    <Text className="text-xs text-text-muted">
-                                        {time}
-                                    </Text>
+                                    <View className="border-[0.2px] px-2 py-1 rounded-full">
+                                        <Text className="text-[12px] font-bold">
+                                            {item.status.toUpperCase()}
+                                        </Text>
+                                    </View>
+
                                 </View>
 
                                 {/* ✅ Service */}
+
+                                <Text className="text-sm text-text-secondary mt-1">{formatPHDate(item.appointmentDate)}</Text>
                                 <Text className="text-sm text-text-secondary mt-1">
                                     {item.serviceType}
                                 </Text>
-
                                 {/* ✅ Ref */}
-                                <Text className="text-xs text-text-muted mt-2 tracking-wider">
-                                    Ref: {item.bookingCode.slice(0, 8).toUpperCase()}
+                                <Text className="text-sm text-text-secondary mt-1">
+                                    Ref: {formatBookingCode(item.bookingCode)}
                                 </Text>
                             </View>
                         );

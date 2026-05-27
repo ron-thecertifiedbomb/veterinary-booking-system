@@ -6,11 +6,7 @@ export const getTodayDate = () => {
 };
 
 // ✅ normalize ANY input date → PH YYYY-MM-DD
-export const formatPHDate = (input: Date | string) => {
-  return new Date(input).toLocaleDateString("en-CA", {
-    timeZone: "Asia/Manila",
-  });
-};
+
 
 // ✅ display date (safe)
 // ✅ display date (NO SHIFT, PH-safe)

@@ -10,7 +10,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "#f9fafb",
+        background: "#ffffff", // ✅ pure white
         surface: "#ffffff",
         surfaceSoft: "#f3f4f6",
         border: "#e5e7eb",
@@ -29,7 +29,6 @@ module.exports = {
         warning: "#f59e0b",
         danger: "#ef4444",
       },
-
       borderRadius: {
         lg: "10px",
         xl: "14px",

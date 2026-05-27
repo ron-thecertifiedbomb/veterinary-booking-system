@@ -1,8 +1,9 @@
 import Loader from "@/components/common/Loader/Loader";
 import { useGetUserAppointments } from "@/features/users/hook/useGetUserAppointemts";
-import { formatDate, getTodayDate } from "@/utils/date";
+import { formatDate, getTodayDate } from "@/utils/dateandtime/date";
+import { formatBookingCode } from "@/utils/formatter";
 import { useEffect } from "react";
-import { View, Text, FlatList } from "react-native";
+import { FlatList, Text, View } from "react-native";
 
 export default function Appointments() {
     const date = getTodayDate();
@@ -104,23 +105,23 @@ export default function Appointments() {
                                         {item.petName}
                                     </Text>
 
-                             
+
                                 </View>
 
 
                                 {/* Service */}
                                 <Text className="text-sm text-text-secondary">
-                                    {item.serviceType}
+                                    Service Type: {item.serviceType}
                                 </Text>
 
                                 <View className="h-px bg-border my-3" />
 
                                 {/* Date */}
-                                <Text className="text-xs text-slate-800 mt-1">
-                                  Date: {new Date(item.appointmentDate).toLocaleDateString()}
+                                <Text className="text-sm text-slate-800 mt-1">
+                                    Date: {new Date(item.appointmentDate).toLocaleDateString()}
                                 </Text>
                                 {/* Time */}
-                                <Text className="text-xs text-slate-800 mt-1">
+                                <Text className="text-sm text-slate-800 mt-1">
                                     Time: {new Date(item.appointmentDate).toLocaleTimeString([], {
                                         hour: "2-digit",
                                         minute: "2-digit",
@@ -128,8 +129,8 @@ export default function Appointments() {
                                 </Text>
 
                                 {/* Reference */}
-                                <Text className="text-xs text-slate-800 mt-1">
-                                    Ref: {item.bookingCode}
+                                <Text className="text-sm text-slate-800 mt-1">
+                                    Ref: {formatBookingCode(item.bookingCode)}
                                 </Text>
 
                             </View>

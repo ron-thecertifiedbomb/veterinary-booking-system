@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "@/utils/api";
 import { logger } from "@/utils/logger";
+import { parseServerNow } from "@/utils/dateandtime/serverTime";
 
 type Slot = {
   time: string;
@@ -12,11 +13,12 @@ type SlotsResponse = {
   slots: Slot[];
 };
 
-export function useSlots() {
+export function useGetSlots() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [slots, setSlots] = useState<Slot[]>([]);
   const [serverNow, setServerNow] = useState<string | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   const getSlots = async (date: string) => {
     try {
@@ -29,7 +31,6 @@ export function useSlots() {
         `/api/vet/appointments/slots?date=${date}`,
       );
 
-      // ✅ FIX: use correct fields
       setSlots(Array.isArray(res.slots) ? res.slots : []);
       setServerNow(res.now);
 
@@ -40,7 +41,6 @@ export function useSlots() {
       const message = err?.message || "Failed to load slots";
 
       setError(message);
-
       logger.error("Slots fetch failed", err);
 
       return null;
@@ -49,10 +49,17 @@ export function useSlots() {
     }
   };
 
+  // ✅ ✅ CLEAN: single object
+  const now = parseServerNow(serverNow);
+
   return {
     getSlots,
     slots,
-    serverNow, // ✅ expose this
+
+    now, // ✅ one clean object (date + time)
+
+    selectedTime,
+    setSelectedTime,
     loading,
     error,
   };
