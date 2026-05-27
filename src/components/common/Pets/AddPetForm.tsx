@@ -1,4 +1,5 @@
 import ScreenContainer from "@/components/common/layout/ScreenContainer";
+import { useAddPet } from "@/features/pet/useAddPet";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -12,8 +13,12 @@ import {
     View,
 } from "react-native";
 
+
+
 export default function AddPetForm() {
     const router = useRouter();
+
+    const { addPet, loading } = useAddPet();
 
     const [name, setName] = useState("");
     const [species, setSpecies] = useState("");
@@ -22,8 +27,6 @@ export default function AddPetForm() {
 
     const [nameError, setNameError] = useState<string | null>(null);
     const [speciesError, setSpeciesError] = useState<string | null>(null);
-
-    const [loading, setLoading] = useState(false);
 
     const noOutline =
         Platform.OS === "web"
@@ -48,20 +51,17 @@ export default function AddPetForm() {
 
         if (hasError) return;
 
-        try {
-            setLoading(true);
+        const response = await addPet({
+            name,
+            species,
+            breed,
+            weight: weight ? Number(weight) : undefined,
+        });
 
-            // ✅ later connect API here
+        if (!response) return;
 
-            // fake delay
-            await new Promise((res) => setTimeout(res, 800));
-
-            router.back(); // ✅ go back after creation
-        } catch (err) {
-            console.log(err);
-        } finally {
-            setLoading(false);
-        }
+        // ✅ go back + trigger refresh
+        router.replace("/pets?refresh=true");
     };
 
     return (
@@ -72,10 +72,11 @@ export default function AddPetForm() {
             >
                 <ScrollView
                     className="flex-1"
+                    contentContainerStyle={{ flexGrow: 1 }} // ✅ crucial for centering
                     keyboardShouldPersistTaps="handled"
                 >
                     <View className="flex-1 justify-center items-center">
-                        <View className="w-full max-w-md px-6 py-8 lg:py-14">
+                        <View className="w-full max-w-md px-6 py-8">
 
                             {/* ✅ HEADER */}
                             <View className="mb-8 items-center">
@@ -83,7 +84,7 @@ export default function AddPetForm() {
                                     Add a Pet
                                 </Text>
                                 <Text className="text-sm text-text-secondary mt-1 text-center">
-                                    Enter your pet’s details to use for booking appointments.
+                                    Enter your pet’s details for booking appointments.
                                 </Text>
                             </View>
 
@@ -188,3 +189,4 @@ export default function AddPetForm() {
         </ScreenContainer>
     );
 }
+``
