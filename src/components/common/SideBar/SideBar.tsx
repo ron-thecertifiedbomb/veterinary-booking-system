@@ -1,5 +1,7 @@
 import { useLogout } from "@/features/auth/hooks/useLogout";
+import { showConfirm } from "@/hooks/crossPlatformAlert";
 import { NavItemType, SidebarProps } from "@/utils/config/sidebar/types";
+
 import { Link, usePathname, useRouter } from "expo-router";
 import { Animated, Pressable, Text, View } from "react-native";
 
@@ -14,26 +16,19 @@ export default function Sidebar({
     const router = useRouter();
     const { logout, loading } = useLogout();
 
-    /**
-     * ✅ Better active matching
-     * Exact match OR nested route match
-     */
 
-    const normalize = (path: string) =>
-        path.replace(/\(.*?\)/g, "");
 
-    const isActive = (href: string) => {
-        const cleanHref = normalize(href);
-        const cleanPath = normalize(pathname);
-
-        if (cleanPath === cleanHref) return true;
-        return cleanPath.startsWith(`${cleanHref}/`);
+    const getCleanPath = (path: string) => {
+        return path.replace(/\/?\(.*?\)/g, "");
     };
 
+    const isActive = (href: string) => {
+        const current = getCleanPath(pathname);
+        const target = getCleanPath(href);
 
-    /**
-     * ✅ Logout handler
-     */
+        return current === target || current.startsWith(target + "/");
+    };
+
     const handleLogout = async () => {
         const success = await logout();
         if (success) {
@@ -41,9 +36,17 @@ export default function Sidebar({
         }
     };
 
-    /**
-     * ✅ Reusable Nav Item
-     */
+    const confirmLogout = () => {
+        showConfirm(
+            "Logout",
+            "Are you sure you want to logout?",
+            handleLogout,
+            "Logout",
+            true
+        );
+    };
+
+    // ✅ NAV ITEM (UPGRADED)
     const NavItem = ({ item }: { item: NavItemType }) => {
         const active = isActive(item.href);
 
@@ -51,31 +54,32 @@ export default function Sidebar({
             <Link href={item.href} asChild>
                 <Pressable
                     onPress={isMobile ? toggleSidebar : undefined}
-                    android_ripple={{ color: "#06B6D433" }}
                     style={({ pressed }) => ({
                         flexDirection: "row",
                         alignItems: "center",
-                        paddingVertical: 12,
-                        paddingHorizontal: 14,
-                        marginBottom: 8,
-                        borderRadius: 10,
 
-                        // ✅ Background behavior
+                        paddingVertical: 14,
+                        paddingHorizontal: 18,
+
+                        borderRadius: 12,
+
                         backgroundColor: active
-                            ? "#06B6D422"
+                            ? "#F1F5F9"
                             : pressed
-                                ? "#F1F5F9"
+                                ? "#F8FAFC"
                                 : "transparent",
 
-                        // ✅ Left accent bar
                         borderLeftWidth: active ? 3 : 0,
-                        borderLeftColor: "#06B6D4",
+                        borderLeftColor: "#111827",
+
+                        transform: [{ scale: pressed ? 0.98 : 1 }],
                     })}
                 >
                     <Text
                         style={{
-                            color: active ? "#06B6D4" : "#1f2937",
-                            fontWeight: active ? "600" : "500",
+                            color: active ? "#111827" : "#64748B",
+                            fontWeight: active ? "700" : "500",
+                            fontSize: 18,
                         }}
                     >
                         {item.label}
@@ -85,60 +89,101 @@ export default function Sidebar({
         );
     };
 
-    /**
-     * ✅ Sidebar Layout Content
-     */
+    // ✅ SIDEBAR CONTENT
     const SidebarContent = (
         <View
             style={{
                 flex: 1,
-                backgroundColor: "#F8FAFC",
-                padding: 16,
+                backgroundColor: "#FFFFFF",
+                padding: 18,
                 borderRightWidth: 1,
                 borderColor: "#E5E7EB",
                 justifyContent: "space-between",
             }}
         >
-            {/* TOP NAV */}
-            <View>
+            {/* 🔥 HEADER BRAND */}
+
+            <View style={{ marginBottom: 28 }}>
+                <Text
+                    style={{
+                        fontSize: 20,
+                        fontWeight: "700",
+                        color: "#0F172A",
+                    }}
+                >
+                    Veterianry Clinic
+                </Text>
+
+                <Text
+                    style={{
+                        fontSize: 12,
+                        color: "#94A3B8",
+                        marginTop: 2,
+                    }}
+                >
+                    Management System
+                </Text>
+            </View>
+
+
+            {/* ✅ NAV */}
+
+            <View style={{ flex: 1, marginTop: 10, gap: 10 }}>
                 {navItems.map((item) => (
                     <NavItem key={item.href} item={item} />
                 ))}
             </View>
 
-            {/* FOOTER */}
-            <Pressable
-                onPress={handleLogout}
-                disabled={loading}
-                style={({ pressed }) => ({
-                    marginTop: 20,
-                    paddingVertical: 12,
-                    borderRadius: 10,
-                    alignItems: "center",
-                    backgroundColor: loading
-                        ? "#1f2937"
-                        : pressed
-                            ? "#111827"
-                            : "black",
-                })}
-            >
-                <Text style={{ color: "#fff", fontWeight: "600" }}>
-                    {loading ? "Logging out..." : "Logout"}
-                </Text>
-            </Pressable>
+
+            {/* ✅ FOOTER */}
+            <View style={{ marginTop: 12 }}>
+                <Pressable
+                    onPress={confirmLogout}
+                    disabled={loading}
+                    style={({ pressed }) => ({
+                        paddingVertical: 12,
+                        borderRadius: 12,
+                        alignItems: "center",
+
+                        backgroundColor: loading
+                            ? "#1e293b"
+                            : pressed
+                                ? "#111827"
+                                : "black",
+
+                        transform: [{ scale: pressed ? 0.97 : 1 }],
+                    })}
+                >
+                    <Text
+                        style={{
+                            color: "#fff",
+                            fontWeight: "600",
+                        }}
+                    >
+                        {loading ? "Logging out..." : "Logout"}
+                    </Text>
+                </Pressable>
+            </View>
         </View>
     );
 
-    /**
-     * ✅ Desktop Sidebar
-     */
+    // ✅ DESKTOP
     if (!isMobile) {
-        return <View style={{ width: 260 }}>{SidebarContent}</View>;
+        return (
+            <View
+                style={{
+                    width: 260,
+                    shadowColor: "#000",
+                    shadowOpacity: 0.05,
+                    shadowRadius: 10,
+                }}
+            >
+                {SidebarContent}
+            </View>
+        );
     }
 
-    /**
-     * ✅ Mobile Sidebar (Overlay + Slide)
-     */
+    // ✅ MOBILE (UPGRADED)
     return (
         <>
             <Animated.View
@@ -149,7 +194,11 @@ export default function Sidebar({
                     left: 0,
                     width: 260,
                     transform: [{ translateX }],
-                    zIndex: 10,
+                    zIndex: 20,
+                    backgroundColor: "#fff",
+                    shadowColor: "#000",
+                    shadowOpacity: 0.1,
+                    shadowRadius: 20,
                 }}
             >
                 {SidebarContent}
@@ -164,8 +213,8 @@ export default function Sidebar({
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        backgroundColor: "rgba(0,0,0,0.25)",
-                        zIndex: 5,
+                        backgroundColor: "rgba(2,6,23,0.35)",
+                        zIndex: 10,
                     }}
                 />
             )}

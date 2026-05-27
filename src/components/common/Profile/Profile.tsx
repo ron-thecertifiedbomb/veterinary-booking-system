@@ -1,10 +1,12 @@
 import Loader from "@/components/common/Loader/Loader";
 import { useLogout } from "@/features/auth/hooks/useLogout";
 import { useGetUserProfile } from "@/features/users/hook/useGetUserProfile";
+import { showConfirm } from "@/hooks/crossPlatformAlert";
 import { getInitials } from "@/utils/getInitials/getInitials";
+
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
-import { Alert, Pressable, Text, View } from "react-native";
+import { Platform, Pressable, ScrollView, Text, View } from "react-native";
 
 export default function Profile() {
     const router = useRouter();
@@ -18,14 +20,13 @@ export default function Profile() {
 
     // ✅ Logout confirmation
     const confirmLogout = () => {
-        Alert.alert("Logout", "Are you sure you want to logout?", [
-            { text: "Cancel", style: "cancel" },
-            {
-                text: "Logout",
-                style: "destructive",
-                onPress: handleLogout,
-            },
-        ]);
+        showConfirm(
+            "Logout",
+            "Are you sure you want to logout?",
+            handleLogout,
+            "Logout",
+            true
+        );
     };
 
     const handleLogout = async () => {
@@ -48,11 +49,15 @@ export default function Profile() {
     }
 
     return (
-        <View className="flex-1 bg-background items-center">
-            <View className="w-full max-w-xl flex-1 px-6">
+        <ScrollView
+            className="flex-1 bg-background"
+            contentContainerClassName="items-center px-6 pb-10"
+            keyboardShouldPersistTaps="handled"
+        >
+            <View className="w-full max-w-3xl pt-6 lg:p-14">
 
                 {/* ✅ HEADER */}
-                <View className="pt-24 mb-6">
+                <View className="mb-6">
                     <Text className="text-3xl font-semibold text-text-primary">
                         My Profile
                     </Text>
@@ -70,10 +75,18 @@ export default function Profile() {
                             Account Details
                         </Text>
 
+
                         <Pressable
-                            onPress={() => router.push("/edit-profile")}
+                            onPress={() =>
+                                router.push(
+                                    Platform.OS === "web"
+                                        ? "/(web)/edit-profile"
+                                        : "/edit-profile"
+                                )
+                            }
                             className="px-3 py-1 rounded-full border border-border active:opacity-80"
                         >
+
                             <Text className="text-xs font-medium text-text-primary">
                                 Edit
                             </Text>
@@ -135,19 +148,23 @@ export default function Profile() {
                 </View>
 
                 {/* ✅ FOOTER ACTION */}
-                <View className="mt-10">
-                    <Pressable
-                        onPress={confirmLogout}
-                        disabled={logoutLoading}
-                        className="bg-black rounded-2xl py-4 items-center active:opacity-80"
-                    >
-                        <Text className="text-white font-semibold text-sm">
-                            {logoutLoading ? "Logging out..." : "Logout"}
-                        </Text>
-                    </Pressable>
-                </View>
+
+                {Platform.OS === "android" && (
+                    <View className="mt-10">
+                        <Pressable
+                            onPress={confirmLogout}
+                            disabled={logoutLoading}
+                            className="bg-black rounded-2xl py-4 items-center active:opacity-80"
+                        >
+                            <Text className="text-white font-semibold text-sm">
+                                {logoutLoading ? "Logging out..." : "Logout"}
+                            </Text>
+                        </Pressable>
+                    </View>
+                )}
+
 
             </View>
-        </View>
+        </ScrollView>
     );
 }

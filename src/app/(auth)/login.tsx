@@ -1,11 +1,12 @@
 import ScreenContainer from "@/components/common/layout/ScreenContainer";
 import { useLogin } from "@/features/auth/hooks/useLogin";
+import { showAlert } from "@/hooks/crossPlatformAlert";
+
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
     ActivityIndicator,
-    Alert,
     KeyboardAvoidingView,
     Platform,
     Pressable,
@@ -56,43 +57,28 @@ export default function Login() {
 
         // ✅ ✅ ✅ ADD ALERT HERE
         if (!response) {
-            Alert.alert(
+            showAlert(
                 "Login Failed",
                 "Invalid email or password. Please try again."
             );
             return;
         }
 
-      const isWeb = Platform.OS === "web";
+        const isWeb = Platform.OS === "web";
 
-Alert.alert(
-  "Login Successful",
-  "Welcome back!",
-  [
-    {
-      text: "Continue",
-      onPress: () => {
-        if (response.user.role === "ADMIN") {
-          router.replace(
-            isWeb
-              ? "/(admin-web)/dashboard"
-              : "/(admin-app)/dashboard"
-          );
-          return;
-        }
+        const handleSuccess = () => {
+            if (response.user.role === "ADMIN") {
+                router.replace(
+                    isWeb ? "/(admin-web)/dashboard" : "/(admin-app)/dashboard"
+                );
+                return;
+            }
 
-        router.replace(
-          isWeb
-            ? "/(web)/home"
-            : "/(app)/home"
-        );
-      },
-    },
-  ]
-);
+            router.replace(isWeb ? "/(web)/home" : "/(app)/home");
+        };
 
+        showAlert("Login Successful", "Welcome back!", handleSuccess);
     };
-    ``
 
     return (
         <ScreenContainer>

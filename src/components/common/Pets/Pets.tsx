@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
-import { Pressable, Text, View, FlatList } from "react-native";
+import { Pressable, Text, View, FlatList, Platform, ScrollView } from "react-native";
 
 import Loader from "@/components/common/Loader/Loader";
 import { useGetPets } from "@/features/pet/useGetPet";
@@ -8,6 +8,16 @@ import { useGetPets } from "@/features/pet/useGetPet";
 export default function Pets() {
     const { pets, fetchPets, loading, error } = useGetPets();
     const { refresh } = useLocalSearchParams();
+
+    const handleAddPet = () => {
+        const isWeb = Platform.OS === "web";
+
+        router.push(
+            isWeb
+                ? "/(web)/add-pet"
+                : "/add-pet"
+        );
+    };
 
     useEffect(() => {
         fetchPets();
@@ -30,11 +40,15 @@ export default function Pets() {
     const isEmpty = pets.length === 0;
 
     return (
-        <View className="flex-1 bg-background items-center">
-            <View className="w-full max-w-xl flex-1 px-6">
+        <ScrollView
+            className="flex-1 bg-background"
+            contentContainerClassName="items-center px-6 pb-10"
+            keyboardShouldPersistTaps="handled"
+        >
+            <View className="w-full max-w-3xl pt-6 lg:p-14">
 
                 {/* ✅ HEADER */}
-                <View className="pt-24 mb-6">
+                <View className="mb-6">
                     <Text className="text-3xl font-semibold text-text-primary">
                         My Pets
                     </Text>
@@ -59,7 +73,7 @@ export default function Pets() {
 
                         <Pressable
                             className="bg-black rounded-xl px-6 py-3 mt-5 active:opacity-80"
-                            onPress={() => router.push("/edit-pet")}
+                            onPress={handleAddPet}
                         >
                             <Text className="text-white font-semibold text-sm">
                                 Add Pet
@@ -117,7 +131,7 @@ export default function Pets() {
                         ListFooterComponent={
                             <Pressable
                                 className="bg-black rounded-2xl py-4 items-center mt-4 mb-10 active:opacity-80"
-                                onPress={() => router.push("/add-pet")}
+                                onPress={handleAddPet}
                             >
                                 <Text className="text-white font-semibold">
                                     Add Another Pet
@@ -128,6 +142,6 @@ export default function Pets() {
                 )}
 
             </View>
-        </View>
+        </ScrollView>
     );
 }

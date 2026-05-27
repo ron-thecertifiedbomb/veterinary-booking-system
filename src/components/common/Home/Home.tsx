@@ -10,7 +10,7 @@ import { getTodayDate } from "@/utils/dateandtime/date";
 
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
 export default function Home() {
     const router = useRouter();
@@ -71,11 +71,17 @@ export default function Home() {
     }
 
     return (
-        <View className="flex-1 bg-background items-center">
-            <View className="w-full max-w-xl flex-1 px-6">
+
+        <ScrollView
+            className="flex-1 bg-background"
+            contentContainerClassName="items-center px-6 pb-10"
+            keyboardShouldPersistTaps="handled"
+        >
+            <View className="w-full max-w-3xl pt-6 lg:p-14">
 
                 {/* ✅ HEADER */}
-                <View className="pt-24 mb-6">
+                <View className="mb-6">
+
                     <Text className="text-3xl font-semibold text-text-primary">
                         Book an Appointment
                     </Text>
@@ -160,6 +166,6 @@ export default function Home() {
                     }
                 }}
             />
-        </View>
+        </ScrollView>
     );
 }

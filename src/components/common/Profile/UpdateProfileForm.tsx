@@ -1,22 +1,21 @@
-import ScreenContainer from "@/components/common/layout/ScreenContainer";
 import { useRouter } from "expo-router";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
-    Alert,
-    KeyboardAvoidingView,
     Platform,
     Pressable,
     ScrollView,
     Text,
     TextInput,
-    View,
+    View
 } from "react-native";
 
 
-import { useGetUserProfile } from "@/features/users/hook/useGetUserProfile";
-import { useUpdateProfile } from "@/features/users/hook/UpdateProfile";
 import Loader from "@/components/common/Loader/Loader";
+import { useUpdateProfile } from "@/features/users/hook/UpdateProfile";
+import { useGetUserProfile } from "@/features/users/hook/useGetUserProfile";
+import { showAlert } from "@/hooks/crossPlatformAlert";
+
 
 export default function UpdateProfileForm() {
     const router = useRouter();
@@ -105,144 +104,137 @@ export default function UpdateProfileForm() {
         });
 
         if (!response) {
-            Alert.alert("Error", "Failed to update profile");
+            showAlert("Error", "Failed to update profile");
             return;
         }
 
         // ✅ SUCCESS ALERT
+        const handleSuccess = () => {
+            router.replace(
+                Platform.OS === "web" ? "/(web)/profile" : "/profile"
+            );
+        };
 
-        Alert.alert(
-            "Success",
-            response.message,
-            [
-                {
-                    text: "OK",
-                    onPress: () => router.replace("/profile"),
-                },
-            ]
-        );
-
+        showAlert("Success", response.message, handleSuccess);
     };
 
     // ✅ Loader while fetching initial profile
     if (fetching) {
         return (
-           <Loader fullScreen />
+            <Loader fullScreen />
         );
     }
 
     return (
-        <ScreenContainer>
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                className="flex-1"
-            >
-                <ScrollView
-                    className="flex-1"
-                    contentContainerStyle={{ flexGrow: 1 }}
-                    keyboardShouldPersistTaps="handled"
-                >
-                    <View className="flex-1 justify-center items-center">
-                        <View className="w-full max-w-md px-6 py-8">
+        <ScrollView
+            className="flex-1 bg-background"
+            contentContainerClassName="items-center px-6 pb-10"
+            keyboardShouldPersistTaps="handled"
+        >
+            <View className="w-full max-w-xl pt-6 lg:p-14">
 
-                            {/* ✅ HEADER */}
-                            <View className="mb-8 items-center">
-                                <Text className="text-3xl font-semibold text-text-primary">
-                                    Edit Profile
-                                </Text>
-                                <Text className="text-sm text-text-secondary mt-1 text-center">
-                                    Update your account information.
-                                </Text>
-                            </View>
 
-                            <View className="gap-4">
+                {/* ✅ HEADER */}
+                <View className="mb-8 items-center">
+                    <Text className="text-3xl font-semibold text-text-primary">
+                        Edit Profile
+                    </Text>
+                    <Text className="text-sm text-text-secondary mt-1 text-center">
+                        Update your account information.
+                    </Text>
+                </View>
 
-                                {/* ✅ NAME */}
-                                <View>
-                                    <Text className="text-sm font-medium mb-2">
-                                        Full Name
-                                    </Text>
-                                    <TextInput
-                                        value={name}
-                                        onChangeText={(text) => {
-                                            setName(text);
-                                            setNameError(null);
-                                        }}
-                                        placeholder="e.g. John Doe"
-                                        className="bg-surface rounded-2xl px-4 py-4"
-                                        style={noOutline}
-                                    />
-                                    {nameError && (
-                                        <Text className="text-red-500 text-xs mt-2">
-                                            {nameError}
-                                        </Text>
-                                    )}
-                                </View>
+                <View className="gap-4">
 
-                                {/* ✅ EMAIL */}
-                                <View>
-                                    <Text className="text-sm font-medium mb-2">
-                                        Email
-                                    </Text>
-                                    <TextInput
-                                        value={email}
-                                        onChangeText={(text) => {
-                                            setEmail(text);
-                                            setEmailError(null);
-                                        }}
-                                        placeholder="e.g. john@email.com"
-                                        keyboardType="email-address"
-                                        autoCapitalize="none"
-                                        className="bg-surface rounded-2xl px-4 py-4"
-                                        style={noOutline}
-                                    />
-                                    {emailError && (
-                                        <Text className="text-red-500 text-xs mt-2">
-                                            {emailError}
-                                        </Text>
-                                    )}
-                                </View>
-
-                                {/* ✅ PHONE */}
-                                <View>
-                                    <Text className="text-sm font-medium mb-2">
-                                        Phone (optional)
-                                    </Text>
-                                    <TextInput
-                                        value={phone}
-                                        onChangeText={setPhone}
-                                        placeholder="e.g. 09123456789"
-                                        keyboardType="phone-pad"
-                                        className="bg-surface rounded-2xl px-4 py-4"
-                                        style={noOutline}
-                                    />
-                                </View>
-
-                                {/* ✅ BUTTON */}
-                                <Pressable
-                                    onPress={handleUpdateProfile}
-                                    disabled={isDisabled}
-                                    className={`rounded-2xl py-4 items-center mt-6 ${isDisabled
-                                            ? "bg-gray-300"
-                                            : "bg-black active:opacity-80"
-                                        }`}
-                                >
-                                    {loading ? (
-                                        <ActivityIndicator color="#FFFFFF" />
-                                    ) : (
-                                        <Text
-                                            className={`font-semibold text-base ${isDisabled ? "text-gray-500" : "text-white"
-                                                }`}
-                                        >
-                                            Save Changes
-                                        </Text>
-                                    )}
-                                </Pressable>
-                            </View>
-                        </View>
+                    {/* ✅ NAME */}
+                    <View>
+                        <Text className="text-sm font-medium mb-2">
+                            Full Name
+                        </Text>
+                        <TextInput
+                            value={name}
+                            onChangeText={(text) => {
+                                setName(text);
+                                setNameError(null);
+                            }}
+                            placeholder="e.g. John Doe"
+                            className={`bg-surface border ${nameError ? "border-red-500" : "border-gray-300"
+                                } rounded-2xl px-4 py-4 text-text-primary`}
+                            style={noOutline}
+                        />
+                        {nameError && (
+                            <Text className="text-red-500 text-xs mt-2">
+                                {nameError}
+                            </Text>
+                        )}
                     </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </ScreenContainer>
+
+                    {/* ✅ EMAIL */}
+                    <View>
+                        <Text className="text-sm font-medium mb-2">
+                            Email
+                        </Text>
+                        <TextInput
+                            value={email}
+                            onChangeText={(text) => {
+                                setEmail(text);
+                                setEmailError(null);
+                            }}
+                            placeholder="e.g. john@email.com"
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            className={`bg-surface border ${emailError ? "border-red-500" : "border-gray-300"
+                                } rounded-2xl px-4 py-4 text-text-primary`}
+                            style={noOutline}
+                        />
+                        {emailError && (
+                            <Text className="text-red-500 text-xs mt-2">
+                                {emailError}
+                            </Text>
+                        )}
+                    </View>
+
+                    {/* ✅ PHONE */}
+                    <View>
+                        <Text className="text-sm font-medium mb-2">
+                            Phone (optional)
+                        </Text>
+                        <TextInput
+                            value={phone}
+                            onChangeText={setPhone}
+                            placeholder="e.g. 09123456789"
+                            keyboardType="phone-pad"
+                            className="bg-surface border border-gray-300 rounded-2xl px-4 py-4 text-text-primary"
+                            style={noOutline}
+                        />
+                    </View>
+
+                    {/* ✅ BUTTON */}
+                    <Pressable
+                        onPress={handleUpdateProfile}
+                        disabled={isDisabled}
+                        className={`rounded-2xl py-4 items-center mt-6 ${isDisabled
+                            ? "bg-gray-300"
+                            : "bg-black active:opacity-80"
+                            }`}
+                    >
+                        {loading ? (
+                            <ActivityIndicator color="#FFFFFF" />
+                        ) : (
+                            <Text
+                                className={`font-semibold text-base ${isDisabled
+                                    ? "text-gray-500"
+                                    : "text-white"
+                                    }`}
+                            >
+                                Save Changes
+                            </Text>
+                        )}
+                    </Pressable>
+
+                </View>
+            </View>
+        </ScrollView>
+
     );
 }
