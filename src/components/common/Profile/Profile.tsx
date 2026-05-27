@@ -1,18 +1,47 @@
-import { formatDate, getTodayDate } from "@/utils/date";
-import { View, Text } from "react-native";
 import { useEffect } from "react";
+import { View, Text, Pressable, Alert } from "react-native";
+import { useRouter } from "expo-router";
+import { formatDate, getTodayDate } from "@/utils/date";
 import { useGetUserProfile } from "@/features/users/hook/useGetUserProfile";
+import { useLogout } from "@/features/auth/hooks/useLogout";
 import Loader from "@/components/common/Loader/Loader";
 
 export default function Profile() {
+    const router = useRouter();
+
     const date = getTodayDate();
     const now = new Date();
 
     const { fetchUserProfile, profile, loading, error } = useGetUserProfile();
+    const { logout, loading: logoutLoading } = useLogout();
 
     useEffect(() => {
         fetchUserProfile();
     }, []);
+
+    // ✅ Logout with confirmation
+    const confirmLogout = () => {
+        Alert.alert(
+            "Logout",
+            "Are you sure you want to logout?",
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Logout",
+                    style: "destructive",
+                    onPress: handleLogout,
+                },
+            ]
+        );
+    };
+
+    const handleLogout = async () => {
+        const success = await logout();
+
+        if (!success) return;
+
+        router.replace("/(auth)/login");
+    };
 
     // ✅ Loading
     if (loading) return <Loader fullScreen />;
@@ -43,8 +72,9 @@ export default function Profile() {
                 {/* ✅ DATE CARD */}
                 <View className="bg-surface border border-border rounded-2xl px-5 py-4 mb-5">
                     <Text className="text-[11px] uppercase tracking-wide text-text-muted mb-1">
-                        Today is
+                        Today
                     </Text>
+
                     <Text className="text-base font-semibold text-text-primary">
                         {formatDate(date)}
                     </Text>
@@ -92,8 +122,33 @@ export default function Profile() {
 
                 </View>
 
+                {/* ✅ ACTIONS */}
+                <View className="mt-6 gap-3">
+
+                    {/* ✅ EDIT PROFILE */}
+                    <Pressable
+                        onPress={() => router.push("/edit-profile")}
+                        className="border border-border rounded-2xl py-3 items-center bg-surface active:opacity-80"
+                    >
+                        <Text className="text-sm font-semibold text-text-primary">
+                            Edit Profile
+                        </Text>
+                    </Pressable>
+
+                    {/* ✅ LOGOUT */}
+                    <Pressable
+                        onPress={confirmLogout}
+                        disabled={logoutLoading}
+                        className="bg-red-500 rounded-2xl py-3 items-center active:opacity-80"
+                    >
+                        <Text className="text-white font-semibold text-sm">
+                            {logoutLoading ? "Logging out..." : "Logout"}
+                        </Text>
+                    </Pressable>
+
+                </View>
+
             </View>
         </View>
     );
 }
-``
