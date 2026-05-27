@@ -102,7 +102,6 @@ export default function Registration() {
             return;
         }
 
-        // ✅ OPTIONAL SUCCESS ALERT
         Alert.alert(
             "Success",
             "Account created successfully!",
@@ -130,10 +129,12 @@ export default function Registration() {
                 },
             ]
         );
-    }
-    const noOutline = Platform.OS === "web"
-        ? ({ outlineStyle: "none" } as any)
-        : undefined;
+    };
+
+    const noOutline =
+        Platform.OS === "web"
+            ? ({ outlineStyle: "none" } as any)
+            : undefined;
 
     return (
         <ScreenContainer>
@@ -141,12 +142,16 @@ export default function Registration() {
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 className="flex-1"
             >
+
                 <ScrollView
                     className="flex-1"
+                    contentContainerClassName="flex-grow justify-center items-center"
                     keyboardShouldPersistTaps="handled"
                 >
-                    <View className="flex-1 justify-center items-center">
-                        <View className="w-full max-w-md px-6 py-8 lg:py-14">
+
+                    <View className="w-full max-w-md px-6 py-8 lg:py-14">
+
+                
 
                             {/* HEADER */}
                             <View className="mb-8 items-center">
@@ -162,9 +167,7 @@ export default function Registration() {
 
                                 {/* NAME */}
                                 <View>
-                                    <Text className="text-sm font-medium mb-2">
-                                        Name
-                                    </Text>
+                                    <Text className="text-sm font-medium mb-2">Name</Text>
                                     <TextInput
                                         value={name}
                                         onChangeText={(text) => {
@@ -172,7 +175,8 @@ export default function Registration() {
                                             setNameError(null);
                                         }}
                                         placeholder="Full name"
-                                        className="bg-surface rounded-2xl px-4 py-4"
+                                        className={`bg-surface border ${nameError ? "border-red-500" : "border-gray-300"
+                                            } rounded-2xl px-4 py-4`}
                                         style={noOutline}
                                     />
                                     {nameError && (
@@ -184,9 +188,7 @@ export default function Registration() {
 
                                 {/* EMAIL */}
                                 <View>
-                                    <Text className="text-sm font-medium mb-2">
-                                        Email
-                                    </Text>
+                                    <Text className="text-sm font-medium mb-2">Email</Text>
                                     <TextInput
                                         value={email}
                                         onChangeText={(text) => {
@@ -196,7 +198,8 @@ export default function Registration() {
                                         placeholder="Email address"
                                         keyboardType="email-address"
                                         autoCapitalize="none"
-                                        className="bg-surface rounded-2xl px-4 py-4"
+                                        className={`bg-surface border ${emailError ? "border-red-500" : "border-gray-300"
+                                            } rounded-2xl px-4 py-4`}
                                         style={noOutline}
                                     />
                                     {emailError && (
@@ -208,9 +211,7 @@ export default function Registration() {
 
                                 {/* PHONE */}
                                 <View>
-                                    <Text className="text-sm font-medium mb-2">
-                                        Phone
-                                    </Text>
+                                    <Text className="text-sm font-medium mb-2">Phone</Text>
                                     <TextInput
                                         value={phone}
                                         onChangeText={(text) => {
@@ -220,7 +221,8 @@ export default function Registration() {
                                         }}
                                         placeholder="Contact number"
                                         keyboardType="phone-pad"
-                                        className="bg-surface rounded-2xl px-4 py-4"
+                                        className={`bg-surface border ${phoneError ? "border-red-500" : "border-gray-300"
+                                            } rounded-2xl px-4 py-4`}
                                         style={noOutline}
                                     />
                                     {phoneError && (
@@ -232,11 +234,12 @@ export default function Registration() {
 
                                 {/* PASSWORD */}
                                 <View>
-                                    <Text className="text-sm font-medium mb-2">
-                                        Password
-                                    </Text>
+                                    <Text className="text-sm font-medium mb-2">Password</Text>
 
-                                    <View className="bg-surface rounded-2xl flex-row items-center">
+                                    <View
+                                        className={`bg-surface border ${passwordError ? "border-red-500" : "border-gray-300"
+                                            } rounded-2xl flex-row items-center`}
+                                    >
                                         <TextInput
                                             value={password}
                                             onChangeText={(text) => {
@@ -250,7 +253,7 @@ export default function Registration() {
                                         />
 
                                         <Pressable
-                                            onPress={() => setIsPasswordVisible(p => !p)}
+                                            onPress={() => setIsPasswordVisible((p) => !p)}
                                             className="px-4"
                                         >
                                             <Ionicons
@@ -274,7 +277,10 @@ export default function Registration() {
                                         Retype Password
                                     </Text>
 
-                                    <View className="bg-surface rounded-2xl flex-row items-center">
+                                    <View
+                                        className={`bg-surface border ${confirmPasswordError ? "border-red-500" : "border-gray-300"
+                                            } rounded-2xl flex-row items-center`}
+                                    >
                                         <TextInput
                                             value={confirmPassword}
                                             onChangeText={(text) => {
@@ -288,11 +294,15 @@ export default function Registration() {
                                         />
 
                                         <Pressable
-                                            onPress={() => setIsConfirmPasswordVisible(p => !p)}
+                                            onPress={() => setIsConfirmPasswordVisible((p) => !p)}
                                             className="px-4"
                                         >
                                             <Ionicons
-                                                name={isConfirmPasswordVisible ? "eye-off-outline" : "eye-outline"}
+                                                name={
+                                                    isConfirmPasswordVisible
+                                                        ? "eye-off-outline"
+                                                        : "eye-outline"
+                                                }
                                                 size={22}
                                                 color="#6b7280"
                                             />
@@ -336,9 +346,10 @@ export default function Registration() {
 
                             </View>
                         </View>
-                    </View>
+                
                 </ScrollView>
             </KeyboardAvoidingView>
         </ScreenContainer>
     );
 }
+``

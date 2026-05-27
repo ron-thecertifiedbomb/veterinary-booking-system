@@ -63,36 +63,36 @@ export default function Login() {
             return;
         }
 
-        const isWeb = Platform.OS === "web";
+      const isWeb = Platform.OS === "web";
 
-        Alert.alert(
-            "Login Successful",
-            "Welcome back!",
-            [
-                {
-                    text: "Continue",
-                    onPress: () => {
-                        if (response.user.role === "ADMIN") {
-                            router.replace(
-                                isWeb
-                                    ? "/(admin-web)/dashboard"
-                                    : "/(admin-app)/dashboard"
-                            );
-                            return;
-                        }
+Alert.alert(
+  "Login Successful",
+  "Welcome back!",
+  [
+    {
+      text: "Continue",
+      onPress: () => {
+        if (response.user.role === "ADMIN") {
+          router.replace(
+            isWeb
+              ? "/(admin-web)/dashboard"
+              : "/(admin-app)/dashboard"
+          );
+          return;
+        }
 
-                        router.replace(
-                            isWeb
-                                ? "/(web)/home"
-                                : "/(app)/home"
-                        );
-                    },
-                },
-            ]
+        router.replace(
+          isWeb
+            ? "/(web)/home"
+            : "/(app)/home"
         );
+      },
+    },
+  ]
+);
 
     };
-    
+    ``
 
     return (
         <ScreenContainer>
@@ -134,7 +134,7 @@ export default function Login() {
                                     keyboardType="email-address"
                                     autoCapitalize="none"
                                     autoCorrect={false}
-                                    className="bg-surface rounded-2xl px-4 py-4 text-text-primary"
+                                    className="bg-surface border border-gray-300 rounded-2xl px-4 py-4 text-text-primary"
                                     style={
                                         Platform.OS === "web"
                                             ? ({ outlineStyle: "none" } as any)
@@ -155,7 +155,7 @@ export default function Login() {
                                     Password
                                 </Text>
 
-                                <View className="bg-surface rounded-2xl flex-row items-center">
+                                <View className="bg-surface border border-gray-300 rounded-2xl flex-row items-center">
                                     <TextInput
                                         value={password}
                                         onChangeText={(text) => {
