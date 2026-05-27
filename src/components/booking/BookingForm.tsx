@@ -17,7 +17,7 @@ const SERVICES = [
     "Vaccination",
     "Grooming",
     "Surgery",
-    "Dental"
+    "Dental",
 ];
 
 const PLACEHOLDER_COLOR = "#9CA3AF";
@@ -33,8 +33,24 @@ export default function BookingForm({
 
     const [showDropdown, setShowDropdown] = useState(false);
 
+    // ✅ Current date + time (MVP display only)
+    const now = new Date();
+
+    const displayDate = now.toLocaleDateString(undefined, {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+    });
+
+    const displayTime = now.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+
     return (
         <View className="gap-4 mb-5">
+
+        
 
             {/* ✅ PET NAME */}
             <View>
@@ -54,6 +70,8 @@ export default function BookingForm({
                 />
             </View>
 
+       
+   
             {/* ✅ SERVICE TYPE */}
             <View>
                 <Text className="text-xs text-gray-500 mb-1">

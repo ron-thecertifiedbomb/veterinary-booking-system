@@ -55,6 +55,18 @@ export default function BookingModal({
         petName &&
         serviceType &&
         selectedTime;
+    const now = new Date();
+
+    const displayDate = now.toLocaleDateString(undefined, {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+    });
+
+    const displayTime = now.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
 
     // ✅ reset form
     const resetForm = () => {
@@ -150,9 +162,25 @@ export default function BookingModal({
 
                         /* ✅ MAIN FORM */
                         <>
-                            <Text className="text-text-primary font-semibold text-lg mb-4">
+                            <Text className="text-text-primary font-semibold text-lg">
                                 Complete Appointment
                             </Text>
+
+                                        <View className="bg-surface mt-1  mb-4">
+
+                                    
+
+                                            <Text className="text-xs text-text-secondary mt-1">
+                                                {displayDate}
+                                            </Text>
+
+                                            <Text className="text-xs text-text-secondary mt-1">
+                                                {displayTime}
+                                            </Text>
+
+                                        </View>
+
+                                        
 
                             {/* ✅ TIME SELECT */}
                             <Text className="text-xs text-text-muted mb-2">
