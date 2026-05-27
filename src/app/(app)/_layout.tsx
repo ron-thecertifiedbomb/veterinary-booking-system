@@ -1,39 +1,18 @@
-import { getStorageItem } from "@/features/auth/storage";
+import Loader from "@/components/common/Loader/Loader";
+import { useAuthGuard } from "@/features/auth/hooks/useAuthGuard";
+
 import { Redirect, Slot } from "expo-router";
-import { useEffect, useState } from "react";
-import { View, ActivityIndicator, Platform } from "react-native";
+import { Platform } from "react-native";
 
 export default function AppLayout() {
-    const [loading, setLoading] = useState(true);
-    const [accessToken, setAccessToken] = useState<string | null>(null);
-    const [user, setUser] = useState<any>(null);
+    const { loading, accessToken, user } = useAuthGuard();
 
-    useEffect(() => {
-        const bootstrap = async () => {
-            const token = await getStorageItem("access_token");
-            const storedUser = await getStorageItem("user");
-
-            setAccessToken(token);
-
-            if (storedUser) {
-                setUser(JSON.parse(storedUser));
-            }
-
-            setLoading(false);
-        };
-
-        bootstrap();
-    }, []);
-
-    // ✅ SHOW LOADING (NO BLANK SCREEN)
+    // ✅ loading
     if (loading) {
         return (
-            <View className="flex-1 justify-center items-center bg-background">
-                <ActivityIndicator size="large" color="#6b7280" />
-            </View>
+            <Loader fullScreen={false} size="small" />
         );
     }
-
     // ✅ NOT AUTHENTICATED → GO TO LOGIN
     if (!accessToken) {
         return <Redirect href="/(auth)/login" />;

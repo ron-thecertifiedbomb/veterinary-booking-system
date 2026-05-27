@@ -1,22 +1,14 @@
-// src/app/(web)/_layout.tsx
-import { toastConfig } from "@/components/common/CustomToast/toastConfig";
+// src/app/_layout.tsx
+
 import "@/global.css";
 import { Slot } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
 
 export default function RootLayout() {
-
-
   return (
-    <SafeAreaView style={{ flex: 1, flexDirection: "row" }}>
-      <Toast
-        config={toastConfig}
-        position="top"
-        topOffset={500} // ✅ balanced center
-      />
-      <Slot />
+    // By wrapping the entire app in an AuthProvider, we create a single
+    // source of truth for authentication state, which is loaded only once.
 
-    </SafeAreaView>
+    <Slot />
+
   );
 }

@@ -8,8 +8,6 @@ export default function Profile() {
             <Text className="text-lg font-semibold mb-2">
                 Profile
             </Text>
-
-
         </ScreenContainer>
     );
 }

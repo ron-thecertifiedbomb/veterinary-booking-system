@@ -21,16 +21,7 @@ export default function Profile() {
                 Profile
             </Text>
 
-            {/* ✅ Logout Button */}
-            <Pressable
-                onPress={handleLogout}
-                disabled={loading}
-                className="bg-black rounded-2xl px-6 py-4 w-full items-center active:opacity-80"
-            >
-                <Text className="text-white font-semibold text-base">
-                    {loading ? "Logging out..." : "Logout"}
-                </Text>
-            </Pressable>
+
         </SafeAreaView>
     );
 }

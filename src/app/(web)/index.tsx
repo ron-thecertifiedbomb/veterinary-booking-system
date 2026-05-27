@@ -1,6 +1,6 @@
-// src/app/(admin-app)/_index.tsx
+// src/app/(web)/index.tsx
 import { Redirect } from "expo-router";
 
 export default function Index() {
-    return <Redirect href="dashboard" />;
+    return <Redirect href="home" />;
 }

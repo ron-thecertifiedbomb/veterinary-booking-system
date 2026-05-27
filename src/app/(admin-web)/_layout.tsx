@@ -1,41 +1,43 @@
 // src/app/(admin-web)/_layout.tsx
 
-import { Slot, usePathname, Redirect } from "expo-router";
+import Loader from "@/components/common/Loader/Loader";
+import Sidebar from "@/components/common/SideBar/SideBar";
+import { useAuthGuard } from "@/features/auth/hooks/useAuthGuard";
+import { adminNav } from "@/utils/config/sidebar/sidebar";
+import { Redirect, Slot } from "expo-router";
+import { useRef, useState } from "react";
+import { Animated, Pressable, Text, useWindowDimensions, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useEffect, useState } from "react";
-import { getStorageItem } from "@/features/auth/storage";
 
 export default function AdminWebLayout() {
-    const pathname = usePathname();
+    const { accessToken, user, loading } = useAuthGuard();
 
-    const [accessToken, setAccessToken] = useState<string | null>(null);
-    const [user, setUser] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
+    // Responsive detection
+    const { width } = useWindowDimensions();
+    const isMobile = width < 768;
 
-    useEffect(() => {
-        async function loadSession() {
-            const token = await getStorageItem("access_token");
-            const storedUser = await getStorageItem("user");
+    // Sidebar state
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const translateX = useRef(new Animated.Value(-250)).current;
 
-            setAccessToken(token);
+    const toggleSidebar = () => {
+        const toValue = sidebarOpen ? -250 : 0;
 
-            if (storedUser) {
-                setUser(JSON.parse(storedUser));
-            }
+        Animated.timing(translateX, {
+            toValue,
+            duration: 250,
+            useNativeDriver: false, // `true` is not supported on web
+        }).start();
 
-            setLoading(false);
-        }
+        setSidebarOpen(!sidebarOpen);
+    };
 
-        loadSession();
-    }, []);
-
-    // ✅ ✅ CRITICAL: Ignore routes outside admin-web
-    if (!pathname.startsWith("/(admin-web)")) {
-        return <Slot />;
+    // ✅ loading
+    if (loading) {
+        return (
+            <Loader fullScreen={false} size="small" />
+        );
     }
-
-    // ✅ prevent flicker
-    if (loading) return null;
 
     // ✅ not authenticated
     if (!accessToken) {
@@ -48,9 +50,40 @@ export default function AdminWebLayout() {
     }
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <Slot />
+        <SafeAreaView style={{ flex: 1, flexDirection: "row" }}>
+
+            <Sidebar
+                isMobile={isMobile}
+                translateX={translateX}
+                sidebarOpen={sidebarOpen}
+                toggleSidebar={toggleSidebar}
+                navItems={adminNav}
+            />
+
+            <View style={{ flex: 1 }}>
+                {/* Mobile Header with hamburger icon */}
+                {isMobile && (
+                    <View
+                        style={{
+                            height: 60,
+                            justifyContent: "center",
+                            paddingHorizontal: 16,
+                            borderBottomWidth: 1,
+                            borderColor: "#e5e7eb",
+                            backgroundColor: "#fff",
+                        }}
+                    >
+                        <Pressable onPress={toggleSidebar}>
+                            <Text style={{ fontSize: 22, color: "#000" }}>
+                                ☰
+                            </Text>
+                        </Pressable>
+                    </View>
+                )}
+
+                {/* Page content */}
+                <Slot />
+            </View>
         </SafeAreaView>
     );
 }
-``

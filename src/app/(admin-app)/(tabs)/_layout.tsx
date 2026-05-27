@@ -1,48 +1,31 @@
-import { getStorageItem } from "@/features/auth/storage";
+// src/app/(admin-app)(tabs)/_layout.tsx
+
+import Loader from "@/components/common/Loader/Loader";
+import { useAuthGuard } from "@/features/auth/hooks/useAuthGuard";
 import { Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
 import { Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useEffect, useState } from "react";
 
 export default function AppAdminTabsLayout() {
     const insets = useSafeAreaInsets();
+    const { loading, accessToken, user } = useAuthGuard();
 
-    const [loading, setLoading] = useState(true);
-    const [accessToken, setAccessToken] = useState<string | null>(null);
-    const [user, setUser] = useState<any>(null);
-
-    // ✅ block web (FIXED path)
     if (Platform.OS === "web") {
         return <Redirect href="/(admin-web)/dashboard" />;
     }
+    // ✅ loading
+    if (loading) {
+        return (
+            <Loader fullScreen={false} size="small" />
+        );
+    }
 
-    useEffect(() => {
-        const bootstrap = async () => {
-            const token = await getStorageItem("access_token");
-            const storedUser = await getStorageItem("user");
 
-            setAccessToken(token);
-
-            if (storedUser) {
-                setUser(JSON.parse(storedUser));
-            }
-
-            setLoading(false);
-        };
-
-        bootstrap();
-    }, []);
-
-    // ✅ wait for loading
-    if (loading) return null;
-
-    // ✅ not logged in
     if (!accessToken) {
         return <Redirect href="/(auth)/login" />;
     }
 
-    // ✅ ✅ FIXED: ONLY ADMIN allowed
     if (user?.role !== "ADMIN") {
         return <Redirect href="/(web)/home" />;
     }
@@ -80,21 +63,6 @@ export default function AppAdminTabsLayout() {
                     ),
                 }}
             />
-
-            <Tabs.Screen
-                name="schedule"
-                options={{
-                    title: "Schedule",
-                    tabBarIcon: ({ color, size, focused }) => (
-                        <Ionicons
-                            name={focused ? "calendar" : "calendar-outline"}
-                            size={size}
-                            color={color}
-                        />
-                    ),
-                }}
-            />
-
             <Tabs.Screen
                 name="appointments"
                 options={{

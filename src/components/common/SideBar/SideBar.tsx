@@ -1,60 +1,76 @@
 import { useLogout } from "@/features/auth/hooks/useLogout";
+import { NavItemType, SidebarProps } from "@/utils/config/sidebar/types";
 import { Link, usePathname, useRouter } from "expo-router";
 import { Animated, Pressable, Text, View } from "react-native";
-
-type SidebarProps = {
-    isMobile: boolean;
-    translateX: Animated.Value;
-    sidebarOpen: boolean;
-    toggleSidebar: () => void;
-};
 
 export default function Sidebar({
     isMobile,
     translateX,
     sidebarOpen,
     toggleSidebar,
+    navItems,
 }: SidebarProps) {
-
     const pathname = usePathname();
     const router = useRouter();
     const { logout, loading } = useLogout();
 
-    // ✅ navigation config
-    const navItems = [
-        { label: "Home", href: "/(web)/home" },
-        { label: "Appointments", href: "/(web)/appointments" },
-        { label: "Pets", href: "/(web)/pets" },
-        { label: "Schedule", href: "/(web)/schedule" },
-        { label: "Profile", href: "/(web)/profile" },
-    ];
+    /**
+     * ✅ Better active matching
+     * Exact match OR nested route match
+     */
 
-    // ✅ logout handler (TOP LEVEL ✅)
+    const normalize = (path: string) =>
+        path.replace(/\(.*?\)/g, "");
+
+    const isActive = (href: string) => {
+        const cleanHref = normalize(href);
+        const cleanPath = normalize(pathname);
+
+        if (cleanPath === cleanHref) return true;
+        return cleanPath.startsWith(`${cleanHref}/`);
+    };
+
+
+    /**
+     * ✅ Logout handler
+     */
     const handleLogout = async () => {
         const success = await logout();
-
         if (success) {
             router.replace("/(auth)/login");
         }
     };
 
-    // ✅ nav item component
-    const NavItem = ({ label, href }: { label: string; href: string }) => {
-        const active = pathname.startsWith(href);
+    /**
+     * ✅ Reusable Nav Item
+     */
+    const NavItem = ({ item }: { item: NavItemType }) => {
+        const active = isActive(item.href);
 
         return (
-            <Link href={href} asChild>
+            <Link href={item.href} asChild>
                 <Pressable
                     onPress={isMobile ? toggleSidebar : undefined}
-                    style={{
+                    android_ripple={{ color: "#06B6D433" }}
+                    style={({ pressed }) => ({
                         flexDirection: "row",
                         alignItems: "center",
                         paddingVertical: 12,
                         paddingHorizontal: 14,
                         marginBottom: 8,
                         borderRadius: 10,
-                        backgroundColor: active ? "#06B6D422" : "transparent",
-                    }}
+
+                        // ✅ Background behavior
+                        backgroundColor: active
+                            ? "#06B6D422"
+                            : pressed
+                                ? "#F1F5F9"
+                                : "transparent",
+
+                        // ✅ Left accent bar
+                        borderLeftWidth: active ? 3 : 0,
+                        borderLeftColor: "#06B6D4",
+                    })}
                 >
                     <Text
                         style={{
@@ -62,13 +78,16 @@ export default function Sidebar({
                             fontWeight: active ? "600" : "500",
                         }}
                     >
-                        {label}
+                        {item.label}
                     </Text>
                 </Pressable>
             </Link>
         );
     };
 
+    /**
+     * ✅ Sidebar Layout Content
+     */
     const SidebarContent = (
         <View
             style={{
@@ -77,60 +96,49 @@ export default function Sidebar({
                 padding: 16,
                 borderRightWidth: 1,
                 borderColor: "#E5E7EB",
-                justifyContent: "space-between", // ✅ important for footer
+                justifyContent: "space-between",
             }}
         >
-
-            {/* TOP */}
+            {/* TOP NAV */}
             <View>
-                <Text
-                    style={{
-                        fontSize: 18,
-                        fontWeight: "700",
-                        color: "#0F172A",
-                        marginBottom: 20,
-                    }}
-                >
-                    Dashboard
-                </Text>
-
-                <View>
-                    {navItems.map((item) => (
-                        <NavItem
-                            key={item.href}
-                            label={item.label}
-                            href={item.href}
-                        />
-                    ))}
-                </View>
+                {navItems.map((item) => (
+                    <NavItem key={item.href} item={item} />
+                ))}
             </View>
 
-            {/* ✅ BOTTOM LOGOUT */}
+            {/* FOOTER */}
             <Pressable
                 onPress={handleLogout}
                 disabled={loading}
-                style={{
+                style={({ pressed }) => ({
                     marginTop: 20,
                     paddingVertical: 12,
                     borderRadius: 10,
                     alignItems: "center",
-                    backgroundColor: "black",
-                }}
+                    backgroundColor: loading
+                        ? "#1f2937"
+                        : pressed
+                            ? "#111827"
+                            : "black",
+                })}
             >
                 <Text style={{ color: "#fff", fontWeight: "600" }}>
                     {loading ? "Logging out..." : "Logout"}
                 </Text>
             </Pressable>
-
         </View>
     );
 
-    // ✅ Desktop
+    /**
+     * ✅ Desktop Sidebar
+     */
     if (!isMobile) {
         return <View style={{ width: 260 }}>{SidebarContent}</View>;
     }
 
-    // ✅ Mobile
+    /**
+     * ✅ Mobile Sidebar (Overlay + Slide)
+     */
     return (
         <>
             <Animated.View

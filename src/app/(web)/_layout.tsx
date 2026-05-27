@@ -1,7 +1,12 @@
 // src/app/(web)/_layout.tsx
 
-import { Redirect, Slot, usePathname } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import Loader from "@/components/common/Loader/Loader";
+import Sidebar from "@/components/common/SideBar/SideBar";
+import { useAuthGuard } from "@/features/auth/hooks/useAuthGuard";
+
+import { userNav } from "@/utils/config/sidebar/sidebar";
+import { Redirect, Slot } from "expo-router";
+import { useRef, useState } from "react";
 import {
   Animated,
   Pressable,
@@ -11,16 +16,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import Sidebar from "@/components/common/SideBar/SideBar";
-import { getStorageItem } from "@/features/auth/storage";
-
 export default function WebUserLayout() {
-  const pathname = usePathname();
-
-  // Auth state
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const { accessToken, user, loading } = useAuthGuard();
 
   // Responsive detection
   const { width } = useWindowDimensions();
@@ -42,25 +39,12 @@ export default function WebUserLayout() {
     setSidebarOpen(!sidebarOpen);
   };
 
-  useEffect(() => {
-    async function loadSession() {
-      const token = await getStorageItem("access_token");
-      const storedUser = await getStorageItem("user");
-
-      setAccessToken(token);
-
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-
-      setLoading(false);
-    }
-
-    loadSession();
-  }, []);
-
   // Prevent flicker while session is loading
-  if (loading) return null;
+  if (loading) {
+    return (
+      <Loader fullScreen={false} size="small" />
+    );
+  }
 
   // Not authenticated, redirect to login
   if (!accessToken) {
@@ -72,22 +56,17 @@ export default function WebUserLayout() {
     return <Redirect href="/(admin-web)/dashboard" />;
   }
 
-  // Redirect from root of group to home screen
-  if (pathname === "/" || pathname === "/(web)") {
-    return <Redirect href="/(web)/home" />;
-  }
-
   return (
     <SafeAreaView style={{ flex: 1, flexDirection: "row" }}>
-      {/* Sidebar */}
+
       <Sidebar
         isMobile={isMobile}
         translateX={translateX}
         sidebarOpen={sidebarOpen}
         toggleSidebar={toggleSidebar}
+        navItems={userNav}
       />
 
-      {/* Main content */}
       <View style={{ flex: 1 }}>
         {/* Mobile Header with hamburger icon */}
         {isMobile && (

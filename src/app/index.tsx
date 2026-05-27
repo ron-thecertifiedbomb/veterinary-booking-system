@@ -1,65 +1,23 @@
 // src/app/index.tsx
 
-import { getStorageItem } from "@/features/auth/storage";
-import { logger } from "@/utils/logger";
-import { Redirect } from "expo-router";
-import { useEffect, useState } from "react";
-import { ActivityIndicator, Platform, View } from "react-native";
+import Loader from "@/components/common/Loader/Loader";
+import { useAuthGuard } from "@/features/auth/hooks/useAuthGuard";
 
-type User = {
-  role: "USER" | "ADMIN";
-};
+import { Redirect } from "expo-router";
+import { Platform } from "react-native";
+
 
 export default function Index() {
-  const [loading, setLoading] = useState(true);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const bootstrap = async () => {
-      try {
-        logger.info("Bootstrapping auth session");
-
-        const token = await getStorageItem("access_token");
-        const storedUser = await getStorageItem("user");
-
-        setAccessToken(token);
-
-        if (storedUser) {
-          const parsedUser = JSON.parse(storedUser);
-          setUser(parsedUser);
-
-          logger.info("User session restored", parsedUser);
-        }
-
-        logger.info("Access token restored");
-      } catch (error) {
-        logger.error("Failed to restore auth session", error);
-      } finally {
-        setLoading(false);
-        logger.info("Auth bootstrap completed");
-      }
-    };
-
-    bootstrap();
-  }, []);
+  const { loading, accessToken, user } = useAuthGuard();
 
   // ✅ loading screen
   if (loading) {
-    return (
-      <View className="flex-1 items-center justify-center bg-background">
-        <ActivityIndicator size="large" />
-      </View>
-    );
+    return <Loader fullScreen />;
   }
 
-  const isLoggedIn = !!accessToken;
+
   const isAdmin = user?.role === "ADMIN";
 
-  // ✅ not authenticated → login
-  if (!isLoggedIn) {
-    return <Redirect href="/(auth)/login" />;
-  }
 
   // ✅ admin routing
   if (isAdmin) {
@@ -68,7 +26,7 @@ export default function Index() {
         href={
           Platform.OS === "web"
             ? "/(admin-web)/dashboard"
-            : "/(admin-app)/dashboard"
+            : "/(admin-app)"
         }
       />
     );

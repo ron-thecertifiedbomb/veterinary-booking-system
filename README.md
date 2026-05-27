@@ -1,50 +1,85 @@
-# ⚡ Rondev Expo NativeWind Starter
+# 🐾 End-to-End Veterinary Booking System with Admin Dashboard (Web + Mobile)
 
-A modern **Expo + React Native + NativeWind (Tailwind CSS)** starter template built for scalable mobile applications and production-ready UI systems.
+A complete end-to-end booking system designed for veterinary clinics, featuring both user-facing and admin-facing workflows for managing appointments, users, and operations.
 
-Designed with a **systems-first approach** — clean architecture, reusable styling, and a premium dark UI foundation.
+This project demonstrates a real-world application flow — from authentication and booking to full system management — with role-based access and cross-platform support.
+
+---
+
+## 🧩 System Overview
+
+This is not just a UI project — it represents a complete application workflow, including:
+
+- User authentication and session management
+- Role-based access control (Admin & User)
+- Appointment booking and scheduling workflow
+- Admin dashboard for managing appointments and users
+- Persistent data flow across web and mobile platforms
+
+The system is structured to reflect real-world business use cases.
 
 ---
 
 ## ✨ Features
 
-- ✅ Expo Router (file-based navigation)
-- ✅ NativeWind (Tailwind CSS for React Native)
-- ✅ Dark-first design system (black + electric cyan)
-- ✅ Organized folder structure (`src/`)
-- ✅ Scalable UI foundation (design tokens ready)
-- ✅ Cross-platform (iOS, Android, Web)
+### ✅ User Side
+- Book and manage appointments
+- Manage pet records
+- View schedule and booking history
+- Update user profile
+
+### ✅ Admin Dashboard
+- Manage all appointments and schedules
+- Monitor users and system activity
+- View and control booking operations
+- Role-based access control
 
 ---
 
-## 🎨 Design System
+## 📱 Platform Support
 
-This template uses a **minimal, high-contrast system UI** inspired by modern platforms like:
+- ✅ Web
+- ✅ Android
+- ✅ iOS
 
-- Vercel
-- Stripe
-- Linear
-
-### Core Colors
-
-| Token | Value |
-|------|------|
-| Background | `#000000` |
-| Surface | `#0a0a0a` |
-| Border | `#1a1a1a` |
-| Text Primary | `#e5e7eb` |
-| Accent | `#00e0ff` |
+Built using Expo for seamless cross-platform support.
 
 ---
 
-## 📦 Installation
+## 🧠 Key Highlights
 
-```bash
-# Clone repo
-git clone https://github.com/your-username/your-repo-name.git
+- End-to-end application flow (User → Booking → Admin Management)
+- Multi-role system (Admin & User)
+- File-based routing using Expo Router
+- Responsive layout (desktop and mobile)
+- Modular and scalable architecture
 
-# Install dependencies
-npm install
+---
 
-# Start development
-npx expo start
+## ⚙️ Tech Stack
+
+- React Native (Expo)
+- Expo Router (navigation)
+- NativeWind (Tailwind CSS)
+- AsyncStorage (session handling)
+- Date-fns (date handling)
+
+---
+
+## 📸 Screenshots
+
+> Add screenshots here
+
+- Dashboard overview
+- Appointments list
+- Sidebar navigation
+- Mobile layout
+- Profile screen
+
+---
+
+## 🚀 Purpose
+
+This project was built as a real-world system example, demonstrating how booking systems can be designed and implemented as complete business solutions — not just UI interfaces.
+
+---
