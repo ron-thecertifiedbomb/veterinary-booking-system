@@ -1,3 +1,6 @@
+export const unstable_settings = {
+    initialRouteName: "home",
+};
 
 import AddPetForm from "@/components/common/Pets/AddPetForm";
 

@@ -1,33 +1,20 @@
-import Loader from "@/components/common/Loader/Loader";
-import { useAuthGuard } from "@/features/auth/hooks/useAuthGuard";
+// src/app/(app)/(tabs)/_layout.tsx
 
+import Loader from "@/components/common/Loader/Loader";
+import { useAuth } from "@/features/auth/providers/AuthProvider"; // ✓ consistent with other layouts
 import { Redirect, Slot } from "expo-router";
 import { Platform } from "react-native";
 
-export default function AppLayout() {
-    const { loading, accessToken, user } = useAuthGuard();
+export default function AppTabsLayout() {
+    const { loading, user } = useAuth();
 
-    // ✅ loading
-    if (loading) {
-        return (
-            <Loader fullScreen={false} size="small" />
-        );
-    }
-    // ✅ NOT AUTHENTICATED → GO TO LOGIN
-    if (!accessToken) {
-        return <Redirect href="/(auth)/login" />;
-    }
+    if (loading) return <Loader fullScreen={false} size="small" />;
 
-    // ✅ WEB USERS → SEPARATE EXPERIENCE
-    if (Platform.OS === "web") {
-        return <Redirect href="/(web)/home" />;
-    }
+    if (!user) return <Redirect href="/(auth)/login" />;
 
-    // ✅ ADMIN USERS → ADMIN DASHBOARD
-    if (user?.role === "ADMIN") {
-        return <Redirect href="/(admin-app)/(tabs)/dashboard" />;
-    }
+    if (Platform.OS === "web") return <Redirect href="/(web)/web-home" />; // ✓ fixed path
 
-    // ✅ NORMAL USERS → ALLOW APP ACCESS
+    if (user.role === "ADMIN") return <Redirect href="/(admin-app)/(tabs)/dashboard" />;
+
     return <Slot />;
 }

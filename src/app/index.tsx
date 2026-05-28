@@ -2,11 +2,12 @@
 
 import Loader from "@/components/common/Loader/Loader";
 import { useAuthGuard } from "@/features/auth/hooks/useAuthGuard";
+import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { Redirect } from "expo-router";
 import { Platform } from "react-native";
 
 export default function Index() {
-  const { loading, accessToken, user } = useAuthGuard();
+  const { loading,  user } = useAuth();
 
   if (loading) {
     return <Loader fullScreen />;
@@ -19,7 +20,7 @@ export default function Index() {
         href={
           Platform.OS === "web"
             ? "/(admin-web)/dashboard"
-            : "/(admin-app)"
+            : "/(admin-app)/(tabs)/dashboard"
         }
       />
     );
@@ -30,8 +31,8 @@ export default function Index() {
     <Redirect
       href={
         Platform.OS === "web"
-          ? "/(web)/home"
-          : "(app)/(tabs)/home"
+          ? "/(web)/web-home"
+          : "/(app)/(tabs)/web-home"
       }
     />
   );

@@ -2,63 +2,45 @@
 
 import Loader from "@/components/common/Loader/Loader";
 import Sidebar from "@/components/common/SideBar/SideBar";
-import { useAuthGuard } from "@/features/auth/hooks/useAuthGuard";
-
+import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { userNav } from "@/utils/config/sidebar/sidebar";
-import { Redirect, Slot } from "expo-router";
+import { Redirect, Stack } from "expo-router";
 import { useRef, useState } from "react";
 import {
   Animated,
+  Platform,
   Pressable,
   Text,
   useWindowDimensions,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function WebUserLayout() {
-  const { accessToken, user, loading } = useAuthGuard();
+  const { user, loading } = useAuth();
 
-  // Responsive detection
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
 
-  // Sidebar state
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const translateX = useRef(new Animated.Value(-250)).current;
 
   const toggleSidebar = () => {
     const toValue = sidebarOpen ? -250 : 0;
-
     Animated.timing(translateX, {
       toValue,
       duration: 250,
-      useNativeDriver: false, // `true` is not supported on web
+      useNativeDriver: false,
     }).start();
-
     setSidebarOpen(!sidebarOpen);
   };
 
-  // Prevent flicker while session is loading
-  if (loading) {
-    return (
-      <Loader fullScreen={false} size="small" />
-    );
-  }
-
-  // Not authenticated, redirect to login
-  if (!accessToken) {
-    return <Redirect href="/(auth)/login" />;
-  }
-
-  // If user is not a 'USER', redirect to admin dashboard
-  if (user?.role !== "USER") {
-    return <Redirect href="/(admin-web)/dashboard" />;
-  }
+  if (loading) return <Loader fullScreen={false} size="small" />;
+  if (Platform.OS !== "web") return <Redirect href="/(app)/(tabs)/home" />;
+  if (!user) return <Redirect href="/(auth)/login" />;
+  if (user.role === "ADMIN") return <Redirect href="/(admin-web)/dashboard" />;
 
   return (
-    <SafeAreaView style={{ flex: 1, flexDirection: "row" }}>
-
+    <View style={{ flex: 1, flexDirection: "row" }}> {/* ✓ plain View, no SafeAreaView */}
       <Sidebar
         isMobile={isMobile}
         translateX={translateX}
@@ -68,7 +50,6 @@ export default function WebUserLayout() {
       />
 
       <View style={{ flex: 1 }}>
-        {/* Mobile Header with hamburger icon */}
         {isMobile && (
           <View
             style={{
@@ -85,10 +66,8 @@ export default function WebUserLayout() {
             </Pressable>
           </View>
         )}
-
-        {/* Page content */}
-        <Slot />
+        <Stack screenOptions={{ headerShown: false }} />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

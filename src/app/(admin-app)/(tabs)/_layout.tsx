@@ -1,40 +1,22 @@
-// src/app/(admin-app)(tabs)/_layout.tsx
+// src/app/(admin-app)/(tabs)/_layout.tsx
 
-import Loader from "@/components/common/Loader/Loader";
-import { useAuthGuard } from "@/features/auth/hooks/useAuthGuard";
 import { Ionicons } from "@expo/vector-icons";
-import { Redirect, Tabs } from "expo-router";
-import { Platform } from "react-native";
+import { Tabs } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function AppAdminTabsLayout() {
+const icon =
+    (name: any) =>
+        ({ color, size }: any) =>
+            <Ionicons name={name} size={size} color={color} />;
+
+export default function AdminAppTabsLayout() {
     const insets = useSafeAreaInsets();
-    const { loading, accessToken, user } = useAuthGuard();
-
-    if (Platform.OS === "web") {
-        return <Redirect href="/(admin-web)/dashboard" />;
-    }
-    // ✅ loading
-    if (loading) {
-        return (
-            <Loader fullScreen={false} size="small" />
-        );
-    }
-
-
-    if (!accessToken) {
-        return <Redirect href="/(auth)/login" />;
-    }
-
-    if (user?.role !== "ADMIN") {
-        return <Redirect href="/(web)/home" />;
-    }
 
     return (
         <Tabs
-            initialRouteName="dashboard"
             screenOptions={{
                 headerShown: false,
+                lazy: true,
                 tabBarActiveTintColor: "#111827",
                 tabBarInactiveTintColor: "#9CA3AF",
                 tabBarStyle: {
@@ -54,26 +36,15 @@ export default function AppAdminTabsLayout() {
                 name="dashboard"
                 options={{
                     title: "Dashboard",
-                    tabBarIcon: ({ color, size, focused }) => (
-                        <Ionicons
-                            name={focused ? "grid" : "grid-outline"}
-                            size={size}
-                            color={color}
-                        />
-                    ),
+                    tabBarIcon: icon("grid-outline"),
                 }}
             />
+
             <Tabs.Screen
                 name="appointments"
                 options={{
                     title: "Appointments",
-                    tabBarIcon: ({ color, size, focused }) => (
-                        <Ionicons
-                            name={focused ? "clipboard" : "clipboard-outline"}
-                            size={size}
-                            color={color}
-                        />
-                    ),
+                    tabBarIcon: icon("time-outline"),
                 }}
             />
 
@@ -81,13 +52,15 @@ export default function AppAdminTabsLayout() {
                 name="users"
                 options={{
                     title: "Users",
-                    tabBarIcon: ({ color, size, focused }) => (
-                        <Ionicons
-                            name={focused ? "people" : "people-outline"}
-                            size={size}
-                            color={color}
-                        />
-                    ),
+                    tabBarIcon: icon("people-outline"),
+                }}
+            />
+
+            <Tabs.Screen
+                name="pets"
+                options={{
+                    title: "Pets",
+                    tabBarIcon: icon("paw-outline"),
                 }}
             />
 
@@ -95,13 +68,7 @@ export default function AppAdminTabsLayout() {
                 name="profile"
                 options={{
                     title: "Profile",
-                    tabBarIcon: ({ color, size, focused }) => (
-                        <Ionicons
-                            name={focused ? "person-circle" : "person-circle-outline"}
-                            size={size}
-                            color={color}
-                        />
-                    ),
+                    tabBarIcon: icon("person-outline"),
                 }}
             />
         </Tabs>

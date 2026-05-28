@@ -111,7 +111,7 @@ export default function UpdateProfileForm() {
         // ✅ SUCCESS ALERT
         const handleSuccess = () => {
             router.replace(
-                Platform.OS === "web" ? "/(web)/profile" : "/profile"
+                Platform.OS === "web" ? "/(web)/edit-profile" : "(app)/edit-profile"
             );
         };
 

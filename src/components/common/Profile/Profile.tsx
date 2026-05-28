@@ -81,7 +81,7 @@ export default function Profile() {
                                 router.push(
                                     Platform.OS === "web"
                                         ? "/(web)/edit-profile"
-                                        : "/edit-profile"
+                                        : "(app)/edit-profile"
                                 )
                             }
                             className="px-3 py-1 rounded-full border border-border active:opacity-80"

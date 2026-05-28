@@ -111,7 +111,7 @@ export default function Sidebar({
                         color: "#0F172A",
                     }}
                 >
-                    Veterianry Clinic
+                    Veterinary Clinic
                 </Text>
 
                 <Text

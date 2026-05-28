@@ -1,30 +1,23 @@
 // src/app/(admin-app)/_layout.tsx
+
 import Loader from "@/components/common/Loader/Loader";
-import { useAuthGuard } from "@/features/auth/hooks/useAuthGuard";
-import { Redirect, Slot, usePathname } from "expo-router";
+import { Redirect, Slot } from "expo-router";
+import { Platform } from "react-native";
+import { useAuth } from "@/features/auth/providers/AuthProvider";
 
-export default function AppAdminLayout() {
-    const pathname = usePathname();
-    const { loading, accessToken, user } = useAuthGuard();
+export default function AdminAppLayout() {
+    const { loading, user } = useAuth();
 
-    // ✅ scope guard
-    if (!pathname.startsWith("/(admin-app)")) {
-        return <Slot />;
-    }
-    // ✅ loading
-    if (loading) {
-        return (
-            <Loader fullScreen={false} size="small" />
-        );
-    }
-    // ✅ not logged in
-    if (!accessToken) {
-        return <Redirect href="/(auth)/login" />;
-    }
+    if (loading) return <Loader fullScreen={false} size="small" />;
 
-    // ✅ only ADMIN allowed
-    if (user?.role !== "ADMIN") {
-        return <Redirect href="/(web)/home" />;
-    }
+    // ✓ Kick WEB users out — this group is mobile only
+    if (Platform.OS === "web") return <Redirect href="/(admin-web)/dashboard" />;
+
+    // ✓ Not logged in
+    if (!user) return <Redirect href="/(auth)/login" />;
+
+    // ✓ Logged in but not admin
+    if (user.role !== "ADMIN") return <Redirect href="/(app)/(tabs)/home" />;
+
     return <Slot />;
 }

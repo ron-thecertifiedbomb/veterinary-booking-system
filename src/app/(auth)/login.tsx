@@ -1,7 +1,8 @@
+// src/app/(auth)/login.tsx
+
 import ScreenContainer from "@/components/common/layout/ScreenContainer";
 import { useLogin } from "@/features/auth/hooks/useLogin";
 import { showAlert } from "@/hooks/crossPlatformAlert";
-
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -21,10 +22,8 @@ export default function Login() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
     const [emailError, setEmailError] = useState<string | null>(null);
     const [passwordError, setPasswordError] = useState<string | null>(null);
-
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     const { login, loading } = useLogin();
@@ -55,12 +54,8 @@ export default function Login() {
 
         const response = await login({ email, password });
 
-        // ✅ ✅ ✅ ADD ALERT HERE
         if (!response) {
-            showAlert(
-                "Login Failed",
-                "Invalid email or password. Please try again."
-            );
+            showAlert("Login Failed", "Invalid email or password. Please try again.");
             return;
         }
 
@@ -69,16 +64,15 @@ export default function Login() {
         const handleSuccess = () => {
             if (response.user.role === "ADMIN") {
                 router.replace(
-                    isWeb ? "/(admin-web)/dashboard" : "/(admin-app)/dashboard"
+                    isWeb ? "/(admin-web)/dashboard" : "/(admin-app)/(tabs)/dashboard"
                 );
                 return;
             }
-
-            router.replace(isWeb ? "/(web)/home" : "/(app)/home");
+            router.replace(isWeb ? "/(web)/web-home" : "/(app)/(tabs)/home");
         };
 
         showAlert("Login Successful", "Welcome back!", handleSuccess);
-    };
+    }; // ✓ handleLogin closes here
 
     return (
         <ScreenContainer>
@@ -109,7 +103,6 @@ export default function Login() {
                                 <Text className="text-sm font-medium text-text-primary mb-2">
                                     Email
                                 </Text>
-
                                 <TextInput
                                     value={email}
                                     onChangeText={(text) => {
@@ -127,11 +120,8 @@ export default function Login() {
                                             : undefined
                                     }
                                 />
-
                                 {emailError && (
-                                    <Text className="text-red-500 text-xs mt-2">
-                                        {emailError}
-                                    </Text>
+                                    <Text className="text-red-500 text-xs mt-2">{emailError}</Text>
                                 )}
                             </View>
 
@@ -140,7 +130,6 @@ export default function Login() {
                                 <Text className="text-sm font-medium text-text-primary mb-2">
                                     Password
                                 </Text>
-
                                 <View className="bg-surface border border-gray-300 rounded-2xl flex-row items-center">
                                     <TextInput
                                         value={password}
@@ -157,29 +146,19 @@ export default function Login() {
                                                 : undefined
                                         }
                                     />
-
                                     <Pressable
-                                        onPress={() =>
-                                            setIsPasswordVisible((prev) => !prev)
-                                        }
+                                        onPress={() => setIsPasswordVisible((prev) => !prev)}
                                         className="px-4"
                                     >
                                         <Ionicons
-                                            name={
-                                                isPasswordVisible
-                                                    ? "eye-off-outline"
-                                                    : "eye-outline"
-                                            }
+                                            name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
                                             size={22}
                                             color="#6b7280"
                                         />
                                     </Pressable>
                                 </View>
-
                                 {passwordError && (
-                                    <Text className="text-red-500 text-xs mt-2">
-                                        {passwordError}
-                                    </Text>
+                                    <Text className="text-red-500 text-xs mt-2">{passwordError}</Text>
                                 )}
                             </View>
 
@@ -192,21 +171,16 @@ export default function Login() {
                                 {loading ? (
                                     <ActivityIndicator color="#FFFFFF" />
                                 ) : (
-                                    <Text className="text-white font-semibold text-base">
-                                        Login
-                                    </Text>
+                                    <Text className="text-white font-semibold text-base">Login</Text>
                                 )}
                             </Pressable>
 
                             {/* REGISTER */}
                             <View className="mt-2 items-center">
                                 <Text className="text-sm text-text-secondary">
-                                    Don’t have an account?
+                                    Don't have an account?
                                 </Text>
-
-                                <Pressable
-                                    onPress={() => router.push("/(auth)/register")}
-                                >
+                                <Pressable onPress={() => router.push("/(auth)/register")}>
                                     <Text className="text-sm font-semibold text-secondary mt-1">
                                         Register here
                                     </Text>

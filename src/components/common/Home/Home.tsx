@@ -154,7 +154,7 @@ export default function Home() {
 
                         setTimeout(() => {
                             router.push({
-                                pathname: "/success",
+                                pathname: "(web)/success",
                                 params: {
                                     code: appointment.bookingCode,
                                 },
