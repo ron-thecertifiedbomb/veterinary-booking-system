@@ -49,7 +49,7 @@ export default function Pets() {
 
                 {/* ✅ HEADER */}
                 <View className="mb-6">
-                    <Text className="text-3xl font-semibold text-text-primary">
+                    <Text className="text-lg lg:text-3xl font-semibold text-text-primary">
                         My Pets
                     </Text>
                     <Text className="text-sm text-text-secondary mt-1">
