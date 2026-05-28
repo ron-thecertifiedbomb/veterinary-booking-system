@@ -10,7 +10,7 @@ import {
 
 import { AuthContextType } from "@/features/auth/providers/types";
 import { getStorageItem, removeStorageItem, setStorageItem } from "@/features/auth/storage";
-import { LoginPayload, LoginResponse, RegisterPayload, RegisterResponse } from "@/features/auth/types";
+import { AuthUser, LoginPayload, LoginResponse, RegisterPayload, RegisterResponse } from "@/features/auth/types";
 import { User } from "@/features/users/types";
 import { api } from "@/utils/api";
 import { logger } from "@/utils/logger";
@@ -19,7 +19,7 @@ import { logger } from "@/utils/logger";
 const AuthContext = createContext<AuthContextType | null>(null);
 
 let sessionCache: {
-    user: User | null;
+    user: AuthUser | null;
     token: string | null;
 } = {
     user: null,
@@ -28,7 +28,7 @@ let sessionCache: {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
 
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<AuthUser | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const hydrated = useRef(false);
@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 getStorageItem("user"),
                 getStorageItem("access_token"),
             ]);
-            const parsedUser: User | null = storedUser
+            const parsedUser: AuthUser | null = storedUser
                 ? JSON.parse(storedUser)
                 : null;
 
@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await loadSession();
     }
 
-    async function setSession(userData: User, accessToken: string) {
+    async function setSession(userData: AuthUser, accessToken: string) {
 
         await Promise.all([
             setStorageItem("user", JSON.stringify(userData)),
@@ -110,6 +110,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }
 
+    async function updateUser(updatedUser: Partial<AuthUser>) {
+        if (!user || !token) return;
+
+        const newUser = {
+            ...user,
+            ...updatedUser,
+        };
+
+        await Promise.all([
+            setStorageItem("user", JSON.stringify(newUser)),
+        ]);
+
+        sessionCache.user = newUser;
+        setUser(newUser);
+
+        logger.info("User updated in session", newUser);
+    }
+
     async function login(payload: LoginPayload): Promise<LoginResponse> {
         try {
             setLoading(true);
@@ -135,7 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }
 
-    async function register(payload: RegisterPayload): Promise<RegisterResponse | null> {
+    async function register(payload: RegisterPayload): Promise<RegisterResponse> {
         try {
             setLoading(true);
             logger.info("Attempting registration via AuthProvider", { email: payload.email });
@@ -170,6 +188,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user && !!token,
         isAdmin: user?.role === "ADMIN", // ✓ convenience shortcut
         refreshSession,
+        updateUser,
         setSession,
         logout,
         login,

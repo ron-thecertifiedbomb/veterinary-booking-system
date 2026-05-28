@@ -11,7 +11,6 @@ import { ScrollView, Text, View } from "react-native";
 
 export default function Home() {
     const router = useRouter();
-
     const [date, setDate] = useState(getTodayDate());
     const [showModal, setShowModal] = useState(false);
     const [modalChecking, setModalChecking] = useState(false);

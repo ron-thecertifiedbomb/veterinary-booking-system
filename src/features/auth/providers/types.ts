@@ -1,20 +1,24 @@
 import {
+  AuthUser,
   LoginPayload,
   LoginResponse,
   RegisterPayload,
   RegisterResponse,
 } from "@/features/auth/types";
-import { User } from "@/features/users/types";
+
 
 export type AuthContextType = {
-  user: User | null;
   token: string | null;
   loading: boolean;
   isAuthenticated: boolean;
   isAdmin: boolean;
+
+  user: AuthUser | null;
+
   refreshSession: () => Promise<void>;
-  setSession: (user: User, token: string) => Promise<void>;
+  setSession: (user: AuthUser, token: string) => Promise<void>;
+  updateUser: (updatedUser: Partial<AuthUser>) => Promise<void>;
   logout: () => Promise<void>;
-  login: (payload: LoginPayload) => Promise<LoginResponse | null>;
-  register: (payload: RegisterPayload) => Promise<RegisterResponse | null>;
+  login: (payload: LoginPayload) => Promise<LoginResponse>;
+  register: (payload: RegisterPayload) => Promise<RegisterResponse>;
 };

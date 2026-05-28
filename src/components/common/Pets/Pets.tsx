@@ -4,9 +4,13 @@ import { Pressable, Text, View, FlatList, Platform, ScrollView } from "react-nat
 
 import Loader from "@/components/common/Loader/Loader";
 import { useGetPets } from "@/features/pet/useGetPet";
+import { useAuth } from "@/features/auth/providers/AuthProvider";
 
 export default function Pets() {
-    const { pets, fetchPets, loading, error } = useGetPets();
+
+    const { user } = useAuth();
+    const pets = user?.pets || [];
+
     const { refresh } = useLocalSearchParams();
 
     const handleAddPet = () => {
@@ -19,23 +23,23 @@ export default function Pets() {
         );
     };
 
-    useEffect(() => {
-        fetchPets();
-    }, []);
+    // useEffect(() => {
+    //     fetchPets();
+    // }, []);
 
-    useEffect(() => {
-        if (refresh) fetchPets();
-    }, [refresh]);
+    // useEffect(() => {
+    //     if (refresh) fetchPets();
+    // }, [refresh]);
 
-    if (loading) return <Loader fullScreen />;
+    // if (loading) return <Loader fullScreen />;
 
-    if (error) {
-        return (
-            <View className="flex-1 justify-center items-center px-6">
-                <Text className="text-red-500 text-sm">{error}</Text>
-            </View>
-        );
-    }
+    // if (error) {
+    //     return (
+    //         <View className="flex-1 justify-center items-center px-6">
+    //             <Text className="text-red-500 text-sm">{error}</Text>
+    //         </View>
+    //     );
+    // }
 
     const isEmpty = pets.length === 0;
 

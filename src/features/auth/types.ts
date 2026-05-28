@@ -1,5 +1,7 @@
 // src/features/auth/types.ts
 
+import { Pet } from "@/features/pet/types";
+
 export type UserRole = "USER" | "ADMIN";
 
 export type AuthUser = {
@@ -8,7 +10,7 @@ export type AuthUser = {
   name: string;
   email: string;
   role: UserRole;
-  // add other fields if needed
+  pets: Pet[];
 };
 
 export type LoginPayload = {
