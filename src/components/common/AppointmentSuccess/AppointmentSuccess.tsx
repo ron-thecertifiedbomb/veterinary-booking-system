@@ -1,6 +1,7 @@
 import Loader from "@/components/common/Loader/Loader";
 import { getStorageItem } from "@/features/auth/storage";
 import { formatDate, formatTime } from "@/utils/dateandtime/date";
+import { formatPHDate } from "@/utils/dateandtime/time";
 import { formatBookingCode } from "@/utils/formatter";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -67,8 +68,11 @@ export default function AppoinmentSuccess() {
                         Service: {appointment.serviceType}
                     </Text>
 
-                    <Text className="text-sm text-text-primary mt-3 font-medium">
-                        {formatDate(appointment.date)} at {formatTime(appointment.time)}
+                    <Text className="text-sm text-text-secondary mb-1">
+                        {formatDate(appointment.date)} 
+                    </Text>
+                    <Text className="text-sm text-text-secondary mb-1">
+                       {formatPHDate(appointment.date)}
                     </Text>
                 </View>
 

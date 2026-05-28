@@ -8,7 +8,7 @@ export type SlotsResponse = {
 };
 
 
-export type CreateAppointmentApiResponse = {
+export type CreateAppointmentSlot = {
   message: string;
   data: Appointment;
 };

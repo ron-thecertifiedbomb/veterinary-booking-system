@@ -14,6 +14,9 @@ import BookingForm from "@/components/booking/BookingForm";
 import Loader from "@/components/common/Loader/Loader";
 import { Slot } from "@/features/appointment/types";
 import { formatSlotTime } from "@/utils/formatter";
+import { logger } from "@/utils/logger";
+import { formatPHDate } from "@/utils/dateandtime/time";
+import { formatDate } from "@/utils/dateandtime/date";
 
 type Props = {
     visible: boolean;
@@ -37,6 +40,7 @@ type Props = {
 
 export default function BookingModal({
     visible,
+    date,
     slots = [],
     checking,
     creating,
@@ -52,7 +56,7 @@ export default function BookingModal({
     // ✅ only use available slots
     const availableSlots = slots.filter((slot) => slot.available);
     const hasAvailableSlots = availableSlots.length > 0;
-
+    logger.info('selectedTime', selectedTime)
     // ✅ validation
     const isValid =
         petName &&
@@ -169,27 +173,11 @@ export default function BookingModal({
                                 Complete Appointment
                             </Text>
 
-                            <View className="bg-surface mt-1  mb-4">
-
-
-
+                            <View className="bg-surface mb-4">
                                 <Text className="text-xs text-text-secondary mt-1">
-                                    {displayDate}
+                                                Selected Date:  {formatDate(date)}
                                 </Text>
-
-                                <Text className="text-xs text-text-secondary mt-1">
-                                    {displayTime}
-                                </Text>
-
                             </View>
-
-
-
-                            {/* ✅ TIME SELECT */}
-                            <Text className="text-xs text-text-muted mb-2">
-                                Select Time
-                            </Text>
-
                             <View className="bg-surface border border-border rounded-xl mb-4">
                                 <Picker
                                     selectedValue={selectedTime}

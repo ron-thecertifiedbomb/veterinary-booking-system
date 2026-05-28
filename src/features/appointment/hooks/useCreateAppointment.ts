@@ -5,8 +5,8 @@ import { getStorageItem, setStorageItem } from "@/features/auth/storage";
 import Toast from "react-native-toast-message";
 
 import {
-  Appointment,
-  CreateAppointmentApiResponse,
+
+  CreateAppointmentSlot,
 } from "@/features/appointment/types";
 
 type CreateAppointmentInput = {
@@ -24,7 +24,7 @@ export const useCreateAppointment = () => {
 
   const createAppointment = async (
     input: CreateAppointmentInput,
-  ): Promise<Appointment> => {
+  ): Promise<CreateAppointmentSlot> => {
     try {
       // ✅ prevent duplicate requests
       if (loading) {
@@ -51,7 +51,6 @@ export const useCreateAppointment = () => {
         throw new Error("Invalid user session");
       }
 
-      // ✅ payload to backend
       const payload = {
         userId,
         petName: input.petName,
@@ -64,58 +63,29 @@ export const useCreateAppointment = () => {
       logger.info("Creating appointment payload ✅", payload);
 
       // ✅ API call
-      const res = await api<CreateAppointmentApiResponse>(
-        "/api/vet/appointments",
-        {
-          method: "POST",
-          body: JSON.stringify(payload),
-          token,
-        },
-      );
+      const res = await api<CreateAppointmentSlot>("/api/vet/appointments", {
+        method: "POST",
+        body: JSON.stringify(payload),
+        token,
+      });
 
-      logger.info("Appointment created ✅", res.data);
-
-      // ✅ ✅ ✅ CRITICAL: STORE SAFE DISPLAY DATA
       const enrichedAppointment = {
         ...res.data,
-        date: input.date, // ✅ FIX DATE (PH-safe)
-        time: input.time, // ✅ FIX TIME (slot-based)
+        date: input.date,
+        time: input.time,
       };
 
-      // ✅ get existing stored appointments
       const existing = await getStorageItem("appointments");
       const parsed = existing ? JSON.parse(existing) : [];
 
-      // ✅ prepend new appointment (latest first)
       const updated = [enrichedAppointment, ...parsed].slice(0, 20); // ✅ limit to 20
 
-      // ✅ save back
       await setStorageItem("appointments", JSON.stringify(updated));
-
-      logger.info("Appointment stored locally ✅");
-
-      // ✅ success toast
-      Toast.show({
-        type: "success",
-        text1: res.message,
-      });
-
       setSuccess(true);
-
-      return res.data;
+      return res;
     } catch (err: any) {
-      logger.error("Error creating appointment", err);
-
       const message = err?.message || "Failed to create appointment";
-
       setError(message);
-
-      // ✅ error toast
-      Toast.show({
-        type: "error",
-        text1: message,
-      });
-
       throw err;
     } finally {
       setLoading(false);

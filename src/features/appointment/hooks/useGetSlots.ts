@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "@/utils/api";
-import { logger } from "@/utils/logger";
 import { parseServerNow } from "@/utils/dateandtime/serverTime";
 
 type Slot = {
@@ -13,19 +12,17 @@ type SlotsResponse = {
   slots: Slot[];
 };
 
-export function useGetSlots() {
+export function useGetSlots(date: string) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [slots, setSlots] = useState<Slot[]>([]);
   const [serverNow, setServerNow] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
-  const getSlots = async (date: string) => {
+  const getSlots = async () => {
     try {
       setLoading(true);
       setError(null);
-
-      logger.info("Fetching slots", { date });
 
       const res = await api<SlotsResponse>(
         `/api/vet/appointments/slots?date=${date}`,
@@ -34,33 +31,38 @@ export function useGetSlots() {
       setSlots(Array.isArray(res.slots) ? res.slots : []);
       setServerNow(res.now);
 
-      logger.info("Slots fetched", res);
-
       return res;
     } catch (err: any) {
-      const message = err?.message || "Failed to load slots";
+      // ✅ Always use server message first
+      const message =
+        err?.response?.message || err?.message || "Failed to fetch slots";
 
       setError(message);
-      logger.error("Slots fetch failed", err);
-
       return null;
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ ✅ CLEAN: single object
-  const now = parseServerNow(serverNow);
+  useEffect(() => {
+    if (date) {
+      getSlots();
+    }
+  }, [date]);
+
+  // ✅ Safe parsing (avoid null crash)
+  const parsed = serverNow ? parseServerNow(serverNow) : null;
 
   return {
-    getSlots,
     slots,
-
-    now, // ✅ one clean object (date + time)
-
-    selectedTime,
-    setSelectedTime,
+    today: parsed?.today ?? null,
+    time: parsed?.time ?? null,
     loading,
     error,
+    selectedTime,
+    setSelectedTime,
+
+    // ✅ expose for manual refresh
+    refetch: getSlots,
   };
 }

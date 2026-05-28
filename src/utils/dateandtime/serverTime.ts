@@ -10,8 +10,8 @@ export const parseServerNow = (serverNow?: string | null) => {
   }
 
   return {
-    raw: date,
-    date: date.toLocaleDateString("en-PH", {
+   
+    today: date.toLocaleDateString("en-PH", {
       month: "long",
       day: "numeric",
       year: "numeric",

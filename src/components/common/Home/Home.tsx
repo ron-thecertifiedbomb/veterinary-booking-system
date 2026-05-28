@@ -2,28 +2,28 @@ import BookingModal from "@/components/booking/BookingModal";
 import DateSelector from "@/components/booking/DateSelector";
 import Loader from "@/components/common/Loader/Loader";
 import { useCreateAppointment } from "@/features/appointment/hooks/useCreateAppointment";
-import { useBookingBootstrap } from "@/hooks/appointments/useBookingBootstrap";
+import { useGetSlots } from "@/features/appointment/hooks/useGetSlots";
+import { showAlert } from "@/hooks/crossPlatformAlert";
 import { getTodayDate } from "@/utils/dateandtime/date";
-import { parseServerNow } from "@/utils/dateandtime/serverTime";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 export default function Home() {
-
     const router = useRouter();
+
     const [date, setDate] = useState(getTodayDate());
     const [showModal, setShowModal] = useState(false);
     const [modalChecking, setModalChecking] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true);
 
     const {
         slots,
+        today: now,
+        time,
         loading,
         error: fetchError,
-        serverNow,
-    } = useBookingBootstrap(date);
-
-    const now = parseServerNow(serverNow);
+    } = useGetSlots(date);
 
     const {
         createAppointment,
@@ -33,9 +33,7 @@ export default function Home() {
         resetSuccess,
     } = useCreateAppointment();
 
-    const [initialLoading, setInitialLoading] = useState(true);
-
-    // ✅ Initial loading (prevent flicker)
+    // ✅ Prevent initial flicker
     useEffect(() => {
         if (!loading) {
             setInitialLoading(false);
@@ -61,6 +59,7 @@ export default function Home() {
         setModalChecking(false);
     }, [showModal, loading]);
 
+    // ✅ Initial loader
     if (initialLoading) {
         return <Loader fullScreen />;
     }
@@ -75,7 +74,6 @@ export default function Home() {
 
                 {/* ✅ HEADER */}
                 <View className="mb-6">
-
                     <Text className="text-lg lg:text-3xl font-semibold text-text-primary">
                         Book an Appointment
                     </Text>
@@ -84,20 +82,18 @@ export default function Home() {
                     </Text>
                 </View>
 
-                {/* ✅ DATE / TIME CARD */}
+                {/* ✅ SERVER DATE + TIME */}
                 <View className="bg-surface border border-border rounded-2xl px-5 py-4 mb-5">
                     <Text className="text-[11px] uppercase tracking-wide text-text-muted mb-1">
                         Today is
                     </Text>
 
-                    {/* ✅ DATE (SERVER) */}
                     <Text className="text-base font-semibold text-text-primary">
-                        {now.date}
+                        {now ?? "Loading..."}
                     </Text>
 
-                    {/* ✅ TIME (SERVER) */}
                     <Text className="text-xs text-text-secondary mt-1">
-                        {now.time}
+                        {time ?? ""}
                     </Text>
                 </View>
 
@@ -120,9 +116,8 @@ export default function Home() {
                 creating={creating}
                 error={fetchError || createError}
 
-                // ✅ ✅ ✅ ADD THESE
-                date={now.date}
-                timeDisplay={now.time}
+                date={date}
+                timeDisplay={time ?? ""}
 
                 onClose={() => {
                     setShowModal(false);
@@ -130,9 +125,7 @@ export default function Home() {
                 }}
 
                 onSubmit={async (formData) => {
-                    if (!formData.time) {
-                        return;
-                    }
+                    if (!formData.time) return;
 
                     try {
                         const appointment = await createAppointment({
@@ -143,20 +136,28 @@ export default function Home() {
                             notes: formData.notes || "",
                         });
 
+                        
+                        showAlert(
+                            "Success",
+                            appointment.message
+                        );
+
                         setShowModal(false);
                         setModalChecking(false);
 
+                        // ✅ Redirect after short delay
                         setTimeout(() => {
                             router.push({
-                                pathname: "(web)/success",
-                                params: {
-                                    code: appointment.bookingCode,
-                                },
+                                pathname: "(web)/success"
                             });
-                        }, 600);
+                        }, 300);
 
-                    } catch {
-                    
+                    } catch (err: any) {
+                        // ✅ Show server error
+                        showAlert(
+                            "Booking Failed",
+                            err?.message || "Something went wrong"
+                        );
                     }
                 }}
             />
