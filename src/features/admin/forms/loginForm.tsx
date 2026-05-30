@@ -7,14 +7,13 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AppTextInput from "@/components/common/AppTextInput/AppTextInput";
-
+import { loginSchema } from "@/features/auth/schemas/login.schema";
 
 type LoginFormProps = {
     loading?: boolean;
     onSubmit: (data: { email: string; password: string }) => void;
     onRegisterPress?: () => void; // ✅ FIX HERE
 };
-
 
 export default function LoginForm({
     loading,
@@ -32,27 +31,24 @@ export default function LoginForm({
         setEmailError(null);
         setPasswordError(null);
 
-        let hasError = false;
+        const result = loginSchema.safeParse({
+            email,
+            password,
+        });
 
-        if (!email) {
-            setEmailError("Email is required");
-            hasError = true;
+        if (!result.success) {
+            const errors = result.error.flatten().fieldErrors;
+
+            if (errors.email) {
+                setEmailError(errors.email[0]);
+            }
+            if (errors.password) {
+                setPasswordError(errors.password[0]);
+            }
+            return;
         }
 
-        if (!password) {
-            setPasswordError("Password is required");
-            hasError = true;
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (email && !emailRegex.test(email)) {
-            setEmailError("Invalid email format");
-            hasError = true;
-        }
-
-        if (hasError) return;
-
-        onSubmit({ email, password });
+        onSubmit(result.data);
     };
 
     return (
