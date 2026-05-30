@@ -1,9 +1,11 @@
+import EmptyState from "@/components/common/EmptyState/EmptyState";
 import Loader from "@/components/common/Loader/Loader";
 import { useGetUserAppointments } from "@/features/users/hook/useGetUserAppointemts";
 import { formatDate, getTodayDate } from "@/utils/dateandtime/date";
 import { formatBookingCode } from "@/utils/formatter";
+import { router } from "expo-router";
 import { useEffect } from "react";
-import { FlatList, ScrollView, Text, View } from "react-native";
+import { FlatList, Platform, ScrollView, Text, View } from "react-native";
 
 export default function Appointments() {
     const date = getTodayDate();
@@ -18,8 +20,15 @@ export default function Appointments() {
     useEffect(() => {
         fetchAppointments();
     }, []);
-
-    // ✅ Loading
+    const isEmpty = appointments.length === 0;
+    const handleAddAppointment = () => {
+        const isWeb = Platform.OS === "web";
+        router.push(
+            isWeb
+                ? "/(web)/web-home"
+                : "(app)/home"
+        );
+    };
     if (loading) return <Loader fullScreen />;
 
     // ✅ Error
@@ -34,19 +43,7 @@ export default function Appointments() {
     }
 
     // ✅ Empty
-    if (!appointments.length) {
-        return (
-            <View className="flex-1 justify-center items-center px-6">
-                <Text className="text-base text-text-secondary">
-                    No past appointments
-                </Text>
-                <Text className="text-xs text-text-muted mt-1">
-                    Completed and cancelled bookings will appear here.
-                </Text>
-            </View>
-        );
-    }
-
+ 
     return (
         <ScrollView
             className="flex-1 bg-background"
@@ -65,7 +62,6 @@ export default function Appointments() {
                         Track and review your upcoming and past bookings.
                     </Text>
                 </View>
-
                 {/* ✅ DATE CARD */}
                 <View className="bg-surface border border-border rounded-2xl px-5 py-4 mb-5">
                     <Text className="text-[11px] uppercase tracking-wide text-text-muted mb-1">
@@ -83,6 +79,17 @@ export default function Appointments() {
                         })}
                     </Text>
                 </View>
+                {isEmpty && (
+                    <EmptyState
+                        icon=""
+                        title="No appointments booked"
+                        description="Add your first appointment."
+                        buttonLabel="Booked an Appointment"
+                        onPress={handleAddAppointment}
+                    />
+                )}
+
+         
 
                 <FlatList
                     data={appointments}

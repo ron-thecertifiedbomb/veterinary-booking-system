@@ -30,7 +30,7 @@ export default function AddPetScreen() {
             petName: data.petName,
             species: data.species,
             breed: data.breed,
-            weight: data.weight ? Number(data.weight) : undefined,
+            weight: Number(data.weight),
         });
 
         // ✅ if hook handles errors → just guard

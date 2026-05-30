@@ -2,6 +2,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { FlatList, Platform, Pressable, ScrollView, Text, View } from "react-native";
 
 import { useAuth } from "@/features/auth/providers/AuthProvider";
+import EmptyState from "@/components/common/EmptyState/EmptyState";
 
 export default function Pets() {
 
@@ -41,25 +42,15 @@ export default function Pets() {
 
                 {/* ✅ EMPTY STATE */}
                 {isEmpty && (
-                    <View className="bg-surface border border-border rounded-2xl p-6 items-center">
-                        <Text className="text-4xl mb-3">🐾</Text>
-                        <Text className="text-lg font-semibold text-text-primary">
-                            No pets yet
-                        </Text>
-                        <Text className="text-sm text-text-secondary text-center mt-1">
-                            Add your first pet to start booking.
-                        </Text>
-
-                        <Pressable
-                            className="bg-black rounded-xl px-6 py-3 mt-5 active:opacity-80"
-                            onPress={handleAddPet}
-                        >
-                            <Text className="text-white font-semibold text-sm">
-                                Add Pet
-                            </Text>
-                        </Pressable>
-                    </View>
+                    <EmptyState
+                        icon="🐾"
+                        title="No pets yet"
+                        description="Add your first pet to start booking."
+                        buttonLabel="Add Pet"
+                        onPress={handleAddPet}
+                    />
                 )}
+                
                 {!isEmpty && (
                     <FlatList
                         data={pets}
