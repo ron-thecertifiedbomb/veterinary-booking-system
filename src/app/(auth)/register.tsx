@@ -15,7 +15,7 @@ export default function Registration() {
   const router = useRouter();
 
   // ✅ useAuth handles session + routing
-  const { register, login, loading, user} = useAuth();
+  const { register, login, loading} = useAuth();
 
 
   const handleRegister = async (data: RegisterPayload) => {
