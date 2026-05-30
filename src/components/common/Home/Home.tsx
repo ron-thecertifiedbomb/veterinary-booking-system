@@ -6,24 +6,23 @@ import { useGetSlots } from "@/features/appointment/hooks/useGetSlots";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { getTodayDate } from "@/utils/dateandtime/date";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 export default function Home() {
-
     const router = useRouter();
     const [date, setDate] = useState(getTodayDate());
     const [showModal, setShowModal] = useState(false);
     const [modalChecking, setModalChecking] = useState(false);
-    const [initialLoading, setInitialLoading] = useState(true);
-    const { user } = useAuth();
+    const { user, loading: authLoading, refreshSession } = useAuth();
     const pets = user?.pets || [];
+
     const {
         slots,
         today: now,
         time,
-        loading,
+        loading: slotsLoading,
         error: fetchError,
     } = useGetSlots(date);
 
@@ -35,31 +34,24 @@ export default function Home() {
         resetSuccess,
     } = useCreateAppointment();
 
+    // ✅ ALL hooks before any early return
     useEffect(() => {
-        if (!loading) {
-            setInitialLoading(false);
-        }
-    }, [loading]);
+        refreshSession();
+    }, []);
 
     useEffect(() => {
         if (!success) return;
-
-        const timer = setTimeout(() => {
-            resetSuccess();
-        }, 2500);
+        const timer = setTimeout(() => resetSuccess(), 2500);
         return () => clearTimeout(timer);
     }, [success, resetSuccess]);
 
-    // ✅ Modal loading sync
     useEffect(() => {
-        if (!showModal) return;
-        if (loading) return;
-
+        if (!showModal || slotsLoading) return;
         setModalChecking(false);
-    }, [showModal, loading]);
+    }, [showModal, slotsLoading]);
 
-    // ✅ Initial loader
-    if (initialLoading) {
+    // ✅ only block on initial auth load
+    if (authLoading) {
         return <Loader fullScreen />;
     }
 
@@ -70,7 +62,6 @@ export default function Home() {
             keyboardShouldPersistTaps="handled"
         >
             <View className="w-full max-w-3xl pt-6 lg:p-14">
-
                 <View className="mb-6">
                     <Text className="text-lg lg:text-3xl font-semibold text-text-primary">
                         Book an Appointment
@@ -87,7 +78,6 @@ export default function Home() {
                     <Text className="text-base font-semibold text-text-primary">
                         {now}
                     </Text>
-
                     <Text className="text-xs text-text-secondary mt-1">
                         {time}
                     </Text>
@@ -103,12 +93,11 @@ export default function Home() {
                 />
             </View>
 
-            {/* ✅ BOOKING MODAL */}
             <BookingModal
                 pets={pets}
                 visible={showModal}
                 slots={slots}
-                checking={modalChecking || loading}
+                checking={modalChecking || slotsLoading}
                 creating={creating}
                 error={fetchError || createError}
                 date={date}
@@ -117,39 +106,29 @@ export default function Home() {
                     setShowModal(false);
                     setModalChecking(false);
                 }}
-
                 onSubmit={async (formData) => {
                     if (!formData.time) return;
 
                     try {
                         const appointment = await createAppointment({
                             petId: formData.petId,
-                            petName: formData.petName, 
+                            petName: formData.petName,
                             serviceType: formData.serviceType,
                             time: formData.time,
                             date,
                             notes: formData.notes || "",
                         });
 
-                        showAlert(
-                            "Success",
-                            appointment.message
-                        );
-
+                        showAlert("Success", appointment.message);
                         setShowModal(false);
                         setModalChecking(false);
 
                         setTimeout(() => {
-                            router.push({
-                                pathname: "(web)/success",
-                            });
+                            router.push({ pathname: "(web)/success" });
                         }, 300);
 
                     } catch (err: any) {
-                        showAlert(
-                            "Booking Failed",
-                            err?.message || "Something went wrong"
-                        );
+                        showAlert("Booking Failed", err?.message || "Something went wrong");
                     }
                 }}
             />

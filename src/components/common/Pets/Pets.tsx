@@ -45,7 +45,14 @@ export default function Pets() {
     };
 
     const isEmpty = pets.length === 0;
-
+    if (loading) {
+        return (
+            <Loader
+                fullScreen={false}
+                size="small"
+            />
+        );
+    } 
     return (
         <>
             {/* ✅ GLOBAL LOADER */}
@@ -87,55 +94,61 @@ export default function Pets() {
                             keyExtractor={(item) => item.id}
                             showsVerticalScrollIndicator={false}
                             scrollEnabled={false}
-                            contentContainerStyle={{
-                                paddingBottom: 40,
-                            }}
+                            contentContainerStyle={{ paddingBottom: 40 }}
                             renderItem={({ item }) => (
                                 <View className="bg-surface border border-border rounded-2xl p-5 mb-3">
+                                    {/* ✅ HEADER ROW */}
+                                    <View className="flex-row items-center justify-between mb-4">
+                                        <View className="flex-row items-center gap-3">
+                                            {/* ✅ AVATAR */}
+                                            <View className="w-11 h-11 rounded-full bg-primary/10 items-center justify-center">
+                                                <Text className="text-xl">
+                                                    {item.species === "Dog" ? "🐶"
+                                                        : item.species === "Cat" ? "🐱"
+                                                            : item.species === "Bird" ? "🐦"
+                                                                : item.species === "Rabbit" ? "🐰"
+                                                                    : "🐾"}
+                                                </Text>
+                                            </View>
 
-                                    {/* ✅ NAME */}
-                                    <Text className="text-xs text-text-muted">
-                                        Name
-                                    </Text>
+                                            <View>
+                                                <Text className="text-base font-semibold text-text-primary">
+                                                    {item.petName}
+                                                </Text>
+                                                <Text className="text-xs text-text-muted">
+                                                    {item.species}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </View>
 
-                                    <Text className="text-base font-semibold text-text-primary mb-2">
-                                        {item.petName}
-                                    </Text>
+                                    {/* ✅ DIVIDER */}
+                                    <View className="h-px bg-border mb-4" />
 
-                                    {/* ✅ BREED */}
-                                    {item.breed && (
-                                        <>
-                                            <Text className="text-xs text-text-muted">
-                                                Breed
-                                            </Text>
+                                    {/* ✅ DETAILS ROW */}
+                                    <View className="flex-row gap-4">
+                                        {item.breed && (
+                                            <View className="flex-1">
+                                                <Text className="text-xs text-text-muted mb-1">
+                                                    Breed
+                                                </Text>
+                                                <Text className="text-sm font-medium text-text-primary">
+                                                    {item.breed}
+                                                </Text>
+                                            </View>
+                                        )}
 
-                                            <Text className="text-sm text-text-primary mb-2">
-                                                {item.breed}
-                                            </Text>
-                                        </>
-                                    )}
-
-                                    {/* ✅ SPECIES */}
-                                    <Text className="text-xs text-text-muted">
-                                        Species
-                                    </Text>
-
-                                    <Text className="text-sm text-text-primary mb-2">
-                                        {item.species}
-                                    </Text>
-
-                                    {/* ✅ WEIGHT */}
-                                    {item.weight && (
-                                        <>
-                                            <Text className="text-xs text-text-muted">
-                                                Weight
-                                            </Text>
-
-                                            <Text className="text-sm text-text-primary">
-                                                {item.weight} kg
-                                            </Text>
-                                        </>
-                                    )}
+                                        {item.weight && (
+                                            <View className="flex-1">
+                                                <Text className="text-xs text-text-muted mb-1">
+                                                    Weight
+                                                </Text>
+                                                <Text className="text-sm font-medium text-text-primary">
+                                                    {item.weight} kg
+                                                </Text>
+                                            </View>
+                                        )}
+                                    </View>
                                 </View>
                             )}
                             ListFooterComponent={
@@ -143,8 +156,8 @@ export default function Pets() {
                                     className="bg-black rounded-2xl py-4 items-center mt-4 mb-10 active:opacity-80"
                                     onPress={handleAddPet}
                                 >
-                                    <Text className="text-white font-semibold">
-                                        Add Another Pet
+                                    <Text className="text-white font-semibold text-base">
+                                        + Add Another Pet
                                     </Text>
                                 </Pressable>
                             }

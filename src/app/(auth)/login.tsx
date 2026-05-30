@@ -23,11 +23,14 @@ type LoginPayload = {
 
 export default function Login() {
     const router = useRouter();
-    const { login, loading } = useAuth();
+    const { login, loading, isAuthenticated } = useAuth();
 
     // ✅ LOGIC HERE (clean separation)
 
     const handleLogin = async ({ email, password }: LoginPayload) => {
+
+        console.log("isAuthenticated before login:", isAuthenticated);
+
         try {
             const response = await login({ email, password });
 
@@ -41,7 +44,7 @@ export default function Login() {
                 router.replace(route); // ✅ important (no back)
             }
         } catch (err: any) {
-            showAlert("", err.message);
+            showAlert("Error", err.message);
         }
     };
 

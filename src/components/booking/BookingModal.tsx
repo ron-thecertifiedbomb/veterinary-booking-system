@@ -131,7 +131,7 @@ export default function BookingModal({
                     {/* ✅ LOADING */}
                     {checking ? (
                         <View className="items-center py-6">
-                            <Loader />
+                            <Loader fullScreen />
                         </View>
 
                     ) : error && !hasAvailableSlots ? (

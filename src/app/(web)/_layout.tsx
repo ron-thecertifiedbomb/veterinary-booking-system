@@ -39,7 +39,7 @@ export default function WebUserLayout() {
     useWindowDimensions();
 
   const isMobile = width < 768;
-
+  const isFirstLoad = !user && loading; 
   const [sidebarOpen, setSidebarOpen] =
     useState(false);
 
@@ -62,15 +62,14 @@ export default function WebUserLayout() {
   };
 
   // ✅ loading state
-  if (loading) {
+  if (isFirstLoad) {
     return (
       <Loader
-        fullScreen={false}
-        size="small"
+        fullScreen
+ 
       />
     );
   }
-
   // ✅ auth guard
   if (!isAuthenticated || !user) {
     return (

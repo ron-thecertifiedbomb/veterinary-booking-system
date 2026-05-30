@@ -94,50 +94,85 @@ export default function Appointments() {
                 <FlatList
                     data={appointments}
                     keyExtractor={(item) => item.bookingCode}
-                    contentContainerStyle={{
-                        paddingBottom: 40,
-                    }}
+                    contentContainerStyle={{ paddingBottom: 40 }}
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => {
+                        const date = new Date(item.appointmentDate);
 
-                        const statusColor =
-                            item.status === "booked"
-                                ? "bg-green-100 text-green-700"
-                                : item.status === "cancelled"
-                                    ? "bg-red-100 text-red-600"
-                                    : "bg-gray-100 text-gray-600";
+                        const statusConfig = {
+                            booked: { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500", label: "Booked" },
+                            cancelled: { bg: "bg-red-50", text: "text-red-600", dot: "bg-red-500", label: "Cancelled" },
+                            completed: { bg: "bg-blue-50", text: "text-blue-600", dot: "bg-blue-500", label: "Completed" },
+                        }[item.status] ?? { bg: "bg-gray-100", text: "text-gray-600", dot: "bg-gray-400", label: item.status };
+
+                        const serviceEmoji =
+                            item.serviceType === "Grooming" ? "✂️"
+                                : item.serviceType === "Vaccination" ? "💉"
+                                    : item.serviceType === "Checkup" ? "🩺"
+                                        : item.serviceType === "Dental" ? "🦷"
+                                            : "🐾";
 
                         return (
                             <View className="bg-surface border border-border rounded-2xl p-5 mb-3">
 
-                                {/* Top Row */}
+                                {/* ✅ HEADER */}
+                                <View className="flex-row items-center justify-between mb-4">
+                                    <View className="flex-row items-center gap-3">
+                                        <View className="w-11 h-11 rounded-full bg-primary/10 items-center justify-center">
+                                            <Text className="text-xl">{serviceEmoji}</Text>
+                                        </View>
+                                        <View>
+                                            <Text className="text-base font-semibold text-text-primary">
+                                                {item.petName}
+                                            </Text>
+                                            <Text className="text-xs text-text-muted">
+                                                {item.serviceType}
+                                            </Text>
+                                        </View>
+                                    </View>
 
-                                <View className="flex-row justify-between items-center mb-2">
-                                    <Text className="text-base font-semibold text-text-primary">
-                                        {item.petName}
+                                    {/* ✅ STATUS BADGE */}
+                                    <View className={`flex-row items-center gap-1.5 px-3 py-1 rounded-full ${statusConfig.bg}`}>
+                                        <View className={`w-1.5 h-1.5 rounded-full ${statusConfig.dot}`} />
+                                        <Text className={`text-xs font-medium ${statusConfig.text}`}>
+                                            {statusConfig.label}
+                                        </Text>
+                                    </View>
+                                </View>
+
+                                {/* ✅ DIVIDER */}
+                                <View className="h-px bg-border mb-4" />
+
+                                {/* ✅ DETAILS */}
+                                <View className="flex-row gap-4 mb-3">
+                                    <View className="flex-1">
+                                        <Text className="text-xs text-text-muted mb-1">Date</Text>
+                                        <Text className="text-sm font-medium text-text-primary">
+                                            {date.toLocaleDateString([], {
+                                                month: "short",
+                                                day: "numeric",
+                                                year: "numeric",
+                                            })}
+                                        </Text>
+                                    </View>
+                                    <View className="flex-1">
+                                        <Text className="text-xs text-text-muted mb-1">Time</Text>
+                                        <Text className="text-sm font-medium text-text-primary">
+                                            {date.toLocaleTimeString([], {
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                            })}
+                                        </Text>
+                                    </View>
+                                </View>
+
+                                {/* ✅ BOOKING REF */}
+                                <View className="bg-background rounded-xl px-4 py-3">
+                                    <Text className="text-xs text-text-muted mb-0.5">Booking Reference</Text>
+                                    <Text className="text-sm font-mono font-semibold text-text-primary tracking-wide">
+                                        {formatBookingCode(item.bookingCode)}
                                     </Text>
                                 </View>
-                                {/* Service */}
-                                <Text className="text-sm text-text-secondary">
-                                    Service Type: {item.serviceType}
-                                </Text>
-                                <View className="h-px bg-border my-3" />
-                                {/* Date */}
-                                <Text className="text-sm text-slate-800 mt-1">
-                                    Date: {new Date(item.appointmentDate).toLocaleDateString()}
-                                </Text>
-                                {/* Time */}
-                                <Text className="text-sm text-slate-800 mt-1">
-                                    Time: {new Date(item.appointmentDate).toLocaleTimeString([], {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                    })}
-                                </Text>
-
-                                {/* Reference */}
-                                <Text className="text-sm text-slate-800 mt-1">
-                                    Ref: {formatBookingCode(item.bookingCode)}
-                                </Text>
 
                             </View>
                         );
