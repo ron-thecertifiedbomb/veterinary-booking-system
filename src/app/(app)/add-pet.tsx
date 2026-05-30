@@ -18,14 +18,9 @@ export default function AddPetScreen() {
 
 
     const handleCreatePet = async (data: CreatePetPayload) => {
-
-
-        // ✅ explicit narrowing
         if (!data) {
             return;
         }
-
-
         const response = await addPet({
             petName: data.petName,
             species: data.species,
@@ -37,7 +32,7 @@ export default function AddPetScreen() {
         if (!response) return;
 
         showAlert("Success", response.message, () => {
-            router.replace(Platform.OS === "web" ? "/(web)/pets" : "/pets");
+            router.replace(Platform.OS === "web" ? "/(web)/web-pets" : "/(app)/pets");
         });
     };
 

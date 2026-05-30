@@ -3,8 +3,8 @@ import Loader from "@/components/common/Loader/Loader";
 import { useGetUserAppointments } from "@/features/users/hook/useGetUserAppointemts";
 import { formatDate, getTodayDate } from "@/utils/dateandtime/date";
 import { formatBookingCode } from "@/utils/formatter";
-import { router } from "expo-router";
-import { useEffect } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useEffect } from "react";
 import { FlatList, Platform, ScrollView, Text, View } from "react-native";
 
 export default function Appointments() {
@@ -17,9 +17,12 @@ export default function Appointments() {
         error,
     } = useGetUserAppointments();
 
-    useEffect(() => {
-        fetchAppointments();
-    }, []);
+    
+    useFocusEffect(
+        useCallback(() => {
+            fetchAppointments();
+        }, [])
+    );
     const isEmpty = appointments.length === 0;
     const handleAddAppointment = () => {
         const isWeb = Platform.OS === "web";
@@ -88,9 +91,6 @@ export default function Appointments() {
                         onPress={handleAddAppointment}
                     />
                 )}
-
-         
-
                 <FlatList
                     data={appointments}
                     keyExtractor={(item) => item.bookingCode}
@@ -116,18 +116,12 @@ export default function Appointments() {
                                     <Text className="text-base font-semibold text-text-primary">
                                         {item.petName}
                                     </Text>
-
-
                                 </View>
-
-
                                 {/* Service */}
                                 <Text className="text-sm text-text-secondary">
                                     Service Type: {item.serviceType}
                                 </Text>
-
                                 <View className="h-px bg-border my-3" />
-
                                 {/* Date */}
                                 <Text className="text-sm text-slate-800 mt-1">
                                     Date: {new Date(item.appointmentDate).toLocaleDateString()}

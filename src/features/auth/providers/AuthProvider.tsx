@@ -124,6 +124,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setLoading,
         });
     }
+
+
+    
     async function logout() {
         return logoutService({
             loading,

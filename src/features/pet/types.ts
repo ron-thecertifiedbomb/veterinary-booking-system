@@ -18,3 +18,9 @@ export type CreatePetResponse = {
   message: string;
   data: Pet;
 };
+
+
+export type GetPetsResponse = {
+  message: string;
+  data: Pet[];
+};

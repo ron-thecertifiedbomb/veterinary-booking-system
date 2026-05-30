@@ -3,20 +3,8 @@ import Toast from "react-native-toast-message";
 import { api } from "@/utils/api";
 import { logger } from "@/utils/logger";
 import { getStorageItem, setStorageItem } from "@/features/auth/storage";
+import { GetPetsResponse, Pet } from "@/features/pet/types";
 
-// ✅ types
-type Pet = {
-  id: string;
-  name: string;
-  species: string;
-  breed?: string;
-  weight?: number;
-};
-
-type GetPetsResponse = {
-  message: string;
-  data: Pet[];
-};
 
 export function useGetPets() {
   const [pets, setPets] = useState<Pet[]>([]);
@@ -36,7 +24,6 @@ export function useGetPets() {
           setPets(parsed);
         }
       }
-
       const token = await getStorageItem("access_token");
       if (!token) throw new Error("Not authenticated");
 
@@ -47,7 +34,6 @@ export function useGetPets() {
         },
       });
 const safeData = Array.isArray(response.data) ? response.data : [];
-
       setPets(safeData);
       setMessage(response.message);
 
@@ -68,7 +54,6 @@ const safeData = Array.isArray(response.data) ? response.data : [];
     pets,
     fetchPets,
     loading,
-
     message,
   };
 }

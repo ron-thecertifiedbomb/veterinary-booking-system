@@ -19,6 +19,7 @@ import { formatDate } from "@/utils/dateandtime/date";
 import { Pet } from "@/features/pet/types";
 import { router } from "expo-router";
 import { logger } from "@/utils/logger";
+import EmptyState from "@/components/common/EmptyState/EmptyState";
 
 type Props = {
     visible: boolean;
@@ -97,7 +98,7 @@ export default function BookingModal({
 
         await onSubmit({
             petId: selectedPet?.id || "",
-            petName: selectedPet?.name || "",
+            petName: selectedPet?.petName || "",
             serviceType,
             time: selectedTime,
             notes,
@@ -111,7 +112,7 @@ export default function BookingModal({
 
         router.push(
             isWeb
-                ? "/(web)/add-pet"
+                ? "/(web)/web-add-pet"
                 : "/(app)/add-pet"
         );
     };
@@ -181,27 +182,13 @@ export default function BookingModal({
                         <>
                             {isEmpty ? (
 
-                                /* ✅ NO PETS */
-                                <View className="items-center p-6">
-                                    <Text className="text-4xl mb-3">🐾</Text>
-
-                                    <Text className="text-lg font-semibold">
-                                        No pets yet
-                                    </Text>
-
-                                    <Text className="text-text-secondary text-center mt-1">
-                                        Add your first pet to start booking.
-                                    </Text>
-
-                                    <Pressable
-                                        className="bg-black rounded-xl px-6 py-3 mt-5"
-                                        onPress={handleAddPet}
-                                    >
-                                        <Text className="text-white font-semibold">
-                                            Add Pet
-                                        </Text>
-                                    </Pressable>
-                                </View>
+                                            <EmptyState
+                                                icon="🐾"
+                                                title="No pets yet"
+                                                description="Add your first pet to start booking."
+                                                buttonLabel="Add Pet"
+                                                onPress={handleAddPet}
+                                            />
 
                             ) : (
 
@@ -238,7 +225,7 @@ export default function BookingModal({
                                             {pets.map((pet) => (
                                                 <Picker.Item
                                                     key={pet.id}
-                                                    label={pet.name}
+                                                    label={pet.petName}
                                                     value={pet.id}
                                                 />
                                             ))}

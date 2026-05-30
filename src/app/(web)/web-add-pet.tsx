@@ -18,26 +18,21 @@ export default function AddPetScreen() {
 
 
     const handleCreatePet = async (data: CreatePetPayload) => {
-
-
-        // ✅ explicit narrowing
-        if (!data ) {
+        if (!data) {
             return;
         }
-
-
         const response = await addPet({
             petName: data.petName,
             species: data.species,
             breed: data.breed,
-            weight: Number(data.weight)
+            weight: Number(data.weight),
         });
 
         // ✅ if hook handles errors → just guard
         if (!response) return;
 
         showAlert("Success", response.message, () => {
-            router.replace(Platform.OS === "web" ? "/(web)/pets" : "/pets");
+            router.replace(Platform.OS === "web" ? "/(web)/web-pets" : "/(app)/pets");
         });
     };
 
