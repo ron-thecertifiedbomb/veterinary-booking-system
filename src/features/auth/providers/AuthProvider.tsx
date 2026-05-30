@@ -11,10 +11,11 @@ import {
 import { AuthContextType } from "@/features/auth/providers/types";
 import { getStorageItem, removeStorageItem, setStorageItem } from "@/features/auth/storage";
 import { AuthUser, LoginPayload, LoginResponse, RegisterPayload, RegisterResponse } from "@/features/auth/types";
-import { User } from "@/features/users/types";
+import { logout as logoutService } from "@/features/auth/services/logout";
 import { api } from "@/utils/api";
 import { logger } from "@/utils/logger";
-
+import { login as loginService } from "@/features/auth/services/login";
+import { register as registerService } from "@/features/auth/services/register";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -87,42 +88,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setToken(accessToken);
     }
 
-    async function logout() {
-        if (loading) return;
-
-        try {
-            setLoading(true);
-            logger.info("Logging out user");
-
-            let response = null;
-
-            if (token) {
-                response = await api("/api/vet/auth/logout", {
-                    method: "POST",
-                    token,
-                });
-            }
-
-            return response; 
-        } catch (error: any) {
-            logger.error("Logout API failed", error);
-            return null; 
-        } finally {
-            await Promise.all([
-                removeStorageItem("user"),
-                removeStorageItem("access_token"),
-            ]);
-
-            sessionCache = { user: null, token: null };
-
-            setUser(null);
-            setToken(null);
-            setLoading(false);
-
-            logger.info("User session cleared");
-        }
-    }
-
     async function updateUser(updatedUser: Partial<AuthUser>) {
         if (!user || !token) return;
 
@@ -141,56 +106,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logger.info("User updated in session", newUser);
     }
 
-    async function login(payload: LoginPayload): Promise<LoginResponse> {
-        try {
-            setLoading(true);
-            const response = await api<LoginResponse>("/api/vet/auth/login", {
-                method: "POST",
-                body: JSON.stringify(payload),
-            });
-            const normalizedUser = {
-                ...response.user,
-                userId: response.user.userId || response.user.id,
-            };
-            await setSession(normalizedUser, response.access_token);
-            logger.info("Login successful via AuthProvider", normalizedUser);
-            return response;
-        } catch (err: any) {
-            const errorMessage =
-                err?.response?.message ||
-                err?.message ||
-                "Failed to login";
-            throw new Error(errorMessage);
-        } finally {
-            setLoading(false);
-        }
+    
+
+    async function login(
+        payload: LoginPayload
+    ) {
+        return loginService(payload, {
+            setLoading,
+            setSession,
+        });
     }
 
-    async function register(payload: RegisterPayload): Promise<RegisterResponse> {
-        try {
-            setLoading(true);
-            logger.info("Attempting registration via AuthProvider", { email: payload.email });
-            const response = await api<RegisterResponse>("/api/vet/auth/register", {
-                method: "POST",
-                body: JSON.stringify(payload),
-            });
-            const normalizedUser = {
-                ...response.user,
-                userId: response.user.userId || response.user.id,
-            };
-            await setSession(normalizedUser, response.access_token);
-            logger.info("Registration successful via AuthProvider", normalizedUser);
-            return response;
-        } catch (err: any) {
-            logger.error("Registration failed via AuthProvider", err);
-            const errorMessage =
-                err?.response?.message ||
-                err?.message ||
-                "Registration failed";
-            throw new Error(errorMessage);
-        } finally {
-            setLoading(false);
-        }
+    async function register(
+        payload: RegisterPayload
+    ) {
+        return registerService(payload, {
+            setLoading,
+        });
+    }
+    async function logout() {
+        return logoutService({
+            loading,
+            token,
+
+            setLoading,
+            setUser,
+            setToken,
+
+            removeStorageItem,
+
+            clearSessionCache: () => {
+                sessionCache = {
+                    user: null,
+                    token: null,
+                };
+            },
+        });
     }
 
 

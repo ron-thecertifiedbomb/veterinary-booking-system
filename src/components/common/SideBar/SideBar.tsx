@@ -16,8 +16,6 @@ export default function Sidebar({
     const router = useRouter();
     const { logout, loading } = useLogout();
 
-
-
     const getCleanPath = (path: string) => {
         return path.replace(/\/?\(.*?\)/g, "");
     };

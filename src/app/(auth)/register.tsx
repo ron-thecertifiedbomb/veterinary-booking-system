@@ -13,26 +13,50 @@ import {
 
 export default function Registration() {
   const router = useRouter();
-  const { register, loading } = useAuth();
+
+  // ✅ useAuth handles session + routing
+  const { register, login, loading } = useAuth();
 
 
-    const handleRegister = async (data: RegisterPayload) => {
-        try {
-            const response = await register(data);
+  const handleRegister = async (
+    data: RegisterPayload
+  ) => {
+    if (loading) return;
 
-            if (response) {
-                showAlert("", response.message);
+    try {
+      const response = await register(data);
 
-                const role = response.user.role;
-                const route = getRouteByRole(role, "app");
+      if (!response) return;
 
-                router.replace(route);
-            }
-        } catch (err: any) {
-            showAlert("", err.message);
-        }
-    };
+      // ✅ UX feedback
+      showAlert(
+        "",
+        "Account created ✅ Signing you in..."
+      );
 
+      // ✅ login handles session
+      const loginResponse = await login({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (!loginResponse) return;
+
+      // ✅ add routing HERE
+   
+      const role = response.user.role; 
+      const route = getRouteByRole(role)
+    
+
+      router.replace(route);
+
+    } catch (err: any) {
+      showAlert(
+        "",
+        err?.message || "Registration failed"
+      );
+    }
+  };
 
   return (
     <ScreenContainer>
@@ -40,7 +64,6 @@ export default function Registration() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
-
         <ScrollView
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
@@ -51,7 +74,6 @@ export default function Registration() {
             paddingBottom: 24,
           }}
         >
-
           <RegisterForm
             loading={loading}
             onSubmit={handleRegister}

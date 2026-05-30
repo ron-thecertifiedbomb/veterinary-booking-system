@@ -1,15 +1,26 @@
-import { routes } from "@/utils/routes/constants/routes";
+import { Platform } from "react-native";
 
+import { routes } from "@/utils/routes/constants/routes";
 
 type Role = "USER" | "ADMIN" | "STAFF";
 
-export function getRouteByRole(role: Role, platform: "web" | "app") {
+type PlatformType = "web" | "app";
+
+// ✅ auto detect current platform
+function getPlatform(): PlatformType {
+  return Platform.OS === "web" ? "web" : "app";
+}
+
+// ✅ centralized role routing
+export function getRouteByRole(role: Role) {
+  const platform = getPlatform();
+
   switch (role) {
     case "ADMIN":
       return routes.admin[platform];
 
     case "STAFF":
-      return routes.admin[platform]; // 👈 for now reuse admin flow
+      return routes.admin[platform];
 
     case "USER":
     default:

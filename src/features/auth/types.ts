@@ -36,6 +36,7 @@ export type RegisterPayload = {
 
 export type RegisterResponse = {
   message: string;
-  access_token: string;
   user: AuthUser;
 };
+
+
