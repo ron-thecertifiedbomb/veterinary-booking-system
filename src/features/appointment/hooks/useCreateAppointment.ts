@@ -2,7 +2,7 @@ import { api } from "@/utils/api";
 import { logger } from "@/utils/logger";
 import { useState } from "react";
 import { getStorageItem, setStorageItem } from "@/features/auth/storage";
-import Toast from "react-native-toast-message";
+
 
 import {
 
@@ -10,6 +10,7 @@ import {
 } from "@/features/appointment/types";
 
 type CreateAppointmentInput = {
+  petId: string
   petName: string;
   serviceType: string;
   date: string;
@@ -53,6 +54,7 @@ export const useCreateAppointment = () => {
 
       const payload = {
         userId,
+        petId: input.petId,
         petName: input.petName,
         serviceType: input.serviceType,
         date: input.date,
@@ -60,7 +62,6 @@ export const useCreateAppointment = () => {
         notes: input.notes || "",
       };
 
-      logger.info("Creating appointment payload ✅", payload);
 
       // ✅ API call
       const res = await api<CreateAppointmentSlot>("/api/vet/appointments", {

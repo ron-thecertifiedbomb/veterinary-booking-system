@@ -15,31 +15,12 @@ export default function Pets() {
 
     const handleAddPet = () => {
         const isWeb = Platform.OS === "web";
-
         router.push(
             isWeb
                 ? "/(web)/add-pet"
-                : "/add-pet"
+                : "(app)/add-pet"
         );
     };
-
-    // useEffect(() => {
-    //     fetchPets();
-    // }, []);
-
-    // useEffect(() => {
-    //     if (refresh) fetchPets();
-    // }, [refresh]);
-
-    // if (loading) return <Loader fullScreen />;
-
-    // if (error) {
-    //     return (
-    //         <View className="flex-1 justify-center items-center px-6">
-    //             <Text className="text-red-500 text-sm">{error}</Text>
-    //         </View>
-    //     );
-    // }
 
     const isEmpty = pets.length === 0;
 
@@ -64,13 +45,10 @@ export default function Pets() {
                 {/* ✅ EMPTY STATE */}
                 {isEmpty && (
                     <View className="bg-surface border border-border rounded-2xl p-6 items-center">
-
                         <Text className="text-4xl mb-3">🐾</Text>
-
                         <Text className="text-lg font-semibold text-text-primary">
                             No pets yet
                         </Text>
-
                         <Text className="text-sm text-text-secondary text-center mt-1">
                             Add your first pet to start booking.
                         </Text>
@@ -85,8 +63,6 @@ export default function Pets() {
                         </Pressable>
                     </View>
                 )}
-
-                {/* ✅ PET LIST */}
                 {!isEmpty && (
                     <FlatList
                         data={pets}

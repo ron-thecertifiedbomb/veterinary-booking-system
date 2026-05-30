@@ -3,6 +3,7 @@ import DateSelector from "@/components/booking/DateSelector";
 import Loader from "@/components/common/Loader/Loader";
 import { useCreateAppointment } from "@/features/appointment/hooks/useCreateAppointment";
 import { useGetSlots } from "@/features/appointment/hooks/useGetSlots";
+import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { getTodayDate } from "@/utils/dateandtime/date";
 import { useRouter } from "expo-router";
@@ -10,12 +11,14 @@ import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 export default function Home() {
+
     const router = useRouter();
     const [date, setDate] = useState(getTodayDate());
     const [showModal, setShowModal] = useState(false);
     const [modalChecking, setModalChecking] = useState(false);
     const [initialLoading, setInitialLoading] = useState(true);
-
+    const { user } = useAuth();
+    const pets = user?.pets || [];
     const {
         slots,
         today: now,
@@ -32,21 +35,18 @@ export default function Home() {
         resetSuccess,
     } = useCreateAppointment();
 
-    // ✅ Prevent initial flicker
     useEffect(() => {
         if (!loading) {
             setInitialLoading(false);
         }
     }, [loading]);
 
-    // ✅ Reset success state
     useEffect(() => {
         if (!success) return;
 
         const timer = setTimeout(() => {
             resetSuccess();
         }, 2500);
-
         return () => clearTimeout(timer);
     }, [success, resetSuccess]);
 
@@ -71,7 +71,6 @@ export default function Home() {
         >
             <View className="w-full max-w-3xl pt-6 lg:p-14">
 
-                {/* ✅ HEADER */}
                 <View className="mb-6">
                     <Text className="text-lg lg:text-3xl font-semibold text-text-primary">
                         Book an Appointment
@@ -81,22 +80,19 @@ export default function Home() {
                     </Text>
                 </View>
 
-                {/* ✅ SERVER DATE + TIME */}
                 <View className="bg-surface border border-border rounded-2xl px-5 py-4 mb-5">
                     <Text className="text-[11px] uppercase tracking-wide text-text-muted mb-1">
                         Today is
                     </Text>
-
                     <Text className="text-base font-semibold text-text-primary">
-                        {now ?? "Loading..."}
+                        {now}
                     </Text>
 
                     <Text className="text-xs text-text-secondary mt-1">
-                        {time ?? ""}
+                        {time}
                     </Text>
                 </View>
 
-                {/* ✅ DATE SELECTOR */}
                 <DateSelector
                     date={date}
                     onDateChange={(newDate) => {
@@ -109,15 +105,14 @@ export default function Home() {
 
             {/* ✅ BOOKING MODAL */}
             <BookingModal
+                pets={pets}
                 visible={showModal}
                 slots={slots}
                 checking={modalChecking || loading}
                 creating={creating}
                 error={fetchError || createError}
-
                 date={date}
                 timeDisplay={time ?? ""}
-
                 onClose={() => {
                     setShowModal(false);
                     setModalChecking(false);
@@ -128,14 +123,14 @@ export default function Home() {
 
                     try {
                         const appointment = await createAppointment({
-                            petName: formData.petName,
+                            petId: formData.petId,
+                            petName: formData.petName, 
                             serviceType: formData.serviceType,
                             time: formData.time,
                             date,
                             notes: formData.notes || "",
                         });
 
-                        
                         showAlert(
                             "Success",
                             appointment.message
@@ -144,15 +139,13 @@ export default function Home() {
                         setShowModal(false);
                         setModalChecking(false);
 
-                        // ✅ Redirect after short delay
                         setTimeout(() => {
                             router.push({
-                                pathname: "(web)/success"
+                                pathname: "(web)/success",
                             });
                         }, 300);
 
                     } catch (err: any) {
-                        // ✅ Show server error
                         showAlert(
                             "Booking Failed",
                             err?.message || "Something went wrong"
