@@ -15,26 +15,18 @@ export default function Registration() {
   const router = useRouter();
 
   // ✅ useAuth handles session + routing
-  const { register, login, loading } = useAuth();
+  const { register, login, loading, user} = useAuth();
 
 
-  const handleRegister = async (
-    data: RegisterPayload
-  ) => {
+  const handleRegister = async (data: RegisterPayload) => {
     if (loading) return;
 
     try {
       const response = await register(data);
-
       if (!response) return;
 
-      // ✅ UX feedback
-      showAlert(
-        "",
-        "Account created ✅ Signing you in..."
-      );
+      showAlert("", "Account created ✅ Signing you in...");
 
-      // ✅ login handles session
       const loginResponse = await login({
         email: data.email,
         password: data.password,
@@ -42,19 +34,14 @@ export default function Registration() {
 
       if (!loginResponse) return;
 
-      // ✅ add routing HERE
-   
-      const role = response.user.role; 
-      const route = getRouteByRole(role)
-    
+      // ✅ use loginResponse directly, not user from context
+      const role = loginResponse.data.user.role;
+      const route = getRouteByRole(role);
 
       router.replace(route);
 
     } catch (err: any) {
-      showAlert(
-        "",
-        err?.message || "Registration failed"
-      );
+      showAlert("", err?.message || "Registration failed");
     }
   };
 

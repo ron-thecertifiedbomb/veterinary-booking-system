@@ -24,8 +24,8 @@ export async function register(
     });
 
     const normalizedUser = {
-      ...response.user,
-      userId: response.user.userId || response.user.id,
+      ...response.data,
+      userId: response.data.userId,
     };
 
     logger.info("Registration successful via AuthProvider", normalizedUser);

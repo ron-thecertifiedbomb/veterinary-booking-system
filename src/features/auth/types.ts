@@ -22,10 +22,8 @@ export type LoginPayload = {
 
 export type LoginResponse = {
   message: string;
-
   data: {
     access_token: string;
-
     user: AuthUser;
   };
 };
@@ -40,7 +38,7 @@ export type RegisterPayload = {
 
 export type RegisterResponse = {
   message: string;
-  user: AuthUser;
+  data: AuthUser;
 };
 
 
