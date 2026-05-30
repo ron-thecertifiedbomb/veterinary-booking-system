@@ -4,8 +4,6 @@ import { api } from "@/utils/api";
 import { logger } from "@/utils/logger";
 
 type LogoutDependencies = {
-  loading: boolean;
-
   token: string | null;
 
   setLoading: (value: boolean) => void;
@@ -16,12 +14,10 @@ type LogoutDependencies = {
 
   clearSessionCache: () => void;
 
-  // ✅ injected storage removers
   removeStorageItem: (key: string) => Promise<void>;
 };
 
 export async function logout({
-  loading,
   token,
   setLoading,
   setUser,
@@ -29,8 +25,6 @@ export async function logout({
   clearSessionCache,
   removeStorageItem,
 }: LogoutDependencies) {
-  if (loading) return null;
-
   try {
     setLoading(true);
 
@@ -51,7 +45,6 @@ export async function logout({
 
     return null;
   } finally {
-    // ✅ injected dependency
     await Promise.all([
       removeStorageItem("user"),
 
@@ -61,6 +54,7 @@ export async function logout({
     clearSessionCache();
 
     setUser(null);
+
     setToken(null);
 
     setLoading(false);

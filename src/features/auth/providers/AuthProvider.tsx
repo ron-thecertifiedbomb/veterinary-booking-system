@@ -1,4 +1,5 @@
 // src/features/auth/providers/AuthProvider.tsx
+
 import {
     createContext,
     ReactNode,
@@ -8,16 +9,35 @@ import {
     useState,
 } from "react";
 
-import { AuthContextType } from "@/features/auth/providers/types";
-import { getStorageItem, removeStorageItem, setStorageItem } from "@/features/auth/storage";
-import { AuthUser, LoginPayload, LoginResponse, RegisterPayload, RegisterResponse } from "@/features/auth/types";
-import { logout as logoutService } from "@/features/auth/services/logout";
+import { Redirect } from "expo-router";
+
 import { api } from "@/utils/api";
 import { logger } from "@/utils/logger";
+
+import { AuthContextType } from "@/features/auth/providers/types";
+
+import {
+    getStorageItem,
+    removeStorageItem,
+    setStorageItem,
+} from "@/features/auth/storage";
+
+import {
+    AuthUser,
+    LoginPayload,
+    RegisterPayload,
+} from "@/features/auth/types";
+
+import { logout as logoutService } from "@/features/auth/services/logout";
+
 import { login as loginService } from "@/features/auth/services/login";
+
 import { register as registerService } from "@/features/auth/services/register";
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext =
+    createContext<AuthContextType | null>(
+        null
+    );
 
 let sessionCache: {
     user: AuthUser | null;
@@ -27,68 +47,210 @@ let sessionCache: {
     token: null,
 };
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({
+    children,
+}: {
+    children: ReactNode;
+}) {
+    const [user, setUser] =
+        useState<AuthUser | null>(null);
 
-    const [user, setUser] = useState<AuthUser | null>(null);
-    const [token, setToken] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [token, setToken] =
+        useState<string | null>(null);
+
+    const [loading, setLoading] =
+        useState(true);
+
     const hydrated = useRef(false);
 
     // -----------------------------------
-    // LOAD SESSION ONCE
+    // LOAD SESSION
     // -----------------------------------
 
     async function loadSession() {
         try {
-            const [storedUser, storedToken] = await Promise.all([
+            const [
+                storedUser,
+                storedToken,
+            ] = await Promise.all([
                 getStorageItem("user"),
-                getStorageItem("access_token"),
-            ]);
-            const parsedUser: AuthUser | null = storedUser
-                ? JSON.parse(storedUser)
-                : null;
 
-            sessionCache = { user: parsedUser, token: storedToken };
+                getStorageItem(
+                    "access_token"
+                ),
+            ]);
+
+            const parsedUser: AuthUser | null =
+                storedUser
+                    ? JSON.parse(storedUser)
+                    : null;
+
+            sessionCache = {
+                user: parsedUser,
+                token: storedToken,
+            };
+
             setUser(parsedUser);
             setToken(storedToken);
+
+            logger.info(
+                "Session loaded successfully"
+            );
+
         } catch (err) {
-            logger.error("Auth load error:", err);
-            sessionCache = { user: null, token: null };
+            logger.error(
+                "Auth load error",
+                err
+            );
+
+            sessionCache = {
+                user: null,
+                token: null,
+            };
+
             setUser(null);
             setToken(null);
-        } finally {
-            setLoading(false);
-            hydrated.current = true;
         }
     }
 
-    useEffect(() => {
-        if (!hydrated.current) {
-            loadSession();
+    // -----------------------------------
+    // CLEAR SESSION
+    // -----------------------------------
+
+    async function clearSession() {
+        await Promise.all([
+            removeStorageItem("user"),
+
+            removeStorageItem(
+                "access_token"
+            ),
+        ]);
+
+        sessionCache = {
+            user: null,
+            token: null,
+        };
+
+        setUser(null);
+        setToken(null);
+
+        logger.info(
+            "Session cleared"
+        );
+    }
+
+    // -----------------------------------
+    // VALIDATE SESSION
+    // -----------------------------------
+
+    async function validateSession() {
+        try {
+            const storedToken =
+                await getStorageItem(
+                    "access_token"
+                );
+
+            if (!storedToken) {
+                await clearSession();
+                return;
+            }
+
+            const response = await api<{
+                data: {
+                    user: AuthUser;
+                };
+            }>("/api/vet/auth/me", {
+                method: "GET",
+                token: storedToken,
+            });
+
+            if (!response?.data?.user) {
+                throw new Error(
+                    "Invalid session"
+                );
+            }
+
+            logger.info(
+                "Session validated successfully"
+            );
+
+        } catch (err) {
+            logger.error(
+                "Session validation failed",
+                err
+            );
+
+            await clearSession();
+
+        } finally {
+            setLoading(false);
         }
+    }
+
+    // -----------------------------------
+    // HYDRATE SESSION
+    // -----------------------------------
+
+    useEffect(() => {
+        async function hydrateSession() {
+            if (hydrated.current) return;
+
+            hydrated.current = true;
+
+            setLoading(true);
+
+            await loadSession();
+
+            await validateSession();
+        }
+
+        hydrateSession();
     }, []);
 
     // -----------------------------------
-    // API
+    // SESSION HELPERS
     // -----------------------------------
 
     async function refreshSession() {
         setLoading(true);
+
         await loadSession();
+
+        await validateSession();
     }
 
-    async function setSession(userData: AuthUser, accessToken: string) {
-
+    async function setSession(
+        userData: AuthUser,
+        accessToken: string
+    ) {
         await Promise.all([
-            setStorageItem("user", JSON.stringify(userData)),
-            setStorageItem("access_token", accessToken),
+            setStorageItem(
+                "user",
+                JSON.stringify(userData)
+            ),
+
+            setStorageItem(
+                "access_token",
+                accessToken
+            ),
         ]);
-        sessionCache = { user: userData, token: accessToken };
+
+        sessionCache = {
+            user: userData,
+            token: accessToken,
+        };
+
         setUser(userData);
         setToken(accessToken);
+
+        logger.info(
+            "Session updated"
+        );
     }
 
-    async function updateUser(updatedUser: Partial<AuthUser>) {
+    async function updateUser(
+        updatedUser: Partial<AuthUser>
+    ) {
         if (!user || !token) return;
 
         const newUser = {
@@ -96,17 +258,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             ...updatedUser,
         };
 
-        await Promise.all([
-            setStorageItem("user", JSON.stringify(newUser)),
-        ]);
+        await setStorageItem(
+            "user",
+            JSON.stringify(newUser)
+        );
 
         sessionCache.user = newUser;
+
         setUser(newUser);
 
-        logger.info("User updated in session", newUser);
+        logger.info(
+            "User updated in session",
+            newUser
+        );
     }
 
-    
+    // -----------------------------------
+    // AUTH
+    // -----------------------------------
 
     async function login(
         payload: LoginPayload
@@ -125,15 +294,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
     }
 
-
-    
     async function logout() {
         return logoutService({
-            loading,
             token,
 
             setLoading,
+
             setUser,
+
             setToken,
 
             removeStorageItem,
@@ -147,23 +315,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
     }
 
+    // -----------------------------------
+    // CONTEXT VALUE
+    // -----------------------------------
 
     const value: AuthContextType = {
         user,
+
         token,
+
         loading,
-        isAuthenticated: !!user && !!token,
-        isAdmin: user?.role === "ADMIN", // ✓ convenience shortcut
+
+        isAuthenticated:
+            !!user && !!token,
+
+        isAdmin:
+            user?.role === "ADMIN",
+
         refreshSession,
+
         updateUser,
+
         setSession,
+
         logout,
+
         login,
+
         register,
     };
 
+
     return (
-        <AuthContext.Provider value={value}>
+        <AuthContext.Provider
+            value={value}
+        >
             {children}
         </AuthContext.Provider>
     );
@@ -174,10 +360,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 // -----------------------------------
 
 export function useAuth() {
-    const context = useContext(AuthContext);
+    const context =
+        useContext(AuthContext);
 
     if (!context) {
-        throw new Error("useAuth must be used inside AuthProvider");
+        throw new Error(
+            "useAuth must be used inside AuthProvider"
+        );
     }
 
     return context;

@@ -1,10 +1,24 @@
 // src/app/(web)/_layout.tsx
+
 import Loader from "@/components/common/Loader/Loader";
 import Sidebar from "@/components/common/SideBar/SideBar";
+
 import { useAuth } from "@/features/auth/providers/AuthProvider";
+
 import { userNav } from "@/utils/config/sidebar/sidebar";
-import { Redirect, Slot, Stack } from "expo-router";
-import { useRef, useState } from "react";
+
+import { getRouteByRole } from "@/utils/routes/routeResolver";
+
+import {
+  Redirect,
+  Slot,
+} from "expo-router";
+
+import {
+  useRef,
+  useState,
+} from "react";
+
 import {
   Animated,
   Platform,
@@ -15,31 +29,90 @@ import {
 } from "react-native";
 
 export default function WebUserLayout() {
-  const { user, loading } = useAuth();
+  const {
+    user,
+    loading,
+    isAuthenticated,
+  } = useAuth();
 
-  const { width } = useWindowDimensions();
+  const { width } =
+    useWindowDimensions();
+
   const isMobile = width < 768;
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const translateX = useRef(new Animated.Value(-250)).current;
+  const [sidebarOpen, setSidebarOpen] =
+    useState(false);
+
+  const translateX = useRef(
+    new Animated.Value(-250)
+  ).current;
 
   const toggleSidebar = () => {
-    const toValue = sidebarOpen ? -250 : 0;
+    const toValue = sidebarOpen
+      ? -250
+      : 0;
+
     Animated.timing(translateX, {
       toValue,
       duration: 250,
       useNativeDriver: false,
     }).start();
+
     setSidebarOpen(!sidebarOpen);
   };
 
-  if (loading) return <Loader fullScreen={false} size="small" />;
-  if (Platform.OS !== "web") return <Redirect href="/(app)/(tabs)/home" />;
-  if (!user) return <Redirect href="/(auth)/login" />;
-  if (user.role === "ADMIN") return <Redirect href="/(admin-web)/dashboard" />;
+  // ✅ loading state
+  if (loading) {
+    return (
+      <Loader
+        fullScreen={false}
+        size="small"
+      />
+    );
+  }
+
+  // ✅ auth guard
+  if (!isAuthenticated || !user) {
+    return (
+      <Redirect
+        href={getRouteByRole(undefined, {
+          isAuthenticated: false,
+        })}
+      />
+    );
+  }
+
+  // ✅ wrong platform
+  if (Platform.OS !== "web") {
+    return (
+      <Redirect
+        href="/(app)/(tabs)/home"
+      />
+    );
+  }
+
+  // ✅ prevent admin from entering user layout
+  if (user.role === "ADMIN") {
+    return (
+      <Redirect
+        href={getRouteByRole(
+          user.role,
+          {
+            isAuthenticated: true,
+          }
+        )}
+      />
+    );
+  }
 
   return (
-    <View style={{ flex: 1, flexDirection: "row" }}> 
+    <View
+      style={{
+        flex: 1,
+        flexDirection: "row",
+      }}
+    >
+      {/* ✅ SIDEBAR */}
       <Sidebar
         isMobile={isMobile}
         translateX={translateX}
@@ -48,6 +121,7 @@ export default function WebUserLayout() {
         navItems={userNav}
       />
 
+      {/* ✅ CONTENT */}
       <View style={{ flex: 1 }}>
         {isMobile && (
           <View
@@ -60,11 +134,18 @@ export default function WebUserLayout() {
               backgroundColor: "#fff",
             }}
           >
-            <Pressable onPress={toggleSidebar}>
-              <Text style={{ fontSize: 22 }}>☰</Text>
+            <Pressable
+              onPress={toggleSidebar}
+            >
+              <Text
+                style={{ fontSize: 22 }}
+              >
+                ☰
+              </Text>
             </Pressable>
           </View>
         )}
+
         <Slot />
       </View>
     </View>

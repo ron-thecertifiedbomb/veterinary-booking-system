@@ -6,14 +6,26 @@ type Role = "USER" | "ADMIN" | "STAFF";
 
 type PlatformType = "web" | "app";
 
-// ✅ auto detect current platform
+type RouteOptions = {
+  isAuthenticated?: boolean;
+};
+
+// ✅ auto detect platform
 function getPlatform(): PlatformType {
   return Platform.OS === "web" ? "web" : "app";
 }
 
-// ✅ centralized role routing
-export function getRouteByRole(role: Role) {
+// ✅ centralized auth + role routing
+export function getRouteByRole(
+  role?: Role,
+  { isAuthenticated = false }: RouteOptions = {},
+) {
   const platform = getPlatform();
+
+  // ✅ guest/public route
+  if (!isAuthenticated || !role) {
+    return routes.public[platform];
+  }
 
   switch (role) {
     case "ADMIN":

@@ -35,7 +35,7 @@ export default function Login() {
                 showAlert("", response.message);
 
                 // ✅ get role + redirect
-                const role = response.user.role; // from backend
+                const role = response.data.user.role; // from backend
                 const route = getRouteByRole(role); // or "web"
 
                 router.replace(route); // ✅ important (no back)

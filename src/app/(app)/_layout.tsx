@@ -1,21 +1,24 @@
-// src/app/(app)/(tabs)/_layout.tsx
+// src/app/(app)/_layout.tsx
 
 import Loader from "@/components/common/Loader/Loader";
 import { useAuth } from "@/features/auth/providers/AuthProvider"; // ✓ consistent with other layouts
-import { Redirect, Slot } from "expo-router";
+import { getRouteByRole } from "@/utils/routes/routeResolver";
+import { Redirect, router, Slot } from "expo-router";
 import { Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AppTabsLayout() {
-    const { loading, user } = useAuth();
+    const { loading, user,  isAuthenticated } = useAuth();
 
-    if (loading) return <Loader fullScreen={false} size="small" />;
+    const route = getRouteByRole(
+        user?.role,
+        {
+            isAuthenticated,
+        }
+    );
+    router.replace(route);
 
-    if (!user) return <Redirect href="/(auth)/login" />;
-
-    if (Platform.OS === "web") return <Redirect href="/(web)/web-home" />; // ✓ fixed path
-
-    if (user.role === "ADMIN") return <Redirect href="/(admin-app)/(tabs)/dashboard" />;
+    if (loading) return <Loader />;
 
     return (
         <SafeAreaView className="flex-1 bg-white">

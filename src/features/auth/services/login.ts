@@ -23,11 +23,11 @@ export async function login(
     });
 
     const normalizedUser = {
-      ...response.user,
-      userId: response.user.userId || response.user.id,
+      ...response.data.user,
+      userId: response.data.user.id,
     };
 
-    await setSession(normalizedUser, response.access_token);
+    await setSession(normalizedUser, response.data.access_token);
 
     logger.info("Login successful via AuthProvider", normalizedUser);
 

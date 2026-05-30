@@ -22,8 +22,12 @@ export type LoginPayload = {
 
 export type LoginResponse = {
   message: string;
-  access_token: string;
-  user: AuthUser;
+
+  data: {
+    access_token: string;
+
+    user: AuthUser;
+  };
 };
 
 
