@@ -88,24 +88,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     async function logout() {
+        if (loading) return;
+
         try {
+            setLoading(true);
             logger.info("Logging out user");
+
+            let response = null;
+
             if (token) {
-                await api("/api/vet/auth/logout", {
+                response = await api("/api/vet/auth/logout", {
                     method: "POST",
                     token,
                 });
             }
+
+            return response; 
         } catch (error: any) {
             logger.error("Logout API failed", error);
+            return null; 
         } finally {
             await Promise.all([
                 removeStorageItem("user"),
                 removeStorageItem("access_token"),
             ]);
+
             sessionCache = { user: null, token: null };
+
             setUser(null);
             setToken(null);
+            setLoading(false);
+
             logger.info("User session cleared");
         }
     }

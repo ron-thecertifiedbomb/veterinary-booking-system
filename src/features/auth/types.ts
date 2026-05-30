@@ -9,6 +9,7 @@ export type AuthUser = {
   userId?: string; // ✅ normalized version
   name: string;
   email: string;
+  phone: string;
   role: UserRole;
   pets: Pet[];
 };

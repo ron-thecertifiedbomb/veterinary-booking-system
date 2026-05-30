@@ -1,9 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect } from "react";
-import { Pressable, Text, View, FlatList, Platform, ScrollView } from "react-native";
+import { FlatList, Platform, Pressable, ScrollView, Text, View } from "react-native";
 
-import Loader from "@/components/common/Loader/Loader";
-import { useGetPets } from "@/features/pet/useGetPet";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 
 export default function Pets() {
@@ -76,7 +73,7 @@ export default function Pets() {
                                 {/* ✅ Name */}
                                 <Text className="text-xs text-text-muted">Name</Text>
                                 <Text className="text-base font-semibold text-text-primary mb-2">
-                                    {item.name}
+                                    {item.petName}
                                 </Text>
 
                                 {/* ✅ Breed */}

@@ -18,7 +18,7 @@ export type AuthContextType = {
   refreshSession: () => Promise<void>;
   setSession: (user: AuthUser, token: string) => Promise<void>;
   updateUser: (updatedUser: Partial<AuthUser>) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => Promise<any | null>;
   login: (payload: LoginPayload) => Promise<LoginResponse>;
   register: (payload: RegisterPayload) => Promise<RegisterResponse>;
 };
