@@ -32,7 +32,7 @@ export function getRouteByRole(
       return routes.admin[platform];
 
     case "STAFF":
-      return routes.admin[platform];
+      return routes.staff[platform];
 
     case "USER":
     default:

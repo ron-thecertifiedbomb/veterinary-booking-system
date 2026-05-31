@@ -2,5 +2,5 @@
 import { Redirect } from "expo-router";
 
 export default function Index() {
-    return <Redirect href="(admin-app)/(tabs)/dashboard" />;
+    return <Redirect href="(staff--app)/(tabs)/dashboard" />;
 }

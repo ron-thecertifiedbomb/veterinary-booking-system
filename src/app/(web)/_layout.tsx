@@ -103,7 +103,18 @@ export default function WebUserLayout() {
       />
     );
   }
-
+  if (user.role === "STAFF") {
+    return (
+      <Redirect
+        href={getRouteByRole(
+          user.role,
+          {
+            isAuthenticated: true,
+          }
+        )}
+      />
+    );
+  }
   return (
     <View
       style={{

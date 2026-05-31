@@ -242,6 +242,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         isAuthenticated: !!user && !!token,
         isAdmin: user?.role === "ADMIN",
+        isStaff: user?.role === "STAFF",
         refreshSession,
         updateUser,
         setSession,

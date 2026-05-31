@@ -6,7 +6,7 @@ import { Platform } from "react-native";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 
 export default function AdminAppLayout() {
-    const { loading, user } = useAuth();
+    const { loading, user, isAuthenticated } = useAuth();
 
     if (loading) return <Loader fullScreen={false} size="small" />;
 
@@ -14,10 +14,10 @@ export default function AdminAppLayout() {
     if (Platform.OS === "web") return <Redirect href="/(admin-web)/dashboard" />;
 
     // ✓ Not logged in
-    if (!user) return <Redirect href="/(auth)/login" />;
+    if (!user && !isAuthenticated) return <Redirect href="/(auth)/login" />;
 
     // ✓ Logged in but not admin
-    if (user.role !== "ADMIN") return <Redirect href="/(app)/(tabs)/home" />;
+    if (user?.role !== "STAFF") return <Redirect href="/(app)/(tabs)/home" />;
 
     return <Slot />;
 }

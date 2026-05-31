@@ -12,7 +12,7 @@ export type AuthContextType = {
   loading: boolean;
   isAuthenticated: boolean;
   isAdmin: boolean;
-
+  isStaff: boolean;
   user: AuthUser | null;
 
   refreshSession: () => Promise<void>;
