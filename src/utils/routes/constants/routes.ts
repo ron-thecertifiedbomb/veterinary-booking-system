@@ -4,8 +4,8 @@ export const routes = {
     app: "/(admin-web)/dashboard",
   },
   staff: {
-    web: "/(app)/(tabs)/home",
-    app: "/(staff-app)/(tabs)/home",
+    web: "/(staff-app)/(tabs)/dashboard",
+    app: "/(staff-app)/(tabs)/dashboard",
   },
   user: {
     web: "/(web)/web-home",
