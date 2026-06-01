@@ -23,7 +23,8 @@ export default function UpdateProfileFormScreen() {
     }));
 
     return (
-        <Animated.View style={[{ flex: 1 }, animatedStyle]}>
+        <Animated.View style={[{ flex: 1, backgroundColor: "white", justifyContent: "center", }, animatedStyle]}>
+            
             <UpdateProfileForm />
         </Animated.View>
     );

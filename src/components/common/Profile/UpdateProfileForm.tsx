@@ -1,240 +1,182 @@
-import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-    ActivityIndicator,
-    Platform,
-    Pressable,
-    ScrollView,
-    Text,
-    TextInput,
-    View
-} from "react-native";
+import { ActivityIndicator, Platform, Pressable, Text, View } from "react-native";
+import { useRouter } from "expo-router";
 
-
+import AppTextInput from "@/components/common/AppTextInput/AppTextInput";
 import Loader from "@/components/common/Loader/Loader";
+
 import { useUpdateProfile } from "@/features/users/hook/UpdateProfile";
 import { useGetUserProfile } from "@/features/users/hook/useGetUserProfile";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 
+import { z } from "zod";
 
-export default function UpdateProfileForm() {
+// ✅ ZOD SCHEMA
+const editProfileSchema = z.object({
+    name: z.string().min(1, "Name is required"),
+    email: z.string().min(1, "Email is required").email("Invalid email"),
+    phone: z.string().optional(),
+});
+
+type FormData = z.infer<typeof editProfileSchema>;
+type Errors = Partial<Record<keyof FormData, string | null>>;
+
+export default function EditProfileForm() {
     const router = useRouter();
 
     const { updateProfile, loading } = useUpdateProfile();
-    const { profile, fetchUserProfile, loading: fetching } = useGetUserProfile();
+    const { profile, fetchUserProfile, loading: fetching } =
+        useGetUserProfile();
 
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState("");
-
-    const [nameError, setNameError] = useState<string | null>(null);
-    const [emailError, setEmailError] = useState<string | null>(null);
-
-    const [original, setOriginal] = useState({
+    const [form, setForm] = useState<FormData>({
         name: "",
         email: "",
         phone: "",
     });
 
-    const noOutline =
-        Platform.OS === "web"
-            ? ({ outlineStyle: "none" } as any)
-            : undefined;
+    const [original, setOriginal] = useState<FormData>({
+        name: "",
+        email: "",
+        phone: "",
+    });
 
-    // ✅ Fetch profile
+    const [errors, setErrors] = useState<Errors>({});
+
     useEffect(() => {
         fetchUserProfile();
     }, []);
 
-    // ✅ Populate fields
     useEffect(() => {
-        if (profile) {
-            setName(profile.name || "");
-            setEmail(profile.email || "");
-            setPhone(profile.phone || "");
-        }
+        if (!profile) return;
+
+        const data = {
+            name: profile.name || "",
+            email: profile.email || "",
+            phone: profile.phone || "",
+        };
+
+        setForm(data);
+        setOriginal(data);
     }, [profile]);
 
-    useEffect(() => {
-        if (profile) {
-            const userData = {
-                name: profile.name || "",
-                email: profile.email || "",
-                phone: profile.phone || "",
-            };
+    const updateField = (key: keyof FormData, value: string) => {
+        setForm((prev) => ({ ...prev, [key]: value }));
+        setErrors((prev) => ({ ...prev, [key]: null }));
+    };
 
-            setName(userData.name);
-            setEmail(userData.email);
-            setPhone(userData.phone);
-
-            setOriginal(userData); // ✅ store original values
-        }
-    }, [profile]);
     const hasChanges =
-        name !== original.name ||
-        email !== original.email ||
-        phone !== original.phone;
+        form.name !== original.name ||
+        form.email !== original.email ||
+        form.phone !== original.phone;
 
     const isDisabled =
-        !name || !email || !hasChanges || loading;
+        !form.name || !form.email || !hasChanges || loading;
 
-    // ✅ Submit handler
-    const handleUpdateProfile = async () => {
-        setNameError(null);
-        setEmailError(null);
+    // ✅ ZOD VALIDATION
+    const handleSubmit = async () => {
+        const result = editProfileSchema.safeParse(form);
 
-        let hasError = false;
+        if (!result.success) {
+            const fieldErrors = result.error.flatten().fieldErrors;
 
-        if (!name) {
-            setNameError("Name is required");
-            hasError = true;
+            setErrors({
+                name: fieldErrors.name?.[0] || null,
+                email: fieldErrors.email?.[0] || null,
+                phone: fieldErrors.phone?.[0] || null,
+            });
+
+            return;
         }
 
-        if (!email) {
-            setEmailError("Email is required");
-            hasError = true;
-        }
+        const res = await updateProfile(result.data);
 
-        if (hasError) return;
-
-        const response = await updateProfile({
-            name,
-            email,
-            phone,
-        });
-
-        if (!response) {
+        if (!res) {
             showAlert("Error", "Failed to update profile");
             return;
         }
 
-        // ✅ SUCCESS ALERT
-        const handleSuccess = () => {
-            router.replace(
-                Platform.OS === "web" ? "/(web)/web-home" : "(app)/(tabs)/home"
-            );
-        };
+        showAlert("Success", res.message, () => {
 
-        showAlert("Success", response.message, handleSuccess);
+            router.replace(
+                Platform.OS === "web"
+                    ? "/(web)/web-profile"
+                    : "(app)/(tabs)/profile"
+            );
+
+        });
     };
 
-    // ✅ Loader while fetching initial profile
-    if (fetching) {
-        return (
-            <Loader fullScreen />
-        );
-    }
+    if (fetching) return <Loader fullScreen />;
 
     return (
-        <ScrollView
-            className="flex-1 bg-background"
-            contentContainerClassName="items-center px-6 pb-10"
-            keyboardShouldPersistTaps="handled"
-        >
-            <View className="w-full max-w-xl pt-6 lg:p-14">
+        <View className="flex-1 bg-gray-50 px-6 pt-6">
 
+            {/* HEADER */}
+            <View className="mb-10 items-center">
+                <Text className="text-3xl font-bold text-gray-900">
+                    Edit Profile
+                </Text>
+                <Text className="text-sm text-gray-500 mt-2 text-center">
+                    Update your personal information
+                </Text>
+            </View>
 
-                {/* ✅ HEADER */}
-                <View className="mb-8 items-center">
-                    <Text className="text-3xl font-semibold text-text-primary">
-                        Edit Profile
-                    </Text>
-                    <Text className="text-sm text-text-secondary mt-1 text-center">
-                        Update your account information.
-                    </Text>
+            {/* CARD */}
+            <View className="bg-white rounded-3xl p-5 shadow-sm">
+
+                <View className="mb-5">
+                    <AppTextInput
+                        label="Full Name"
+                        value={form.name}
+                        onChangeText={(text) => updateField("name", text)}
+                        placeholder="John Doe"
+                        error={errors.name}
+                    />
                 </View>
 
-                <View className="gap-4">
+                <View className="mb-5">
+                    <AppTextInput
+                        label="Email Address"
+                        value={form.email}
+                        onChangeText={(text) => updateField("email", text)}
+                        placeholder="john@email.com"
+                        keyboardType="email-address"
+                        error={errors.email}
+                    />
+                </View>
 
-                    {/* ✅ NAME */}
-                    <View>
-                        <Text className="text-sm font-medium mb-2">
-                            Full Name
-                        </Text>
-                        <TextInput
-                            value={name}
-                            onChangeText={(text) => {
-                                setName(text);
-                                setNameError(null);
-                            }}
-                            placeholder="e.g. John Doe"
-                            className={`bg-surface border ${nameError ? "border-red-500" : "border-gray-300"
-                                } rounded-2xl px-4 py-4 text-text-primary`}
-                            style={noOutline}
-                        />
-                        {nameError && (
-                            <Text className="text-red-500 text-xs mt-2">
-                                {nameError}
-                            </Text>
-                        )}
-                    </View>
+                <View className="mb-6">
+                    <AppTextInput
+                        label="Phone (Optional)"
+                        value={form.phone ?? ""}
+                        onChangeText={(text) =>
+                            updateField("phone", text.replace(/\D/g, ""))
+                        }
+                        placeholder="09123456789"
+                        error={errors.phone}
+                    />
+                </View>
 
-                    {/* ✅ EMAIL */}
-                    <View>
-                        <Text className="text-sm font-medium mb-2">
-                            Email
-                        </Text>
-                        <TextInput
-                            value={email}
-                            onChangeText={(text) => {
-                                setEmail(text);
-                                setEmailError(null);
-                            }}
-                            placeholder="e.g. john@email.com"
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            className={`bg-surface border ${emailError ? "border-red-500" : "border-gray-300"
-                                } rounded-2xl px-4 py-4 text-text-primary`}
-                            style={noOutline}
-                        />
-                        {emailError && (
-                            <Text className="text-red-500 text-xs mt-2">
-                                {emailError}
-                            </Text>
-                        )}
-                    </View>
-
-                    {/* ✅ PHONE */}
-                    <View>
-                        <Text className="text-sm font-medium mb-2">
-                            Phone (optional)
-                        </Text>
-                        <TextInput
-                            value={phone}
-                            onChangeText={setPhone}
-                            placeholder="e.g. 09123456789"
-                            keyboardType="phone-pad"
-                            className="bg-surface border border-gray-300 rounded-2xl px-4 py-4 text-text-primary"
-                            style={noOutline}
-                        />
-                    </View>
-
-                    {/* ✅ BUTTON */}
-                    <Pressable
-                        onPress={handleUpdateProfile}
-                        disabled={isDisabled}
-                        className={`rounded-2xl py-4 items-center mt-6 ${isDisabled
+                <Pressable
+                    onPress={handleSubmit}
+                    disabled={isDisabled}
+                    className={`rounded-xl py-4 items-center ${isDisabled
                             ? "bg-gray-300"
                             : "bg-black active:opacity-80"
-                            }`}
-                    >
-                        {loading ? (
-                            <ActivityIndicator color="#FFFFFF" />
-                        ) : (
-                            <Text
-                                className={`font-semibold text-base ${isDisabled
-                                    ? "text-gray-500"
-                                    : "text-white"
-                                    }`}
-                            >
-                                Save Changes
-                            </Text>
-                        )}
-                    </Pressable>
-
-                </View>
+                        }`}
+                >
+                    {loading ? (
+                        <ActivityIndicator color="#fff" />
+                    ) : (
+                        <Text
+                            className={`font-semibold text-base ${isDisabled ? "text-gray-500" : "text-white"
+                                }`}
+                        >
+                            Save Changes
+                        </Text>
+                    )}
+                </Pressable>
             </View>
-        </ScrollView>
-
+        </View>
     );
 }
