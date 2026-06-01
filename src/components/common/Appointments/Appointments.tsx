@@ -48,9 +48,8 @@ export default function Appointments() {
 
     const {
         fetchAppointments,
-        appointments = [],
+        appointments,
         loading,
-        error,
     } = useGetUserAppointments();
 
     useFocusEffect(
@@ -68,175 +67,117 @@ export default function Appointments() {
                 : "/(app)/(tabs)/home"
         );
     };
-
+    const isEmpty = appointments.length === 0;
     // ✅ LOADING
     if (loading) return <Loader fullScreen />;
-
-    // ✅ ERROR
-    if (error) {
-        return (
-            <View className="flex-1 justify-center items-center px-6">
-                <Text className="text-red-500 text-sm text-center">
-                    {error}
-                </Text>
-            </View>
-        );
-    }
-
     return (
-        <FlatList
-            data={appointments}
-            keyExtractor={(item) => item.bookingCode}
-            showsVerticalScrollIndicator={false}
-            contentContainerClassName="pt-6 lg:pt-14 px-4 lg:px-0"
 
-            // ✅ HEADER
-            ListHeaderComponent={
-
-                <HeaderSection
-                    title="My Appointments"
-                    description="Track and review your upcoming and past bookings."
-                    date={date}
-                    time={now.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                    })}
+        <View className=" bg-background px-6 flex-1" >
+            <HeaderSection
+                title="My Appointments"
+                description="Track and review your upcoming and past bookings."
+        
+            />
+            {isEmpty && (
+                <EmptyState
+                    title="No appointments booked"
+                    description="Add your first appointment."
+                    buttonLabel="Book an Appointment"
+                    onPress={handleAddAppointment}
                 />
+            )}
+            {!isEmpty && (
+            <FlatList
+                className="w-full"
+                data={appointments}
+                keyExtractor={(item) => item.bookingCode}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => {
+                    const dateObj = new Date(item.appointmentDate);
+                    const statusConfig =
+                        STATUS_CONFIG[item.status as AppointmentStatus] ?? {
+                            bg: "bg-gray-100",
+                            text: "text-gray-600",
+                            dot: "bg-gray-400",
+                            label: item.status,
+                        };
 
-            }
+                    return (
+                        <View className="w-full max-w-3xl m-auto">
+                            <View
+                                className="bg-white rounded-2xl p-6 mb-5 border border-border"
+                                style={{
+                                    boxShadow: "0px 10px 30px rgba(2,6,23,0.06)",
+                                }}
+                            >
+                                <View className="flex-row items-center justify-between mb-5">
+                                    <View>
+                                        <Text className="text-sm font-semibold text-text-primary">
+                                            {item.pet.petName}
+                                        </Text>
+                                        <Text className="text-xs text-text-muted mt-0.5">
+                                            {item.serviceType}
+                                        </Text>
+                                    </View>
 
-   
-            ListEmptyComponent={
-                <View className="w-full flex justify-center items-center px-6 ">
-                <View className="w-full max-w-3xl">
-                    <EmptyState
-                        icon=""
-                        title="No appointments booked"
-                        description="Add your first appointment."
-                        buttonLabel="Book an Appointment"
-                        onPress={handleAddAppointment}
-                    />
-                </View>
-                </View>
-            }
-
-            // ✅ ITEMS
-            renderItem={({ item }) => {
-                const dateObj = new Date(item.appointmentDate);
-
-                const statusConfig =
-                    STATUS_CONFIG[item.status as AppointmentStatus] ?? {
-                        bg: "bg-gray-100",
-                        text: "text-gray-600",
-                        dot: "bg-gray-400",
-                        label: item.status,
-                    };
-
-                const serviceEmoji =
-                    item.serviceType === "Grooming"
-                        ? "✂️"
-                        : item.serviceType === "Vaccination"
-                            ? "💉"
-                            : item.serviceType === "Checkup"
-                                ? "🩺"
-                                : item.serviceType === "Dental"
-                                    ? "🦷"
-                                    : "🐾";
-
-                return (
-
-                    <View className="w-full max-w-3xl m-auto">
-
-                        {/* ✅ CARD */}
-                        <View
-                            className="bg-white rounded-2xl p-6 mb-5 border border-border"
-                            style={{
-                                boxShadow: "0px 10px 30px rgba(2,6,23,0.06)",
-                            }}
-                        >
-
-                            {/* ✅ HEADER */}
-                            <View className="flex-row items-center justify-between mb-5">
-
-                                {/* LEFT: PET INFO */}
-                                <View>
-                                    <Text className="text-sm font-semibold text-text-primary">
-                                        {item.pet.petName}
-                                    </Text>
-                                    <Text className="text-xs text-text-muted mt-0.5">
-                                        {item.serviceType}
-                                    </Text>
-                                </View>
-
-                                {/* RIGHT: STATUS */}
-                                <View
-                                    className={`flex-row items-center gap-1.5 px-3 py-1 rounded-full ${statusConfig.bg}`}
-                                >
                                     <View
-                                        className={`w-1.5 h-1.5 rounded-full ${statusConfig.dot}`}
-                                    />
-                                    <Text className={`text-xs font-medium ${statusConfig.text}`}>
-                                        {statusConfig.label}
-                                    </Text>
+                                        className={`flex-row items-center gap-1.5 px-3 py-1 rounded-full ${statusConfig.bg}`}
+                                    >
+                                        <View
+                                            className={`w-1.5 h-1.5 rounded-full ${statusConfig.dot}`}
+                                        />
+                                        <Text className={`text-xs font-medium ${statusConfig.text}`}>
+                                            {statusConfig.label}
+                                        </Text>
+                                    </View>
                                 </View>
-                            </View>
+                                <View className="h-px bg-border mb-5" />
+                                <View className="flex-row justify-between mb-5">
+                                    <View>
+                                        <Text className="text-xs text-text-muted mb-1">Date</Text>
+                                        <Text className="text-sm font-medium text-text-primary">
+                                            {dateObj.toLocaleDateString([], {
+                                                month: "short",
+                                                day: "numeric",
+                                                year: "numeric",
+                                            })}
+                                        </Text>
+                                    </View>
+                                    <View>
+                                        <Text className="text-xs text-text-muted mb-1">Time</Text>
+                                        <Text className="text-sm font-medium text-text-primary">
+                                            {dateObj.toLocaleTimeString([], {
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                            })}
+                                        </Text>
+                                    </View>
 
-                            {/* ✅ DIVIDER */}
-                            <View className="h-px bg-border mb-5" />
-
-                            {/* ✅ DATE + TIME */}
-                            <View className="flex-row justify-between mb-5">
-
-                                <View>
-                                    <Text className="text-xs text-text-muted mb-1">Date</Text>
-                                    <Text className="text-sm font-medium text-text-primary">
-                                        {dateObj.toLocaleDateString([], {
-                                            month: "short",
-                                            day: "numeric",
-                                            year: "numeric",
-                                        })}
-                                    </Text>
                                 </View>
+                                <View className="flex-row justify-between items-center py-3">
+                                    <View>
+                                        <Text className="text-xs text-text-muted">Reference</Text>
+                                        <Text className="text-sm font-mono font-semibold text-text-primary tracking-wide">
+                                            {formatBookingCode(item.bookingCode)}
+                                        </Text>
+                                    </View>
+                                    <View>
+                                        <Text className="text-xs text-right">
+                                            Service
+                                        </Text>
+                                        <Text className="text-sm font-semibold text-text-primary text-right">
+                                            {item.serviceType}
+                                        </Text>
+                                    </View>
 
-                                <View>
-                                    <Text className="text-xs text-text-muted mb-1">Time</Text>
-                                    <Text className="text-sm font-medium text-text-primary">
-                                        {dateObj.toLocaleTimeString([], {
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                        })}
-                                    </Text>
-                                </View>
-
-                            </View>
-
-                            {/* ✅ EXTRA INFO ROW */}
-                            <View className="flex-row justify-between items-center py-3">
-
-                                {/* BOOKING */}
-                                <View>
-                                    <Text className="text-xs text-text-muted">Reference</Text>
-                                    <Text className="text-sm font-mono font-semibold text-text-primary tracking-wide">
-                                        {formatBookingCode(item.bookingCode)}
-                                    </Text>
-                                </View>
-
-                                {/* SERVICE */}
-                                <View>
-                                    <Text className="text-xs text-right">
-                                        Service
-                                    </Text>
-                                    <Text className="text-sm font-semibold text-text-primary text-right">
-                                        {item.serviceType}
-                                    </Text>
                                 </View>
 
                             </View>
-
                         </View>
-                    </View>
-                );
-            }}
-        />
+                    );
+                }}
+                />
+            )}
+        </View>
     );
 }

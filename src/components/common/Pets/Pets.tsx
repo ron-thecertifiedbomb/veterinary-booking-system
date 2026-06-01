@@ -37,47 +37,25 @@ export default function Pets() {
 
     const handleAddPet = () => {
         const isWeb = Platform.OS === "web";
-
         router.push(
             isWeb
                 ? "/(web)/web-add-pet"
                 : "(app)/add-pet"
         );
     };
+    
 
     const isEmpty = pets.length === 0;
-    if (loading) {
-        return (
-            <Loader
-                fullScreen
-         
-            />
-        );
-    } 
+    if (loading) return <Loader fullScreen />;
     return (
-        <>
-            {/* ✅ GLOBAL LOADER */}
-            {loading && <Loader />}
-
-            <ScrollView
-                className="flex-1 bg-background"
-                contentContainerClassName="items-center px-6 pb-10 pt-6 lg:pt-14"
-                keyboardShouldPersistTaps="handled"
-            >
-                <View className="w-full max-w-3xl  m-auto">
-
-                
+        
+            <View className=" bg-background px-6 flex-1" >
                         <HeaderSection
                         title="My Pets"
                         description="Easily manage your pets for faster booking."
-                         
-
                         />
-                
-                    {/* ✅ EMPTY STATE */}
-                    {isEmpty && !loading && (
+                    {isEmpty && (
                         <EmptyState
-                            icon="🐾"
                             title="No pets yet"
                             description="Add your first pet to start booking."
                             buttonLabel="Add Pet"
@@ -85,7 +63,6 @@ export default function Pets() {
                         />
                     )}
 
-                    {/* ✅ PET LIST */}
                     {!isEmpty && (
                         <FlatList
                             data={pets}
@@ -162,7 +139,7 @@ export default function Pets() {
                         />
                     )}
                 </View>
-            </ScrollView>
-        </>
+        
+        
     );
 }

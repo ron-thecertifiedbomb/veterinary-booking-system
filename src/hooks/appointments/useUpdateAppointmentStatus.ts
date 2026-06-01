@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import { updateAppointmentStatus } from "@/features/admin/api";
 import { Appointment } from "@/features/admin/types";
 import { logger } from "@/utils/logger/logger";
@@ -15,14 +14,9 @@ export const useUpdateAppointmentStatus = () => {
       setError(null);
       setSuccess(false);
 
-      logger.info("Updating appointment status", { id, status });
-
       const data = await updateAppointmentStatus(id, status);
 
-      logger.info("Appointment status updated", data);
-
       setSuccess(true);
-
       return data;
     } catch (err) {
       logger.error("Update appointment status failed", err);
@@ -32,10 +26,8 @@ export const useUpdateAppointmentStatus = () => {
       setUpdatingId(null);
     }
   };
-
   const resetSuccess = () => setSuccess(false);
   const resetError = () => setError(null);
-
   return {
     updateStatus,
     updatingId,

@@ -106,7 +106,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async function validateSession() {
         if (validating.current) return; // ✅ prevent concurrent calls
         validating.current = true;
-
         try {
             const storedToken = await getStorageItem("access_token");
 
@@ -114,7 +113,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 await clearSession();
                 return;
             }
-
             const response = await api<{
                 data: { user: AuthUser };
             }>("/api/vet/auth/me", {
@@ -125,7 +123,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (!response?.data?.user) {
                 throw new Error("Invalid session");
             }
-
             const freshUser = {
                 ...response.data.user,
                 userId: response.data.user.id,
@@ -142,15 +139,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 logger.warn("No internet during validation, keeping session");
                 return;
             }
-
             if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
                 logger.error("Session expired, clearing session");
                 await clearSession();
                 return;
             }
-
-            logger.warn("Server error during validation, keeping session", err);
-
         } finally {
             validating.current = false; // ✅ release lock
             setLoading(false);

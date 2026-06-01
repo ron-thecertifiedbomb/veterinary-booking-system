@@ -74,10 +74,7 @@ export async function api<T>(
   // ✅ REQUEST LOG (ALWAYS FIRST)
   // ==========================
   logger.info("API Request", {
-    url,
-    method,
-    body: maskSensitive(requestBody),
-    pathname: options.pathname || null,
+    endpoint,
   });
 
   let response: Response;

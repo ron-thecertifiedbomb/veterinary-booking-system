@@ -5,6 +5,7 @@ import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
 
 export const useGetUserProfile = () => {
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -12,30 +13,20 @@ export const useGetUserProfile = () => {
   const fetchUserProfile = async (): Promise<UserProfile | null> => {
     try {
       if (loading) return null;
-
       setLoading(true);
       setError(null);
 
-      // ✅ Get token
       const token = await getStorageItem("access_token");
       if (!token) {
         throw new Error("Unauthorized. Please login again.");
       }
-
-      logger.info("Fetching user profile ✅");
-
-      // ✅ API call (NO PAYLOAD)
-      const res = await api<GetUserProfileResponse>("/api/vet/users/me", {
+      const response = await api<GetUserProfileResponse>("/api/vet/users/me", {
         method: "GET",
-        token, // ✅Bearer token handled inside api util
+        token, 
       });
-
-      logger.info("User profile fetched ✅", res.data);
-
-      // ✅ Save locally (optional but recommended)
-      await setStorageItem("user_profile", JSON.stringify(res.data));
-      setProfile(res.data);
-      return res.data;
+      await setStorageItem("user_profile", JSON.stringify(response.data));
+      setProfile(response.data);
+      return response.data;
     } catch (err: any) {
       logger.error("Error fetching profile ❌", err);
       const message = err?.message || "Failed to fetch user profile";

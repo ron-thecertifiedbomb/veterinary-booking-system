@@ -13,45 +13,25 @@ export default function DateSelector({
     onContinue,
 }: Props) {
     return (
-        <View>
-
-
-            {/* ✅ Calendar */}
-            <View className="bg-surface border border-border rounded-xl p-4">
-
-                <Calendar
-                    current={date}
-                    minDate={new Date().toLocaleDateString("en-CA")}
-                    onDayPress={(day) => {
-                        onDateChange(day.dateString);
-                        onContinue?.();
-                    }}
-                    markedDates={{
-                        [date]: {
-                            selected: true,
-                            selectedColor: "#111827",
-                            selectedTextColor: "#ffffff",
-                        },
-                    }}
-
-                    // ✅ ADD THIS
-                    theme={{
-                        arrowColor: "#000000",
-                    }}
-                />
-
-            </View>
-
-            {/* {onContinue && (
-                <TouchableOpacity
-                    onPress={onContinue}
-                    className="bg-surfaceSoft border border-border rounded-xl py-4 mt-6"
-                >
-                    <Text className="text-center text-text-primary font-medium">
-                        Continue Booking
-                    </Text>
-                </TouchableOpacity>
-            )} */}
+        <View className="bg-white border border-gray-200 rounded-xl p-4 mb-4">
+            <Calendar
+                current={date}
+                minDate={new Date().toISOString().split("T")[0]}
+                onDayPress={(day) => {
+                    onDateChange(day.dateString);
+                    onContinue?.();
+                }}
+                markedDates={{
+                    [date]: {
+                        selected: true,
+                        selectedColor: "#111827",
+                        selectedTextColor: "#ffffff",
+                    },
+                }}
+                theme={{
+                    arrowColor: "#000000",
+                }}
+            />
         </View>
     );
 }

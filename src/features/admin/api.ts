@@ -4,25 +4,12 @@ import { logger } from "@/utils/logger/logger";
 
 export const getAppointments = async (): Promise<Appointment[]> => {
   try {
-    logger.info("Fetching all appointments");
 
-    const res = await fetch(`${API}/appointments`);
-
-    if (!res.ok) {
-      const err = await res.text();
-
-      logger.error("Fetch appointments failed", {
-        status: res.status,
-        body: err,
-      });
-
+    const response = await fetch(`${API}/appointments`);
+    if (!response.ok) {
       throw new Error("Failed to fetch appointments");
     }
-
-    const data = await res.json();
-
-    logger.info("Appointments fetched", data);
-
+    const data = await response.json();
     return data;
   } catch (err) {
     logger.error("Error fetching appointments", err);
@@ -35,9 +22,8 @@ export const updateAppointmentStatus = async (
   status: Appointment["status"],
 ) => {
   try {
-    logger.info("Updating appointment status", { id, status });
 
-    const res = await fetch(`${API}/appointments/${id}`, {
+    const response = await fetch(`${API}/appointments/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -45,20 +31,12 @@ export const updateAppointmentStatus = async (
       body: JSON.stringify({ status }),
     });
 
-    if (!res.ok) {
-      const err = await res.text();
-
-      logger.error("Update appointment status failed", {
-        id,
-        status,
-        responseStatus: res.status,
-        body: err,
-      });
-
+    if (!response.ok) {
+ 
       throw new Error("Failed to update status");
     }
 
-    const data = await res.json();
+    const data = await response.json();
 
     logger.info("Appointment status updated", data);
 

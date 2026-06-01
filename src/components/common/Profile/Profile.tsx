@@ -1,30 +1,38 @@
+import Container from "@/components/common/Container/Container";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Loader from "@/components/common/Loader/Loader";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { getInitials } from "@/utils/getInitials/getInitials";
+import { getRouteByRole } from "@/utils/routes/routeResolver";
 import { useRouter } from "expo-router";
 import { Platform, Pressable, ScrollView, Text, View } from "react-native";
 
-export default function  Profile() {
+export default function Profile() {
+    
     const router = useRouter();
-    const { user, loading, logout } = useAuth();
+    const { user, loading, logout, isAuthenticated } = useAuth();
 
     const handleLogout = async () => {
         const response = await logout();
         if (response) showAlert("Success", response.message);
-        router.replace("/(auth)/login");
+        // ✅ allow AuthProvider to update state first
+        setTimeout(() => {
+            const target = getRouteByRole(
+                user?.role,
+                isAuthenticated
+            );
+            router.replace(target);
+        }, 2);
     };
+    
+
+    if (loading) { 
+        return <Loader fullScreen />;
+    }
 
     return (
-        <>
-            {loading && <Loader />}
-
-            <ScrollView
-                className="flex-1 bg-background"
-                contentContainerClassName="items-center px-6 pb-10 pt-6 lg:pt-14"
-                keyboardShouldPersistTaps="handled"
-            >
+    <Container>
                 <View className="w-full max-w-3xl">
                     <View className="w-full max-w-3xl">
                         <HeaderSection
@@ -127,7 +135,7 @@ export default function  Profile() {
                     )}
 
                 </View>
-            </ScrollView>
-        </>
+        
+</Container >
     );
 }

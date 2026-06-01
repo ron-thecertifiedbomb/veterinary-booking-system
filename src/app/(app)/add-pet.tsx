@@ -1,20 +1,18 @@
 
-
+import ScreenContainer from "@/components/common/Layouts/ScreenContainer/ScreenContainer";
 import AddPetForm from "@/components/common/Pets/AddPetForm";
 import { useAddPet } from "@/features/pet/hooks/useAddPet";
 import { CreatePetPayload } from "@/features/pet/types";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
-import { Platform } from "react-native";
-
-import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withTiming,
+import {
     Easing,
-} from "react-native-reanimated";
-
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+} from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 export default function AddPetScreen() {
     const router = useRouter();

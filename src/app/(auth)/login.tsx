@@ -33,7 +33,7 @@ export default function Login() {
                     );
 
                     router.replace(target);
-                }, 0);
+                }, 2);
             }
 
         } catch (err: any) {

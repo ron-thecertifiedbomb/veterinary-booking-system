@@ -1,14 +1,13 @@
 import { useState } from "react";
-
 import { api } from "@/utils/api/api";
 import { logger } from "@/utils/logger/logger";
-
 import { getStorageItem } from "@/features/auth/storage";
-
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { CreatePetPayload, CreatePetResponse } from "@/features/pet/types";
 
+
 export function useAddPet() {
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -20,16 +19,13 @@ export function useAddPet() {
   ): Promise<CreatePetResponse | null> => {
     try {
       setLoading(true);
-
       setError(null);
       setMessage(null);
 
       const token = await getStorageItem("access_token");
-
       if (!token) {
         throw new Error("Not authenticated");
       }
-
       const response = await api<CreatePetResponse>("/api/vet/pets", {
         method: "POST",
         body: JSON.stringify(payload),
@@ -37,11 +33,7 @@ export function useAddPet() {
           Authorization: `Bearer ${token}`,
         },
       });
-
       setMessage(response.message);
-
-      logger.info("Pet created successfully", response.data);
-
       await updateUser({
         pets: [...(user?.pets || []), response.data],
       });
@@ -49,11 +41,8 @@ export function useAddPet() {
       return response;
     } catch (err: any) {
       const errorMessage = err?.message || "Failed to create pet";
-
       setError(errorMessage);
-
       logger.error("Add pet failed", err);
-
       return null;
     } finally {
       setLoading(false);
