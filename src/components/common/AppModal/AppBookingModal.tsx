@@ -1,9 +1,9 @@
+import BookingForm from "@/components/booking/BookingForm";
+import BookingModal from "@/components/booking/BookingModal";
+import { Slot } from "@/features/appointment/types";
+import { Pet } from "@/features/pet/types";
 import { useState } from "react";
 import { Text, View } from "react-native";
-import BookingModal from "@/components/booking/BookingModal";
-import BookingForm from "@/components/booking/BookingForm";
-import { Pet } from "@/features/pet/types";
-import { Slot } from "@/features/appointment/types";
 
 type Props = {
     pets: Pet[];
