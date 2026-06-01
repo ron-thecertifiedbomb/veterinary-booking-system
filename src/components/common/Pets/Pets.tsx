@@ -1,35 +1,18 @@
 import EmptyState from "@/components/common/EmptyState/EmptyState";
 import Loader from "@/components/common/Loader/Loader";
-
-
-
-import {
-    router,
-    useFocusEffect,
-} from "expo-router";
-
-import {
-    FlatList,
-    Platform,
-    Pressable,
-    ScrollView,
-    Text,
-    View,
-} from "react-native";
-
-import { useCallback } from "react";
-import { useGetPets } from "@/features/pet/hooks/useGetPet";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Container from "@/components/common/Container/Container";
 
-export default function Pets() {
-    const {
-        pets,
-        fetchPets,
-        loading,
-    } = useGetPets();
+import { router, useFocusEffect } from "expo-router";
+import { FlatList, Platform, Pressable, Text, View } from "react-native";
 
-    // ✅ refetch pets on focus
+import { useCallback } from "react";
+import { useGetPets } from "@/features/pet/hooks/useGetPet";
+
+export default function Pets() {
+    const { pets, fetchPets, loading } = useGetPets();
+    const isEmpty = pets.length === 0;
+    // ✅ refetch on focus
     useFocusEffect(
         useCallback(() => {
             fetchPets();
@@ -39,108 +22,65 @@ export default function Pets() {
     const handleAddPet = () => {
         const isWeb = Platform.OS === "web";
         router.push(
-            isWeb
-                ? "/(web)/web-add-pet"
-                : "(app)/add-pet"
+            isWeb ? "/(web)/web-add-pet" : "(app)/add-pet"
         );
     };
-    
 
-    const isEmpty = pets.length === 0;
     if (loading) return <Loader fullScreen />;
+
+
+
     return (
-        
         <Container>
-                        <HeaderSection
-                        title="My Pets"
-                        description="Easily manage your pets for faster booking."
-                        />
-                    {isEmpty && (
-                        <EmptyState
-                            title="No pets yet"
-                            description="Add your first pet to start booking."
-                            buttonLabel="Add Pet"
-                            onPress={handleAddPet}
-                        />
-                    )}
+            {/* ✅ HEADER */}
+            <HeaderSection
+                title="My Pets"
+                description="Manage your pets and add new ones."
+            />
 
-                    {!isEmpty && (
-                        <FlatList
-                            data={pets}
-                            keyExtractor={(item) => item.id}
-                            showsVerticalScrollIndicator={false}
-                            scrollEnabled={false}
-                            contentContainerStyle={{ paddingBottom: 40 }}
-                            renderItem={({ item }) => (
-                                <View className="bg-surface border border-border rounded-2xl p-5 mb-3">
-                                    {/* ✅ HEADER ROW */}
-                                    <View className="flex-row items-center justify-between mb-4">
-                                        <View className="flex-row items-center gap-3">
-                                            {/* ✅ AVATAR */}
-                                            <View className="w-11 h-11 rounded-full bg-primary/10 items-center justify-center">
-                                                <Text className="text-xl">
-                                                    {item.species === "Dog" ? "🐶"
-                                                        : item.species === "Cat" ? "🐱"
-                                                            : item.species === "Bird" ? "🐦"
-                                                                : item.species === "Rabbit" ? "🐰"
-                                                                    : "🐾"}
-                                                </Text>
-                                            </View>
+            {isEmpty && (
+                <EmptyState
+                    title="No Pets Yet"
+                    description="Add your first pet to start booking appointments."
+                    buttonLabel="Add Pet"
+                    onPress={handleAddPet}
+                />
+            )}
 
-                                            <View>
-                                                <Text className="text-base font-semibold text-text-primary">
-                                                    {item.petName}
-                                                </Text>
-                                                <Text className="text-xs text-text-muted">
-                                                    {item.species}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                    </View>
+            {!isEmpty && (
+                <FlatList
+                    data={pets}
+                    keyExtractor={(item) => item.id}
+                    contentContainerStyle={{ paddingBottom: 40 }}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                        <View className="bg-white rounded-2xl p-4 mb-3 shadow-sm">
 
-                                    {/* ✅ DIVIDER */}
-                                    <View className="h-px bg-border mb-4" />
+                            {/* ✅ ROW */}
+                            <View className="flex-row items-center justify-between">
 
-                                    {/* ✅ DETAILS ROW */}
-                                    <View className="flex-row gap-4">
-                                        {item.breed && (
-                                            <View className="flex-1">
-                                                <Text className="text-xs text-text-muted mb-1">
-                                                    Breed
-                                                </Text>
-                                                <Text className="text-sm font-medium text-text-primary">
-                                                    {item.breed}
-                                                </Text>
-                                            </View>
-                                        )}
-
-                                        {item.weight && (
-                                            <View className="flex-1">
-                                                <Text className="text-xs text-text-muted mb-1">
-                                                    Weight
-                                                </Text>
-                                                <Text className="text-sm font-medium text-text-primary">
-                                                    {item.weight} kg
-                                                </Text>
-                                            </View>
-                                        )}
-                                    </View>
-                                </View>
-                            )}
-                            ListFooterComponent={
-                                <Pressable
-                                    className="bg-black rounded-2xl py-4 items-center mt-4 mb-10 active:opacity-80"
-                                    onPress={handleAddPet}
-                                >
-                                    <Text className="text-white font-semibold text-base">
-                                        + Add Another Pet
+                                {/* PET INFO */}
+                                <View>
+                                    <Text className="text-base font-semibold text-gray-900">
+                                        {item.petName}
                                     </Text>
-                                </Pressable>
-                            }
-                        />
+
+                                    <Text className="text-sm text-gray-500 mt-1">
+                                        {item.species} • {item.breed || "N/A"}
+                                    </Text>
+
+                                    <Text className="text-xs text-gray-400 mt-1">
+                                        {item.weight} kg
+                                    </Text>
+                                </View>
+
+                                {/* OPTIONAL ACTION */}
+                                <Text className="text-2xl">🐾</Text>
+                            </View>
+                        </View>
                     )}
+                />
+            )}
         </Container>
-        
-        
     );
 }

@@ -14,7 +14,7 @@ export default function ScreenContainer({
 
     return (
         <SafeAreaView className="flex-1 bg-background items-center px-6">
-            <View className="flex-1 w-full max-w-md justify-center">
+            <View className="flex-1 w-full  justify-center">
                 {children}
             </View>
         </SafeAreaView>

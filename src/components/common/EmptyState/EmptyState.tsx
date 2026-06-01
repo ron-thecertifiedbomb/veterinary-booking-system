@@ -20,10 +20,10 @@ export default function EmptyState({
     onPress,
 }: Props) {
     return (
-        <View className="flex-1 justify-center">
+        <View className="flex-1 justify-center px-14">
 
             {/* ✅ CARD */}
-            <View className="w-full max-w-md bg-surface border border-border rounded-2xl p-8 shadow-sm">
+            <View className="w-full  bg-surface border border-border rounded-2xl p-8 shadow-sm">
 
                 {/* ✅ TITLE */}
                 <Text className="text-xl font-semibold text-text-primary text-center tracking-tight">

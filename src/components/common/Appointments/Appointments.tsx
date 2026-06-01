@@ -81,7 +81,7 @@ export default function Appointments() {
             />
             {isEmpty && (
                 <EmptyState
-                    title="No appointments booked"
+                    title="No booked appointments"
                     description="Add your first appointment."
                     buttonLabel="Book an Appointment"
                     onPress={handleAddAppointment}
@@ -104,7 +104,7 @@ export default function Appointments() {
                         };
 
                     return (
-                        <View className="w-full max-w-3xl m-auto">
+                        <View className="w-full">
                             <View
                                 className="bg-white rounded-2xl p-6 mb-5 border border-border"
                                 style={{

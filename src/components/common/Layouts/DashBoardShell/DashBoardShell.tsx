@@ -53,8 +53,6 @@ export default function DashboardShell({ children, navItems }: Props) {
                             height: 60,
                             justifyContent: "center",
                             paddingHorizontal: 16,
-                            borderBottomWidth: 1,
-                            borderColor: "#e5e7eb",
                             backgroundColor: "#fff",
                         }}
                     >

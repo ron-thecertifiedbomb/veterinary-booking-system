@@ -4,23 +4,25 @@ import {
     Pressable,
     Text,
     View,
+    Platform,
 } from "react-native";
+import { router } from "expo-router";
+
 import AppTextInput from "@/components/common/AppTextInput/AppTextInput";
 import { addPetSchema } from "@/features/pet/schemas/addPet.schema";
 import { z } from "zod";
-import { CreatePetPayload } from "@/features/pet/types";
+
+import { useAddPet } from "@/features/pet/hooks/useAddPet";
+import { showAlert } from "@/hooks/crossPlatformAlert";
 
 type AddPetFormData = z.infer<typeof addPetSchema>;
 type AddPetErrors = Partial<
     Record<keyof AddPetFormData, string | null>
 >;
 
-type Props = {
-    loading?: boolean;
-    onSubmit: (data: CreatePetPayload) => void;
-};
+export default function AddPetForm() {
+    const { addPet, loading } = useAddPet();
 
-export default function AddPetForm({ loading, onSubmit }: Props) {
     const [form, setForm] = useState<AddPetFormData>({
         petName: "",
         species: "",
@@ -30,7 +32,7 @@ export default function AddPetForm({ loading, onSubmit }: Props) {
 
     const [errors, setErrors] = useState<AddPetErrors>({});
 
-    // ✅ Better number sanitizer
+    // ✅ sanitize number input
     const sanitizeNumber = (text: string) => {
         return text
             .replace(/[^0-9.]/g, "")
@@ -38,14 +40,18 @@ export default function AddPetForm({ loading, onSubmit }: Props) {
     };
 
     // ✅ LIVE VALIDATION
-    const updateField = (key: keyof AddPetFormData, value: string) => {
+    const updateField = (
+        key: keyof AddPetFormData,
+        value: string
+    ) => {
         const newForm = { ...form, [key]: value };
         setForm(newForm);
 
         const result = addPetSchema.safeParse(newForm);
 
         if (!result.success) {
-            const fieldErrors = result.error.flatten().fieldErrors;
+            const fieldErrors =
+                result.error.flatten().fieldErrors;
 
             setErrors((prev) => ({
                 ...prev,
@@ -59,11 +65,13 @@ export default function AddPetForm({ loading, onSubmit }: Props) {
         }
     };
 
-    const handleSubmit = () => {
+    // ✅ SUBMIT LOGIC (SELF-CONTAINED)
+    const handleCreatePet = async () => {
         const result = addPetSchema.safeParse(form);
 
         if (!result.success) {
-            const fieldErrors = result.error.flatten().fieldErrors;
+            const fieldErrors =
+                result.error.flatten().fieldErrors;
 
             setErrors({
                 petName: fieldErrors.petName?.[0] ?? null,
@@ -75,54 +83,67 @@ export default function AddPetForm({ loading, onSubmit }: Props) {
             return;
         }
 
-        const { petName, species, breed, weight } = result.data;
+        try {
+            const { petName, species, breed, weight } =
+                result.data;
 
-        onSubmit({
-            petName,
-            species,
-            breed: breed === "" ? "N/A" : breed,
-            weight: Number(weight),
-        });
+            const response = await addPet({
+                petName,
+                species,
+                breed: breed || "N/A",
+                weight: Number(weight),
+            });
 
-        // ✅ RESET AFTER SUBMIT
-        setForm({
-            petName: "",
-            species: "",
-            breed: "",
-            weight: "",
-        });
+            if (!response) {
+                showAlert("Error", "Failed to add pet");
+                return;
+            }
+
+            // ✅ SUCCESS
+            showAlert("Success", response.message, () => {
+                router.replace(
+                    Platform.OS === "web"
+                        ? "/(web)/web-pets"
+                        : "(app)/pets"
+                );
+            });
+
+            // ✅ RESET FORM
+            setForm({
+                petName: "",
+                species: "",
+                breed: "",
+                weight: "",
+            });
+
+        } catch (err: any) {
+            showAlert(
+                "Error",
+                err?.message || "Something went wrong"
+            );
+        }
     };
 
     const isDisabled =
         !form.petName || !form.species || loading;
 
     return (
-        <View className="w-full max-w-xl px-4">
+        <View className="flex-1 px-6 pt-6">
 
-            {/* ✅ CARD CONTAINER */}
-            <View
-                className="bg-white rounded-3xl px-6 py-8"
-                style={{
-                    boxShadow: "0px 8px 24px rgba(15,23,42,0.08)",
-                }}
-            >
+            {/* ✅ HEADER */}
+            <View className="mb-10 items-center">
+                <Text className="text-3xl font-bold text-gray-900">
+                    Add a Pet
+                </Text>
+                <Text className="text-sm text-gray-500 mt-2 text-center">
+                    Enter your pet’s details to start booking appointments.
+                </Text>
+            </View>
 
-                {/* ✅ HEADER */}
-                <View className="mb-6 items-center">
-                    <Text className="text-3xl font-bold tracking-tight text-text-primary">
-                        Add a Pet
-                    </Text>
+            {/* ✅ CARD */}
+            <View className="bg-white rounded-3xl p-5 shadow-sm">
 
-                    <Text className="text-sm text-text-secondary mt-2 text-center leading-relaxed">
-                        Enter your pet’s details to start booking appointments.
-                    </Text>
-                </View>
-
-                {/* ✅ DIVIDER */}
-                <View className="h-[1px] bg-gray-200 mb-4" />
-
-                {/* ✅ FORM */}
-                <View className="gap-4">
+                <View className="gap-2">
 
                     <AppTextInput
                         label="Pet Name"
@@ -130,7 +151,7 @@ export default function AddPetForm({ loading, onSubmit }: Props) {
                         onChangeText={(text) =>
                             updateField("petName", text)
                         }
-                        placeholder="e.g. Duff"
+                        placeholder="Duff"
                         error={errors.petName}
                     />
 
@@ -140,7 +161,7 @@ export default function AddPetForm({ loading, onSubmit }: Props) {
                         onChangeText={(text) =>
                             updateField("species", text)
                         }
-                        placeholder="Dog, Cat, etc."
+                        placeholder="Dog, Cat"
                         error={errors.species}
                     />
 
@@ -150,7 +171,7 @@ export default function AddPetForm({ loading, onSubmit }: Props) {
                         onChangeText={(text) =>
                             updateField("breed", text)
                         }
-                        placeholder="e.g. Labrador"
+                        placeholder="Labrador"
                         error={errors.breed}
                     />
 
@@ -160,38 +181,39 @@ export default function AddPetForm({ loading, onSubmit }: Props) {
                         onChangeText={(text) =>
                             updateField("weight", sanitizeNumber(text))
                         }
-                        placeholder="e.g. 12.5"
+                        placeholder="12.5"
                         error={errors.weight}
                     />
 
                     {/* ✅ BUTTON */}
                     <Pressable
-                        onPress={handleSubmit}
+                        onPress={handleCreatePet}
                         disabled={isDisabled}
                         style={({ pressed }) => ({
-                            marginTop: 20,
-                            borderRadius: 18,
+                            marginTop: 16,
+                            borderRadius: 14,
                             paddingVertical: 16,
                             alignItems: "center",
 
                             backgroundColor: isDisabled
                                 ? "#E5E7EB"
                                 : pressed
-                                    ? "#0F172A"
-                                    : "#020617",
+                                    ? "#111827"
+                                    : "#000000",
 
                             transform: [{ scale: pressed ? 0.97 : 1 }],
                         })}
                     >
                         {loading ? (
-                            <ActivityIndicator color="#FFFFFF" />
+                            <ActivityIndicator color="#fff" />
                         ) : (
                             <Text
                                 style={{
-                                    color: isDisabled ? "#9CA3AF" : "#FFFFFF",
+                                    color: isDisabled
+                                        ? "#9CA3AF"
+                                        : "#FFFFFF",
                                     fontWeight: "600",
                                     fontSize: 16,
-                                    letterSpacing: -0.2,
                                 }}
                             >
                                 Save Pet
@@ -203,4 +225,3 @@ export default function AddPetForm({ loading, onSubmit }: Props) {
         </View>
     );
 }
-``

@@ -109,7 +109,7 @@ export default function EditProfileForm() {
     if (fetching) return <Loader fullScreen />;
 
     return (
-        <View className="flex-1 bg-gray-50 px-6 pt-6">
+        <View className="flex-1  px-6 pt-6">
 
             {/* HEADER */}
             <View className="mb-10 items-center">

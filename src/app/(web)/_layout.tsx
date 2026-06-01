@@ -1,14 +1,13 @@
 // src/app/(admin-web)/_layout.tsx
 
+import Container from "@/components/common/Container/Container";
 import DashboardShell from "@/components/common/Layouts/DashBoardShell/DashBoardShell";
 import Loader from "@/components/common/Loader/Loader";
-
-
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { adminNav, customerNav } from "@/utils/config/sidebar/sidebar";
-
+import {   customerNav } from "@/utils/config/sidebar/sidebar";
 import { Redirect, Slot } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View } from "react-native";
+
 
 export default function WebLayout() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -28,7 +27,15 @@ export default function WebLayout() {
   return (
 
     <DashboardShell navItems={customerNav}>
-      <Slot />
+
+      <Container className="flex-1 w-full">
+        <View className="flex-1 items-center px-4 lg:pt-20">
+          <View className="w-full max-w-2xl">
+            <Slot />
+          </View>
+        </View>
+      </Container>
+
     </DashboardShell>
 
   );
