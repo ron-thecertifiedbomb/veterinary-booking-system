@@ -1,3 +1,4 @@
+import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Loader from "@/components/common/Loader/Loader";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { showAlert } from "@/hooks/crossPlatformAlert";
@@ -21,19 +22,17 @@ export default function  Profile() {
 
             <ScrollView
                 className="flex-1 bg-background"
-                contentContainerClassName="items-center px-6 pb-10"
+                contentContainerClassName="items-center px-6 pb-10 pt-6 lg:pt-14"
                 keyboardShouldPersistTaps="handled"
             >
-                <View className="w-full max-w-3xl pt-6 lg:p-14">
-
-                    {/* ✅ HEADER */}
-                    <View className="mb-6">
-                        <Text className="text-lg lg:text-3xl font-semibold text-text-primary">
-                            My Profile
-                        </Text>
-                        <Text className="text-sm text-text-secondary mt-1">
-                            View and manage your account information.
-                        </Text>
+                <View className="w-full max-w-3xl">
+                    <View className="w-full max-w-3xl">
+                        <HeaderSection
+                            title="My Profile"
+                            description="View and manage your account information."
+                        
+/>
+            
                     </View>
 
                     {/* ✅ PROFILE HERO CARD */}

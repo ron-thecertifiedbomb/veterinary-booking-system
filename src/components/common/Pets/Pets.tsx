@@ -19,6 +19,7 @@ import {
 
 import { useCallback } from "react";
 import { useGetPets } from "@/features/pet/hooks/useGetPet";
+import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 
 export default function Pets() {
     const {
@@ -60,22 +61,19 @@ export default function Pets() {
 
             <ScrollView
                 className="flex-1 bg-background"
-                contentContainerClassName="items-center px-6 pb-10"
+                contentContainerClassName="items-center px-6 pb-10 pt-6 lg:pt-14"
                 keyboardShouldPersistTaps="handled"
             >
-                <View className="w-full max-w-3xl pt-6 lg:p-14">
+                <View className="w-full max-w-3xl  m-auto">
 
-                    {/* ✅ HEADER */}
-                    <View className="mb-6">
-                        <Text className="text-lg lg:text-3xl font-semibold text-text-primary">
-                            My Pets
-                        </Text>
+                
+                        <HeaderSection
+                        title="My Pets"
+                        description="Easily manage your pets for faster booking."
+                         
 
-                        <Text className="text-sm text-text-secondary mt-1">
-                            Easily manage your pets for faster booking.
-                        </Text>
-                    </View>
-
+                        />
+                
                     {/* ✅ EMPTY STATE */}
                     {isEmpty && !loading && (
                         <EmptyState

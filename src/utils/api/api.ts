@@ -6,7 +6,7 @@ import { logger } from "@/utils/logger/logger";
 // ==========================
 type RequestOptions = RequestInit & {
   token?: string | null;
-  pathname?: string; // optional route context
+  pathname?: string;
 };
 
 // ==========================
@@ -32,21 +32,52 @@ export class ApiError extends Error {
 }
 
 // ==========================
+// Helpers
+// ==========================
+function safeJsonParse(body: any) {
+  try {
+    return typeof body === "string" ? JSON.parse(body) : body;
+  } catch {
+    return body;
+  }
+}
+
+function maskSensitive(data: any) {
+  if (!data || typeof data !== "object") return data;
+
+  const copy = { ...data };
+
+  if ("password" in copy) copy.password = "***";
+  if ("token" in copy) copy.token = "***";
+
+  return copy;
+}
+
+// ==========================
 // API FUNCTION
 // ==========================
 export async function api<T>(
   endpoint: string,
   options: RequestOptions = {},
 ): Promise<T> {
-  const { token, headers,...rest } = options;
+  const { token, headers, ...rest } = options;
 
   const url = `${API}${endpoint}`;
   const method = rest.method || "GET";
 
-  // ✅ Request log
+  const requestBody = rest.body ? safeJsonParse(rest.body) : null;
+
+  // ✅ start time (for duration)
+  const start = Date.now();
+
+  // ==========================
+  // ✅ REQUEST LOG (ALWAYS FIRST)
+  // ==========================
   logger.info("API Request", {
-    endpoint,
+    url,
     method,
+    body: maskSensitive(requestBody),
+    pathname: options.pathname || null,
   });
 
   let response: Response;
@@ -61,14 +92,13 @@ export async function api<T>(
       },
     });
   } catch (error: any) {
-    // ✅ Cross-platform safe offline detect
     const isOffline =
       typeof navigator !== "undefined" ? navigator.onLine === false : false;
 
     logger.error("API Network Failure", {
-      endpoint,
-      isOffline,
+      url,
       message: error?.message,
+      isOffline,
     });
 
     throw new NetworkError(
@@ -83,33 +113,38 @@ export async function api<T>(
   try {
     data = await response.json();
   } catch {
-    // non-JSON response safe fallback
     data = null;
   }
 
-  // ✅ Response log
+  const duration = Date.now() - start;
+
+  // ==========================
+  // ✅ RESPONSE LOG (ALWAYS SECOND)
+  // ==========================
+
   logger.info("API Response", {
-    endpoint,
+    url,
     status: response.status,
+    duration: `${duration}ms`,
+    ...(typeof data === "object" ? maskSensitive(data) : {}),
   });
 
   // ==========================
-  // ERROR HANDLING (KEY PART)
+  // ERROR HANDLING
   // ==========================
   if (!response.ok) {
     const message =
-      (typeof data === "object" && data?.message) || // ✅ server message priority
-      response.statusText || // fallback
+      (typeof data === "object" && data?.message) ||
+      response.statusText ||
       "Something went wrong";
 
     logger.error("API Error", {
-      endpoint,
+      url,
       status: response.status,
       message,
       raw: data,
     });
 
-    // ✅ THROW MESSAGE TO UI
     throw new ApiError(message, response.status, data);
   }
 

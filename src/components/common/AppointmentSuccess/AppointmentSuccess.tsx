@@ -40,11 +40,11 @@ export default function AppoinmentSuccess() {
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-background justify-center items-center px-6">
+        <View className="flex-1 bg-background justify-center items-center px-6">
             <View className="w-full max-w-md mx-auto bg-surface border border-border rounded-2xl p-6">
 
                 <Text className="text-2xl font-semibold text-text-primary text-center">
-                    Appointment Summary
+                    Appointment Summar
                 </Text>
 
                 <Text className="text-sm text-text-muted text-center mt-2 mb-6">
@@ -86,6 +86,6 @@ export default function AppoinmentSuccess() {
                 </TouchableOpacity>
 
             </View>
-        </SafeAreaView>
+        </View>
     );
 }

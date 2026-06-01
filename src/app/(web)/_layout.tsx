@@ -14,7 +14,7 @@ export default function WebLayout() {
   const { user, loading, isAuthenticated } = useAuth();
 
   // ✅ loading
-  if (loading) return <Loader fullScreen={false} size="small" />;
+  if (loading) return <Loader fullScreen />;
 
   // ✅ BLOCK: not authenticated
   if (!isAuthenticated) {
