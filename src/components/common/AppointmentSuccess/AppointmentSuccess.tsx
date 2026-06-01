@@ -1,3 +1,4 @@
+import Container from "@/components/common/Container/Container";
 import Loader from "@/components/common/Loader/Loader";
 import { getStorageItem } from "@/features/auth/storage";
 import { formatDate, formatTime } from "@/utils/dateandtime/date";
@@ -31,16 +32,10 @@ export default function AppoinmentSuccess() {
         loadAppointment();
     }, []);
 
-    if (!appointment) {
-        return (
-            <SafeAreaView className="flex-1 justify-center items-center bg-background">
-                <Loader fullScreen={false} size="small" />
-            </SafeAreaView>
-        );
-    }
 
     return (
-        <View className="flex-1 bg-background justify-center items-center px-6">
+        <Container>
+            {!appointment && <Loader fullScreen />}
             <View className="w-full max-w-md mx-auto bg-surface border border-border rounded-2xl p-6">
 
                 <Text className="text-2xl font-semibold text-text-primary text-center">
@@ -86,6 +81,6 @@ export default function AppoinmentSuccess() {
                 </TouchableOpacity>
 
             </View>
-        </View>
+        </Container>
     );
 }

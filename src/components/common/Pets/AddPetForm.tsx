@@ -128,7 +128,7 @@ export default function AddPetForm() {
         !form.petName || !form.species || loading;
 
     return (
-        <View className="flex-1 px-6 pt-6">
+        <View className= " bg-white flex-1 px-6 pt-6">
 
             {/* ✅ HEADER */}
             <View className="mb-10 items-center">

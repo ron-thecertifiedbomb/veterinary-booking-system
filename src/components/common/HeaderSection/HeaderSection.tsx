@@ -18,7 +18,7 @@ export default function HeaderSection({
         
 
         <View className="w-full mb-4">
-                <View className="mb-6 px-2">
+                <View>
                     <Text className="text-2xl lg:text-3xl font-bold tracking-tight text-text-primary">
                         {title}
                     </Text>
@@ -28,30 +28,6 @@ export default function HeaderSection({
                         </Text>
                     )}
                 </View>
-
-     
-                {/* <View
-                    className="bg-white border border-border rounded-2xl px-6 py-5"
-                    style={{
-                        boxShadow: "0px 10px 30px rgba(2,6,23,0.06)",
-                    }}
-                >
-                    <Text className="text-[14px] uppercase tracking-wide text-text-muted">
-                        Today is
-                    </Text>
-                    {date && (
-                    <Text className="text-lg font-medium text-text-primary">
-                        {formatDate(date)}
-                    </Text>
-                    )}
-                    {time && (
-                        <Text className="text-xs text-text-secondary mt-1">
-                            {time}
-                        </Text>
-                    )}
-                </View> */}
-
-            </View>
-        
+            </View>  
     );
 }

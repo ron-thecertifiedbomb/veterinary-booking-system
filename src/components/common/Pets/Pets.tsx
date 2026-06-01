@@ -12,7 +12,7 @@ import { useGetPets } from "@/features/pet/hooks/useGetPet";
 export default function Pets() {
     const { pets, fetchPets, loading } = useGetPets();
     const isEmpty = pets.length === 0;
-    // ✅ refetch on focus
+
     useFocusEffect(
         useCallback(() => {
             fetchPets();
@@ -21,21 +21,16 @@ export default function Pets() {
 
     const handleAddPet = () => {
         const isWeb = Platform.OS === "web";
-        router.push(
-            isWeb ? "/(web)/web-add-pet" : "(app)/add-pet"
-        );
+        router.push(isWeb ? "/(web)/web-add-pet" : "(app)/add-pet");
     };
 
     if (loading) return <Loader fullScreen />;
 
-
-
     return (
-        <Container>
-            {/* ✅ HEADER */}
+        <Container className="flex-1">
             <HeaderSection
                 title="My Pets"
-                description="Manage your pets and add new ones."
+                description="Manage your pets and easily book appointments."
             />
 
             {isEmpty && (
@@ -48,38 +43,78 @@ export default function Pets() {
             )}
 
             {!isEmpty && (
-                <FlatList
-                    data={pets}
-                    keyExtractor={(item) => item.id}
-                    contentContainerStyle={{ paddingBottom: 40 }}
-                    showsVerticalScrollIndicator={false}
-                    renderItem={({ item }) => (
-                        <View className="bg-white rounded-2xl p-4 mb-3 shadow-sm">
+                <>
+                    <FlatList
+                        data={pets}
+                        keyExtractor={(item) => item.id}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{
+                            paddingBottom: 120,
+                            paddingTop: 10,
+                        }}
+                        renderItem={({ item }) => (
+                            <View
+                                className="bg-white rounded-2xl mb-4 p-5 border border-border"
+                                style={{
+                                    boxShadow: "0px 8px 20px rgba(2,6,23,0.06)",
+                                }}
+                            >
+                                {/* HEADER */}
+                                <View className="flex-row justify-between items-start mb-3">
+                                    <View>
+                                        <Text className="text-base font-semibold text-text-primary">
+                                            {item.petName}
+                                        </Text>
 
-                            {/* ✅ ROW */}
-                            <View className="flex-row items-center justify-between">
+                                        <Text className="text-sm text-text-muted mt-1">
+                                            {item.species} • {item.breed || "Unknown breed"}
+                                        </Text>
+                                    </View>
 
-                                {/* PET INFO */}
-                                <View>
-                                    <Text className="text-base font-semibold text-gray-900">
-                                        {item.petName}
-                                    </Text>
-
-                                    <Text className="text-sm text-gray-500 mt-1">
-                                        {item.species} • {item.breed || "N/A"}
-                                    </Text>
-
-                                    <Text className="text-xs text-gray-400 mt-1">
-                                        {item.weight} kg
-                                    </Text>
+                                    {/* ✅ ICON (minimal lang) */}
+                                    <Text className="text-lg opacity-70">🐾</Text>
                                 </View>
 
-                                {/* OPTIONAL ACTION */}
-                                <Text className="text-2xl">🐾</Text>
+                                {/* DIVIDER */}
+                                <View className="h-px bg-border my-3" />
+
+                                {/* INFO ROW */}
+                                <View className="flex-row justify-between">
+                                    <View>
+                                        <Text className="text-xs text-text-muted">
+                                            Weight
+                                        </Text>
+                                        <Text className="text-sm font-medium text-text-primary mt-1">
+                                            {item.weight} kg
+                                        </Text>
+                                    </View>
+
+                                    <View className="items-end">
+                                        <Text className="text-xs text-text-muted">
+                                            Status
+                                        </Text>
+                                        <Text className="text-sm font-medium text-text-primary mt-1">
+                                            Active
+                                        </Text>
+                                    </View>
+                                </View>
                             </View>
-                        </View>
-                    )}
-                />
+                        )}
+                    />
+
+                    {/* ✅ FLOATING BUTTON (WHITE THEME FRIENDLY) */}
+                    <Pressable
+                        onPress={handleAddPet}
+                        className="absolute bottom-6 right-6 bg-black px-6 py-4 rounded-full active:opacity-80"
+                        style={{
+                            boxShadow: "0px 10px 20px rgba(2,6,23,0.15)",
+                        }}
+                    >
+                        <Text className="text-white font-semibold text-sm">
+                            + Add
+                        </Text>
+                    </Pressable>
+                </>
             )}
         </Container>
     );

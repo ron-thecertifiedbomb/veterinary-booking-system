@@ -31,7 +31,7 @@ export default function ProtectedLayout({
 
 
     return (
-        <SafeAreaView className="flex-1 bg-background">
+        <SafeAreaView className="flex-1 bg-background px-4">
             <Slot />
         </SafeAreaView>
     );

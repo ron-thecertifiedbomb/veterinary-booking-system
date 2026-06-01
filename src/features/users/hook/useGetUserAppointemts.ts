@@ -1,4 +1,5 @@
-import { Appointment } from "@/features/appointment/types";
+
+import { AppointmentData, CreateAppointmentResponse } from "@/features/appointment/types";
 import { getStorageItem, setStorageItem } from "@/features/auth/storage";
 import { GetUserAppointmentsResponse } from "@/features/users/types";
 import { api } from "@/utils/api/api";
@@ -9,17 +10,14 @@ export function useGetUserAppointments() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [appointments, setAppointments] = useState<AppointmentData[]>([]);
 
-  const fetchAppointments = async (): Promise<Appointment[] | null> => {
+  const fetchAppointments = async (): Promise<AppointmentData[] | null> => {
     try {
       setLoading(true);
       setError(null);
       setMessage(null);
 
-      logger.info("Fetching user appointments");
-
-      // ✅ 1. READ FROM CACHE FIRST
       const stored = await getStorageItem("appointments");
 
       if (stored) {
@@ -37,7 +35,7 @@ export function useGetUserAppointments() {
       }
 
       // ✅ 3. FETCH FROM API
-      const response = await api<GetUserAppointmentsResponse>(
+      const response = await api<CreateAppointmentResponse>(
         "/api/vet/users/appointments",
         {
           method: "GET",
@@ -49,16 +47,9 @@ export function useGetUserAppointments() {
 
       const safeData = Array.isArray(response.data) ? response.data : [];
 
-      // ✅ 4. UPDATE STATE
       setAppointments(safeData);
       setMessage(response.message);
 
-      logger.info("Appointments fetched ✅", {
-        message: response.message,
-        count: safeData.length,
-      });
-
-      // ✅ 5. SAVE TO CACHE
       await setStorageItem("appointments", JSON.stringify(safeData));
 
       return safeData;
@@ -69,7 +60,6 @@ export function useGetUserAppointments() {
       return null;
     } finally {
       setLoading(false);
-      logger.info("Fetch appointments completed");
     }
   };
 

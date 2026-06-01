@@ -1,4 +1,5 @@
 import { AuthUser } from "@/features/auth/types";
+import { Pet } from "@/features/pet/types";
 
 export type Slot = {
   time: string;
@@ -22,31 +23,43 @@ export type SlotsResponse = {
 export type SlotsApiResponse = {
   message: string;
   data: SlotsResponse;
-}
+};
 
 export type AppointmentDependencies = {
   setLoading: (value: boolean) => void;
   setSession: (user: AuthUser, token: string) => Promise<void>;
 };
 
-export type CreateAppointmentPayload = {
-  userId: string;
-  petId: string;
-  serviceType: string;
+export type ServiceType =
+  | "CHECKUP"
+  | "VACCINATION"
+  | "SURGERY"
+  | "GROOMING"
+  | string;
+
+export type AppointmentStatus =
+  | "BOOKED"
+  | "CONFIRMED"
+  | "COMPLETED"
+  | "CANCELLED"
+  | string;
+
+export interface AppointmentData {
+  id: string;
+  bookingCode: string;
+  serviceType: ServiceType;
   appointmentDate: string;
+  status: AppointmentStatus;
   notes: string;
-};
-
-export type CreateAppointmentResponse= {
-  message: string;
-  data: CreateAppointmentPayload;
-};
-
-export type CreateAppointmentInput = {
+  createdAt: string;
+  updatedAt: string;
+  customerId: string;
   petId: string;
-  petName: string;
-  serviceType: string;
-  date: string;
-  time: string;
-  notes?: string;
-};
+  staffId: string | null;
+  pet: Pet
+}
+
+export interface CreateAppointmentResponse {
+  message: string;
+  data: AppointmentData[];
+}

@@ -39,12 +39,7 @@ export default function Profile() {
                 description="View and manage your account information."
 
             />
-
-
-
-
             <View className="bg-surface border border-border rounded-2xl p-6 mb-4 items-center">
-
                 {/* ✅ AVATAR */}
                 <View className="w-20 h-20 rounded-full bg-black items-center justify-center mb-3">
                     <Text className="text-2xl font-bold text-white">

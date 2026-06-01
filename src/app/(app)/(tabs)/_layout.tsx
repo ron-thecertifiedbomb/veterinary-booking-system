@@ -13,10 +13,11 @@ export default function AppUserLayout() {
                 tabBarInactiveTintColor: "#9CA3AF",
                 tabBarStyle: {
                     height: 64 + insets.bottom,
-                    paddingTop: 8,
+                    paddingTop: 12,
                     paddingBottom: Math.max(insets.bottom, 12),
                     borderTopWidth: 0,
                     backgroundColor: "#FFFFFF",
+                    borderRadius: 12
                 },
                 tabBarLabelStyle: {
                     fontSize: 12,

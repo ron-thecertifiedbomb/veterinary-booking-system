@@ -7,3 +7,6 @@ export interface Appointment {
   appointmentDate: string;
   status: string;
 }
+
+
+
