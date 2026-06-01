@@ -1,3 +1,4 @@
+import Container from "@/components/common/Container/Container";
 import EmptyState from "@/components/common/EmptyState/EmptyState";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Loader from "@/components/common/Loader/Loader";
@@ -72,7 +73,7 @@ export default function Appointments() {
     if (loading) return <Loader fullScreen />;
     return (
 
-        <View className=" bg-background px-6 flex-1" >
+        <Container>
             <HeaderSection
                 title="My Appointments"
                 description="Track and review your upcoming and past bookings."
@@ -178,6 +179,6 @@ export default function Appointments() {
                 }}
                 />
             )}
-        </View>
+        </Container>
     );
 }

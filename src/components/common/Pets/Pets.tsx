@@ -20,6 +20,7 @@ import {
 import { useCallback } from "react";
 import { useGetPets } from "@/features/pet/hooks/useGetPet";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
+import Container from "@/components/common/Container/Container";
 
 export default function Pets() {
     const {
@@ -49,7 +50,7 @@ export default function Pets() {
     if (loading) return <Loader fullScreen />;
     return (
         
-            <View className=" bg-background px-6 flex-1" >
+        <Container>
                         <HeaderSection
                         title="My Pets"
                         description="Easily manage your pets for faster booking."
@@ -138,7 +139,7 @@ export default function Pets() {
                             }
                         />
                     )}
-                </View>
+        </Container>
         
         
     );
