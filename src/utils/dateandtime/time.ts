@@ -14,4 +14,12 @@ export const formatPHDate = (input: Date | string) => {
 
   return `Time: ${time}`;
 };
-;
+
+
+
+export const formatter = (time: string) => {
+  return time
+    .replace(/:\d{2}\s/, " ") // ✅ remove seconds
+    .replace(/\s?(AM|PM)/i, "") // ✅ remove AM/PM
+    .trim();
+};

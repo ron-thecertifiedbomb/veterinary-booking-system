@@ -1,6 +1,6 @@
 import { Appointment } from "@/features/admin/types";
 import { API } from "@/utils/config/api";
-import { logger } from "@/utils/logger";
+import { logger } from "@/utils/logger/logger";
 
 export const getAppointments = async (): Promise<Appointment[]> => {
   try {

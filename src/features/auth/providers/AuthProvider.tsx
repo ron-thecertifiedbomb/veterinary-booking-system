@@ -9,8 +9,8 @@ import {
     useState,
 } from "react";
 
-import { api, ApiError, NetworkError } from "@/utils/api";
-import { logger } from "@/utils/logger";
+import { api, ApiError, NetworkError } from "@/utils/api/api";
+import { logger } from "@/utils/logger/logger";
 
 import { AuthContextType } from "@/features/auth/providers/types";
 
@@ -26,8 +26,8 @@ import {
     RegisterPayload,
 } from "@/features/auth/types";
 
-import { logout as logoutService } from "@/features/auth/services/logout";
 import { login as loginService } from "@/features/auth/services/login";
+import { logout as logoutService } from "@/features/auth/services/logout";
 import { register as registerService } from "@/features/auth/services/register";
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -173,6 +173,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     // -----------------------------------
+    // APPOINTMENTS
+    // -----------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // -----------------------------------
     // SESSION HELPERS
     // -----------------------------------
 
@@ -241,8 +259,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         token,
         loading,
         isAuthenticated: !!user && !!token,
+
+        role: user?.role ?? null, // ✅ single source of truth
+
         isAdmin: user?.role === "ADMIN",
         isStaff: user?.role === "STAFF",
+        isCustomer: user?.role === "CUSTOMER",
+
         refreshSession,
         updateUser,
         setSession,
@@ -250,6 +273,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
     };
+    
 
     return (
         <AuthContext.Provider value={value}>

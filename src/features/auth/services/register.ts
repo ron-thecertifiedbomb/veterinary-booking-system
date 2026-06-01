@@ -1,7 +1,7 @@
 import { RegisterPayload, RegisterResponse } from "@/features/auth/types";
 
-import { api } from "@/utils/api";
-import { logger } from "@/utils/logger";
+import { api } from "@/utils/api/api";
+import { logger } from "@/utils/logger/logger";
 
 type RegisterDependencies = {
   setLoading: (value: boolean) => void;

@@ -5,7 +5,7 @@ import { getInitials } from "@/utils/getInitials/getInitials";
 import { useRouter } from "expo-router";
 import { Platform, Pressable, ScrollView, Text, View } from "react-native";
 
-export default function Profile() {
+export default function  Profile() {
     const router = useRouter();
     const { user, loading, logout } = useAuth();
 

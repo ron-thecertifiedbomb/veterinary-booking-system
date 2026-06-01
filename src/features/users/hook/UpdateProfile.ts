@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { api } from "@/utils/api";
-import { logger } from "@/utils/logger";
 import { getStorageItem, setStorageItem } from "@/features/auth/storage";
+import { api } from "@/utils/api/api";
+import { logger } from "@/utils/logger/logger";
+import { useState } from "react";
 
 // ✅ types
 type UpdateProfilePayload = {
@@ -58,7 +58,6 @@ export function useUpdateProfile() {
 
       const errorMessage = err?.message || "Failed to update profile";
       setError(errorMessage);
-
 
       return null;
     } finally {

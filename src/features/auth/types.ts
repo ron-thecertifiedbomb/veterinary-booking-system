@@ -2,7 +2,7 @@
 
 import { Pet } from "@/features/pet/types";
 
-export type UserRole = "USER" | "ADMIN" | "STAFF";
+export type UserRole = "CUSTOMER" | "ADMIN" | "STAFF";
 
 export type AuthUser = {
   id: string;

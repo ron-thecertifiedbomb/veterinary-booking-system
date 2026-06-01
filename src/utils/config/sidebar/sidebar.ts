@@ -13,7 +13,7 @@ export const adminNav = [
   { label: "Settings", href: "/(admin-web)/settings" },
 ];
 
-export const userNav = [
+export const customerNav = [
   { label: "Home", href: "/(web)/web-home" },
   { label: "Appointments", href: "/(web)/web-appointments" },
   { label: "Pets", href: "/(web)/web-pets" },

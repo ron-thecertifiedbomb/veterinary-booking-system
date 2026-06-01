@@ -1,27 +1,52 @@
+import { AuthUser } from "@/features/auth/types";
+
 export type Slot = {
   time: string;
   available: boolean;
+  status: "available" | "full" | "past";
 };
+
 export type SlotsResponse = {
-  now: string;
+  meta: {
+    currentDateTime: {
+      iso: string;
+      date: string;
+      time: string;
+    };
+    timezone: string;
+    date: string;
+  };
   slots: Slot[];
 };
 
-
-export type CreateAppointmentSlot = {
+export type SlotsApiResponse = {
   message: string;
-  data: Appointment;
+  data: SlotsResponse;
+}
+
+export type AppointmentDependencies = {
+  setLoading: (value: boolean) => void;
+  setSession: (user: AuthUser, token: string) => Promise<void>;
 };
 
-
-export type Appointment = {
-  bookingCode: string;
-  serviceType: string;
-  petName: string;
-  appointmentDate: string;
-  status: string;
-  notes: string;
-  createdAt: string;
-  updatedAt: string;
+export type CreateAppointmentPayload = {
   userId: string;
+  petId: string;
+  serviceType: string;
+  appointmentDate: string;
+  notes: string;
+};
+
+export type CreateAppointmentResponse= {
+  message: string;
+  data: CreateAppointmentPayload;
+};
+
+export type CreateAppointmentInput = {
+  petId: string;
+  petName: string;
+  serviceType: string;
+  date: string;
+  time: string;
+  notes?: string;
 };

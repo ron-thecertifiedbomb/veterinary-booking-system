@@ -7,6 +7,8 @@ import { Slot } from "expo-router";
 
 export default function RootLayout() {
   return (
+
+    
       // <NetworkGuard allowOffline={false}>
     <AuthProvider>
         <Slot />

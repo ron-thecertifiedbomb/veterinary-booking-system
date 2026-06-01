@@ -1,7 +1,6 @@
-import { View, Text, TextInput, Pressable, Platform } from "react-native";
-import { useState } from "react";
-import { logger } from "@/utils/logger";
+import { logger } from "@/utils/logger/logger";
 import { Picker } from "@react-native-picker/picker";
+import { Platform, Text, TextInput, View } from "react-native";
 
 type Props = {
     serviceType: string;

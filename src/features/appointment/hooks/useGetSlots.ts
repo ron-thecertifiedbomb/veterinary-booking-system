@@ -1,68 +1,51 @@
-import { useEffect, useState } from "react";
-import { api } from "@/utils/api";
-import { parseServerNow } from "@/utils/dateandtime/serverTime";
+// useGetSlots.ts
 
-type Slot = {
-  time: string;
-  available: boolean;
-};
-
-type SlotsResponse = {
-  now: string;
-  slots: Slot[];
-};
+import { fetchSlots } from "@/features/appointment/services/slots";
+import { SlotsResponse } from "@/features/appointment/types";
+import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { logger } from "@/utils/logger/logger";
+import { useState } from "react";
 
 export function useGetSlots(date: string) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [slots, setSlots] = useState<Slot[]>([]);
-  const [serverNow, setServerNow] = useState<string | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const { token } = useAuth(); // ✅ still using your pattern
 
-  const getSlots = async () => {
+  const [loading, setLoading] = useState(false);
+  const [slotsData, setSlotsData] = useState<SlotsResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const getSlots = async (selectedDate?: string) => {
+    const targetDate = selectedDate || date;
+
+    if (!targetDate || !token) return null;
+
     try {
       setLoading(true);
       setError(null);
 
-      const res = await api<SlotsResponse>(
-        `/api/vet/appointments/slots?date=${date}`,
-      );
+      const response = await fetchSlots(targetDate, token);
 
-      setSlots(Array.isArray(res.slots) ? res.slots : []);
-      setServerNow(res.now);
+      if (response?.data) {
+        setSlotsData(response.data);
+      }
 
-      return res;
+      return response?.data;
     } catch (err: any) {
-      // ✅ Always use server message first
-      const message =
-        err?.response?.message || err?.message || "Failed to fetch slots";
+      const msg =
+        err?.response?.data?.message || err?.message || "Failed to fetch slots";
 
-      setError(message);
+      setError(msg);
+      logger.error("Failed to fetch slots", msg);
+
       return null;
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (date) {
-      getSlots();
-    }
-  }, [date]);
-
-  // ✅ Safe parsing (avoid null crash)
-  const parsed = serverNow ? parseServerNow(serverNow) : null;
-
   return {
-    slots,
-    today: parsed?.today ?? null,
-    time: parsed?.time ?? null,
+    slotsData,
     loading,
     error,
-    selectedTime,
-    setSelectedTime,
-
-    // ✅ expose for manual refresh
-    refetch: getSlots,
+    getSlots,
   };
 }

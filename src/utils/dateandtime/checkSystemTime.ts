@@ -1,6 +1,6 @@
+import { logger } from "@/utils/logger/logger";
 import { parse } from "date-fns";
 import { fromZonedTime, toZonedTime } from "date-fns-tz";
-import { logger } from "@/utils/logger";
 
 export const checkSystemTime = (serverNow: string): boolean => {
   try {

@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/features/auth/providers/AuthProvider"; // ✓ add
 import { LoginPayload, LoginResponse } from "@/features/auth/types";
-import { logger } from "@/utils/logger";
+import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
 
 export function useLogin() {

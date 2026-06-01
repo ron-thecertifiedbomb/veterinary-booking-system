@@ -12,14 +12,13 @@ import {
 } from "react-native";
 
 import BookingForm from "@/components/booking/BookingForm";
+import EmptyState from "@/components/common/EmptyState/EmptyState";
 import Loader from "@/components/common/Loader/Loader";
 import { Slot } from "@/features/appointment/types";
-import { formatSlotTime } from "@/utils/formatter";
-import { formatDate } from "@/utils/dateandtime/date";
 import { Pet } from "@/features/pet/types";
+import { formatDate } from "@/utils/dateandtime/date";
+import { formatSlotTime } from "@/utils/formatter";
 import { router } from "expo-router";
-import { logger } from "@/utils/logger";
-import EmptyState from "@/components/common/EmptyState/EmptyState";
 
 type Props = {
     visible: boolean;
@@ -79,7 +78,7 @@ export default function BookingModal({
         setNotes("");
     };
     const selectedPet = pets.find(p => p.id === selectedPetId);
-    logger.info('Pet ID', selectedPet?.id)
+
 
     const handleClose = () => {
         if (creating) return;
@@ -99,7 +98,7 @@ export default function BookingModal({
         await onSubmit({
             petId: selectedPet?.id || "",
             petName: selectedPet?.petName || "",
-            serviceType,
+            serviceType: serviceType,
             time: selectedTime,
             notes,
         });
@@ -182,13 +181,13 @@ export default function BookingModal({
                         <>
                             {isEmpty ? (
 
-                                            <EmptyState
-                                                icon="🐾"
-                                                title="No pets yet"
-                                                description="Add your first pet to start booking."
-                                                buttonLabel="Add Pet"
-                                                onPress={handleAddPet}
-                                            />
+                                <EmptyState
+                                    icon="🐾"
+                                    title="No pets yet"
+                                    description="Add your first pet to start booking."
+                                    buttonLabel="Add Pet"
+                                    onPress={handleAddPet}
+                                />
 
                             ) : (
 
@@ -210,11 +209,11 @@ export default function BookingModal({
                                             onValueChange={(value) =>
                                                 setSelectedPetId(String(value))
                                             }
-                                                            style={
-                                                                Platform.OS === "web"
-                                                                    ? ({ outlineStyle: "none" } as any)
-                                                                    : undefined
-                                                            }
+                                            style={
+                                                Platform.OS === "web"
+                                                    ? ({ outlineStyle: "none" } as any)
+                                                    : undefined
+                                            }
                                         >
                                             <Picker.Item
                                                 label="Select your pet..."
@@ -233,18 +232,18 @@ export default function BookingModal({
                                     </View>
 
                                     {/* ✅ TIME PICKER */}
-                                                    <View className="border border-border rounded-xl mb-4 p-2">
+                                    <View className="border border-border rounded-xl mb-4 p-2">
                                         <Picker
                                             selectedValue={selectedTime}
                                             enabled={!creating}
                                             onValueChange={(value) =>
                                                 setSelectedTime(String(value))
                                             }
-                                                            style={
-                                                                Platform.OS === "web"
-                                                                    ? ({ outlineStyle: "none" } as any)
-                                                                    : undefined
-                                                            }
+                                            style={
+                                                Platform.OS === "web"
+                                                    ? ({ outlineStyle: "none" } as any)
+                                                    : undefined
+                                            }
                                         >
                                             <Picker.Item
                                                 label="Select a time..."
@@ -265,6 +264,7 @@ export default function BookingModal({
                                     {/* ✅ FORM */}
                                     <BookingForm
                                         serviceType={serviceType}
+
                                         notes={notes}
                                         setServiceType={setServiceType}
                                         setNotes={setNotes}
@@ -295,8 +295,8 @@ export default function BookingModal({
                                             disabled={!isValid || creating}
                                             onPress={handleSubmit}
                                             className={`flex-1 rounded-lg py-3 ${isValid && !creating
-                                                    ? "bg-black"
-                                                    : "bg-gray-400"
+                                                ? "bg-black"
+                                                : "bg-gray-400"
                                                 }`}
                                         >
                                             {creating ? (

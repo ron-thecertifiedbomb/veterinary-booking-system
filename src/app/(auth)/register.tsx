@@ -1,5 +1,6 @@
 import RegisterForm from "@/components/authentication/forms/RegisterForm";
-import ScreenContainer from "@/components/common/layout/ScreenContainer";
+import ScreenContainer from "@/components/common/Layouts/ScreenContainer/ScreenContainer";
+
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { RegisterPayload } from "@/features/auth/types";
 import { showAlert } from "@/hooks/crossPlatformAlert";
@@ -25,7 +26,7 @@ export default function Registration() {
       const response = await register(data);
       if (!response) return;
 
-      showAlert("", "Account created ✅ Signing you in...");
+      showAlert("Success", response.message);
 
       const loginResponse = await login({
         email: data.email,
@@ -34,14 +35,17 @@ export default function Registration() {
 
       if (!loginResponse) return;
 
-      // ✅ use loginResponse directly, not user from context
-      const role = loginResponse.data.user.role;
-      const route = getRouteByRole(role);
 
-      router.replace(route);
+      setTimeout(() => {
+        const target = getRouteByRole(
+          loginResponse.data.user.role,
+          true
+        );
 
+        router.replace(target);
+      }, 0);
     } catch (err: any) {
-      showAlert("", err?.message || "Registration failed");
+      showAlert("Error", err.message);
     }
   };
 

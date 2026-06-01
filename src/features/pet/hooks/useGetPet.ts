@@ -1,10 +1,7 @@
-import { useState } from "react";
-import Toast from "react-native-toast-message";
-import { api } from "@/utils/api";
-import { logger } from "@/utils/logger";
 import { getStorageItem, setStorageItem } from "@/features/auth/storage";
 import { GetPetsResponse, Pet } from "@/features/pet/types";
-
+import { api } from "@/utils/api/api";
+import { useState } from "react";
 
 export function useGetPets() {
   const [pets, setPets] = useState<Pet[]>([]);
@@ -33,7 +30,7 @@ export function useGetPets() {
           Authorization: `Bearer ${token}`,
         },
       });
-const safeData = Array.isArray(response.data) ? response.data : [];
+      const safeData = Array.isArray(response.data) ? response.data : [];
       setPets(safeData);
       setMessage(response.message);
 
@@ -41,12 +38,10 @@ const safeData = Array.isArray(response.data) ? response.data : [];
 
       return safeData;
     } catch (err: any) {
- 
       err?.message || "Failed to fetch pets";
       return null;
     } finally {
       setLoading(false);
-
     }
   };
 

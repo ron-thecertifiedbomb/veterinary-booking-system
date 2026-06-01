@@ -1,9 +1,8 @@
-import { api } from "@/utils/api";
-import { logger } from "@/utils/logger";
-import { useState } from "react";
 import { getStorageItem, setStorageItem } from "@/features/auth/storage";
 import { GetUserProfileResponse, UserProfile } from "@/features/users/types";
-
+import { api } from "@/utils/api/api";
+import { logger } from "@/utils/logger/logger";
+import { useState } from "react";
 
 export const useGetUserProfile = () => {
   const [loading, setLoading] = useState(false);
@@ -53,4 +52,3 @@ export const useGetUserProfile = () => {
     error,
   };
 };
-

@@ -1,5 +1,5 @@
-import { api } from "@/utils/api";
-import { logger } from "@/utils/logger";
+import { api } from "@/utils/api/api";
+import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
 
 type Payload = {

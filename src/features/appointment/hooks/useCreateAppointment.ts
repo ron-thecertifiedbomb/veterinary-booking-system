@@ -1,93 +1,104 @@
-import { api } from "@/utils/api";
-import { logger } from "@/utils/logger";
-import { useState } from "react";
 import { getStorageItem, setStorageItem } from "@/features/auth/storage";
-
+import { api } from "@/utils/api/api";
+import { logger } from "@/utils/logger/logger";
+import { useState } from "react";
 
 import {
-
-  CreateAppointmentSlot,
+  CreateAppointmentInput,
+  CreateAppointmentResponse,
 } from "@/features/appointment/types";
 
-type CreateAppointmentInput = {
-  petId: string
-  petName: string;
-  serviceType: string;
-  date: string;
-  time: string;
-  notes?: string;
-};
+import { useAuth } from "@/features/auth/providers/AuthProvider";
 
 export const useCreateAppointment = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  const { token } = useAuth(); // ✅ keep it clean
+
   const createAppointment = async (
     input: CreateAppointmentInput,
-  ): Promise<CreateAppointmentSlot> => {
+  ): Promise<CreateAppointmentResponse> => {
     try {
-      // ✅ prevent duplicate requests
-      if (loading) {
-        throw new Error("Request already in progress");
-      }
-
       setLoading(true);
       setError(null);
       setSuccess(false);
 
-      // ✅ get token
-      const token = await getStorageItem("access_token");
+      // ✅ TOKEN
       if (!token) {
         throw new Error("Unauthorized. Please login again.");
       }
 
-      // ✅ get user
+      // ✅ USER (safe parse)
       const storedUser = await getStorageItem("user");
-      const user = storedUser ? JSON.parse(storedUser) : null;
 
-      const userId = user?.userId || user?.id;
-
-      if (!userId) {
-        throw new Error("Invalid user session");
+      let parsedUser = null;
+      try {
+        parsedUser = storedUser ? JSON.parse(storedUser) : null;
+      } catch {
+        throw new Error("Corrupted user session");
       }
 
+      const userId = parsedUser?.id;
+      if (!userId) throw new Error("Invalid user session");
+
+      const appointmentDate = new Date(
+        `${input.date}T${input.time}:00+08:00`,
+      ).toISOString();
+
       const payload = {
-        userId,
-        petId: input.petId,
         petName: input.petName,
-        serviceType: input.serviceType,
-        date: input.date,
-        time: input.time,
+        petId: input.petId,
+        serviceType: input.serviceType.toUpperCase(),
+        appointmentDate,
         notes: input.notes || "",
       };
 
+      // ✅ API CALL
+      const res = await api<CreateAppointmentResponse>(
+        "/api/vet/appointments",
+        {
+          method: "POST",
+          body: JSON.stringify(payload),
+          token,
+        },
+      );
 
-      // ✅ API call
-      const res = await api<CreateAppointmentSlot>("/api/vet/appointments", {
-        method: "POST",
-        body: JSON.stringify(payload),
-        token,
-      });
-
-      const enrichedAppointment = {
+      const appointment = {
         ...res.data,
-        date: input.date,
-        time: input.time,
       };
 
+      // ✅ STORAGE
       const existing = await getStorageItem("appointments");
-      const parsed = existing ? JSON.parse(existing) : [];
 
-      const updated = [enrichedAppointment, ...parsed].slice(0, 20); // ✅ limit to 20
+      let parsed: any[] = [];
+      try {
+        parsed = existing ? JSON.parse(existing) : [];
+      } catch {
+        parsed = [];
+      }
+
+      const updated = [appointment, ...parsed].slice(0, 20);
 
       await setStorageItem("appointments", JSON.stringify(updated));
+
       setSuccess(true);
-      return res;
+
+      return {
+        message: res.message,
+        data: res.data,
+      };
     } catch (err: any) {
-      const message = err?.message || "Failed to create appointment";
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to create appointment";
+
       setError(message);
-      throw err;
+      logger.error("Create appointment failed", message);
+
+      throw new Error(message);
     } finally {
       setLoading(false);
     }

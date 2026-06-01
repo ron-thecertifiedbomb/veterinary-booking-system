@@ -1,7 +1,6 @@
 // src/features/auth/services/login.ts
 
-import { api } from "@/utils/api";
-import { logger } from "@/utils/logger";
+import { api } from "@/utils/api/api";
 
 import { AuthUser, LoginPayload, LoginResponse } from "@/features/auth/types";
 
@@ -28,8 +27,6 @@ export async function login(
     };
 
     await setSession(normalizedUser, response.data.access_token);
-
-    logger.info("Login successful via AuthProvider", normalizedUser);
 
     return response;
   } finally {

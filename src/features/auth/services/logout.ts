@@ -1,7 +1,7 @@
 // src/features/auth/services/logout.ts
 
-import { api } from "@/utils/api";
-import { logger } from "@/utils/logger";
+import { api } from "@/utils/api/api";
+import { logger } from "@/utils/logger/logger";
 
 type LogoutDependencies = {
   token: string | null;
@@ -28,8 +28,6 @@ export async function logout({
   try {
     setLoading(true);
 
-    logger.info("Logging out user");
-
     let response = null;
 
     if (token) {
@@ -47,16 +45,11 @@ export async function logout({
   } finally {
     await Promise.all([
       removeStorageItem("user"),
-
       removeStorageItem("access_token"),
     ]);
-
     clearSessionCache();
-
     setUser(null);
-
     setToken(null);
-
     setLoading(false);
 
     logger.info("User session cleared");

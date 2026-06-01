@@ -1,7 +1,7 @@
 import { useGetSlots } from "@/features/appointment/hooks/useGetSlots";
-import { logger } from "@/utils/logger";
-import { useCallback, useEffect, useRef } from "react";
 import { parseServerNow } from "@/utils/dateandtime/serverTime";
+import { logger } from "@/utils/logger/logger";
+import { useCallback, useEffect, useRef } from "react";
 
 export const useBookingBootstrap = (date: string) => {
   const { slots, getSlots, loading, error, serverNow, setSelectedTime } =

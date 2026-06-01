@@ -1,27 +1,29 @@
-// src/app/index.tsx
+import { Redirect, usePathname } from 'expo-router';
+import { useAuth } from '@/features/auth/providers/AuthProvider';
+import { getRouteByRole } from '@/utils/routes/routeResolver';
 
-import Loader from "@/components/common/Loader/Loader";
-import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { getRouteByRole } from "@/utils/routes/routeResolver";
-import { Redirect } from "expo-router";
+export default function GatekeeperLayout() {
+  const pathname = usePathname();
+  const { user, loading, isAuthenticated } = useAuth();
 
-export default function Index() {
-  const { loading, user, isAuthenticated } = useAuth();
+  // ✅ Wait for auth hydration
+  if (loading) return null;
 
-  // ✅ loading first
-  if (loading) {
-    return <Loader fullScreen />;
+  // ✅ HARD BLOCK: not logged in → always go login
+  if (!isAuthenticated) {
+    if (!pathname.startsWith("/(auth)")) {
+      return <Redirect href="/(auth)/login" />;
+    }
+    return null;
   }
 
-  // ✅ guest → login
-  if (!user || !isAuthenticated) {
-    return <Redirect href={getRouteByRole(undefined, { isAuthenticated: false })} />;
+  // ✅ Resolve correct route
+  const target = getRouteByRole(user?.role, true) as string;
+
+  // ✅ Allow nested routes inside correct stack
+  if (!pathname.startsWith(target)) {
+    return <Redirect href={target} />;
   }
 
-  // ✅ central routing (handles role + platform)
-  return (
-    <Redirect
-      href={getRouteByRole(user.role, { isAuthenticated: true })}
-    />
-  );
+  return null;
 }

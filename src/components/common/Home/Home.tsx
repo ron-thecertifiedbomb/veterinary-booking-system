@@ -5,7 +5,9 @@ import { useCreateAppointment } from "@/features/appointment/hooks/useCreateAppo
 import { useGetSlots } from "@/features/appointment/hooks/useGetSlots";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { showAlert } from "@/hooks/crossPlatformAlert";
-import { getTodayDate } from "@/utils/dateandtime/date";
+import { formatTime, getTodayDate } from "@/utils/dateandtime/date";
+import { formatPHDate, formatter } from "@/utils/dateandtime/time";
+import { formatDate } from "date-fns";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
@@ -18,14 +20,23 @@ export default function Home() {
     const { user, loading: authLoading, refreshSession } = useAuth();
     const pets = user?.pets || [];
 
-    const {
-        slots,
-        today: now,
-        time,
+    const { getSlots, slotsData,
         loading: slotsLoading,
-        error: fetchError,
-    } = useGetSlots(date);
+        error: slotFetch, } = useGetSlots(date);
 
+    const slots = slotsData?.slots ?? [];
+    const now = slotsData?.meta.currentDateTime.date ?? "";
+    const time = slotsData?.meta.currentDateTime.time ?? "";
+
+
+    
+    const handleSelectDate = async (newDate: string) => {
+        setModalChecking(true);
+        setShowModal(true);
+        setDate(newDate);
+
+        await getSlots(newDate);
+    };
     const {
         createAppointment,
         loading: creating,
@@ -34,10 +45,13 @@ export default function Home() {
         resetSuccess,
     } = useCreateAppointment();
 
-    // ✅ ALL hooks before any early return
     useEffect(() => {
         refreshSession();
     }, []);
+
+    useEffect(() => {
+        getSlots();
+    }, [date]);
 
     useEffect(() => {
         if (!success) return;
@@ -51,7 +65,8 @@ export default function Home() {
     }, [showModal, slotsLoading]);
 
     // ✅ only block on initial auth load
-    if (authLoading) {
+
+    if (slotsLoading) {
         return <Loader fullScreen />;
     }
 
@@ -79,27 +94,23 @@ export default function Home() {
                         {now}
                     </Text>
                     <Text className="text-xs text-text-secondary mt-1">
-                        {time}
+                        {formatter(time)}
                     </Text>
                 </View>
 
                 <DateSelector
                     date={date}
-                    onDateChange={(newDate) => {
-                        setModalChecking(true);
-                        setShowModal(true);
-                        setDate(newDate);
-                    }}
+                    onDateChange={handleSelectDate}
                 />
-            </View>
 
+            </View>
             <BookingModal
                 pets={pets}
                 visible={showModal}
                 slots={slots}
                 checking={modalChecking || slotsLoading}
                 creating={creating}
-                error={fetchError || createError}
+                error={slotFetch || createError}
                 date={date}
                 timeDisplay={time ?? ""}
                 onClose={() => {
@@ -111,6 +122,7 @@ export default function Home() {
 
                     try {
                         const appointment = await createAppointment({
+                            
                             petId: formData.petId,
                             petName: formData.petName,
                             serviceType: formData.serviceType,
@@ -119,10 +131,13 @@ export default function Home() {
                             notes: formData.notes || "",
                         });
 
-                        showAlert("Success", appointment.message);
+                        showAlert(
+                            "Success",
+                          appointment.message
+                        );
+
                         setShowModal(false);
                         setModalChecking(false);
-
                         setTimeout(() => {
                             router.push({ pathname: "(web)/success" });
                         }, 300);

@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 
-
-import { Appointment } from "@/features/admin/types";
-import { logger } from "@/utils/logger";
 import { getAppointments } from "@/features/admin/api";
+import { Appointment } from "@/features/admin/types";
+import { logger } from "@/utils/logger/logger";
 
 export const useAppointments = () => {
-
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -68,6 +66,3 @@ export const useAppointments = () => {
     refresh,
   };
 };
-
-
-

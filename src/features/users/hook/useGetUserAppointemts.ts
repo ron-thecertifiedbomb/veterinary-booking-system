@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { api } from "@/utils/api";
-import { logger } from "@/utils/logger";
+import { Appointment } from "@/features/appointment/types";
 import { getStorageItem, setStorageItem } from "@/features/auth/storage";
 import { GetUserAppointmentsResponse } from "@/features/users/types";
-import { Appointment } from "@/features/appointment/types";
+import { api } from "@/utils/api/api";
+import { logger } from "@/utils/logger/logger";
+import { useState } from "react";
 
 export function useGetUserAppointments() {
   const [loading, setLoading] = useState(false);

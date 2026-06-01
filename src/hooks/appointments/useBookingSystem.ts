@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
 import { API } from "@/utils/config/api";
+import { logger } from "@/utils/logger/logger";
 import { parse } from "date-fns";
 import { fromZonedTime, toZonedTime } from "date-fns-tz";
-import { logger } from "@/utils/logger";
+import { useEffect, useState } from "react";
 
 export type Slot = {
   time: string;

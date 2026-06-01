@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { AppState } from "react-native";
 
-import { api } from "@/utils/api";
-import { logger } from "@/utils/logger";
+import { api } from "@/utils/api/api";
+import { logger } from "@/utils/logger/logger";
 
 type ServerTimeResponse = {
   message: string;
@@ -25,10 +25,10 @@ export function useTimeValidation() {
   const validate = async () => {
     try {
       const response = await api<ServerTimeResponse>("/api/server-time");
-  logger.info("useTimeValidation", {
-    message:response.message,
-    data:response.data
-  });
+      logger.info("useTimeValidation", {
+        message: response.message,
+        data: response.data,
+      });
       // ✅ log backend message
       // logger.info(res.message);
       const serverTime = response.data.timestamp;

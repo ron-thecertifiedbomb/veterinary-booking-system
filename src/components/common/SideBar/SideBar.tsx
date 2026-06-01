@@ -5,6 +5,9 @@ import { NavItemType, SidebarProps } from "@/utils/config/sidebar/types";
 import { Link, usePathname, useRouter } from "expo-router";
 import { Animated, Pressable, Text, View } from "react-native";
 
+// ✅✅ NEW IMPORT
+import { getSidebarShadow } from "@/utils/styles/shadow";
+
 export default function Sidebar({
     isMobile,
     translateX,
@@ -44,7 +47,7 @@ export default function Sidebar({
         );
     };
 
-    // ✅ NAV ITEM (UPGRADED)
+    // ✅ NAV ITEM
     const NavItem = ({ item }: { item: NavItemType }) => {
         const active = isActive(item.href);
 
@@ -55,21 +58,16 @@ export default function Sidebar({
                     style={({ pressed }) => ({
                         flexDirection: "row",
                         alignItems: "center",
-
                         paddingVertical: 14,
                         paddingHorizontal: 18,
-
                         borderRadius: 12,
-
                         backgroundColor: active
                             ? "#F1F5F9"
                             : pressed
                                 ? "#F8FAFC"
                                 : "transparent",
-
                         borderLeftWidth: active ? 3 : 0,
                         borderLeftColor: "#111827",
-
                         transform: [{ scale: pressed ? 0.98 : 1 }],
                     })}
                 >
@@ -99,8 +97,7 @@ export default function Sidebar({
                 justifyContent: "space-between",
             }}
         >
-            {/* 🔥 HEADER BRAND */}
-
+            {/* HEADER */}
             <View style={{ marginBottom: 28 }}>
                 <Text
                     style={{
@@ -123,17 +120,14 @@ export default function Sidebar({
                 </Text>
             </View>
 
-
-            {/* ✅ NAV */}
-
+            {/* NAV */}
             <View style={{ flex: 1, marginTop: 10, gap: 10 }}>
                 {navItems.map((item) => (
                     <NavItem key={item.href} item={item} />
                 ))}
             </View>
 
-
-            {/* ✅ FOOTER */}
+            {/* FOOTER */}
             <View style={{ marginTop: 12 }}>
                 <Pressable
                     onPress={confirmLogout}
@@ -142,13 +136,11 @@ export default function Sidebar({
                         paddingVertical: 12,
                         borderRadius: 12,
                         alignItems: "center",
-
                         backgroundColor: loading
                             ? "#1e293b"
                             : pressed
                                 ? "#111827"
                                 : "black",
-
                         transform: [{ scale: pressed ? 0.97 : 1 }],
                     })}
                 >
@@ -165,39 +157,37 @@ export default function Sidebar({
         </View>
     );
 
-  
+    // ✅ DESKTOP SIDEBAR
     if (!isMobile) {
         return (
             <View
-                style={{
-                    width: 260,
-                    shadowColor: "#000",
-                    shadowOpacity: 0.05,
-                    shadowRadius: 10,
-                }}
+                style={[
+                    { width: 260 },
+                    getSidebarShadow("light"), // ✅✅ APPLIED
+                ]}
             >
                 {SidebarContent}
             </View>
         );
     }
 
-   
+    // ✅ MOBILE SIDEBAR
     return (
         <>
             <Animated.View
-                style={{
-                    position: "absolute",
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                    width: 260,
-                    transform: [{ translateX }],
-                    zIndex: 20,
-                    backgroundColor: "#fff",
-                    shadowColor: "#000",
-                    shadowOpacity: 0.1,
-                    shadowRadius: 20,
-                }}
+                style={[
+                    {
+                        position: "absolute",
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        width: 260,
+                        transform: [{ translateX }],
+                        zIndex: 20,
+                        backgroundColor: "#fff",
+                    },
+                    getSidebarShadow("medium"), // ✅✅ APPLIED
+                ]}
             >
                 {SidebarContent}
             </Animated.View>

@@ -1,16 +1,12 @@
 // src/features/auth/hooks/useRegister.ts
 
-import { useState } from "react";
-import Toast from "react-native-toast-message";
-import { api } from "@/utils/api";
-import { logger } from "@/utils/logger";
-import { LoginResponse, RegisterPayload } from "@/features/auth/types";
 import { setStorageItem } from "@/features/auth/storage";
-
-
+import { LoginResponse, RegisterPayload } from "@/features/auth/types";
+import { api } from "@/utils/api/api";
+import { logger } from "@/utils/logger/logger";
+import { useState } from "react";
 
 export function useRegister() {
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -38,7 +34,6 @@ export function useRegister() {
 
       return response;
     } catch (err: any) {
-
       const errorMessage = err?.message || "Failed to register";
 
       setError(errorMessage);
