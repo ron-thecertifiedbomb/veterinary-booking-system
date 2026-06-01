@@ -1,21 +1,36 @@
 
-import ScreenContainer from "@/components/common/Layouts/ScreenContainer/ScreenContainer";
+
 import AddPetForm from "@/components/common/Pets/AddPetForm";
 import { useAddPet } from "@/features/pet/hooks/useAddPet";
 import { CreatePetPayload } from "@/features/pet/types";
-
-
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { useRouter } from "expo-router";
-import {
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-} from "react-native";
+import { useEffect } from "react";
+import { Platform } from "react-native";
+
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withTiming,
+    Easing,
+} from "react-native-reanimated";
+
 
 export default function AddPetScreen() {
     const router = useRouter();
     const { addPet, loading } = useAddPet();
+    const x = useSharedValue(300);
+
+    useEffect(() => {
+        x.value = withTiming(0, {
+            duration: 350,
+            easing: Easing.out(Easing.ease),
+        });
+    }, []);
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [{ translateX: x.value }],
+    }));
 
 
     const handleCreatePet = async (data: CreatePetPayload) => {
@@ -38,22 +53,8 @@ export default function AddPetScreen() {
     };
 
     return (
-        <ScreenContainer>
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                className="flex-1"
-            >
-                <ScrollView
-                    keyboardShouldPersistTaps="handled"
-                    contentContainerStyle={{
-                        flexGrow: 1,
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
+        <Animated.View style={[{ flex: 1 }, animatedStyle]}>
                     <AddPetForm loading={loading} onSubmit={handleCreatePet} />
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </ScreenContainer>
+        </Animated.View>
     );
 }

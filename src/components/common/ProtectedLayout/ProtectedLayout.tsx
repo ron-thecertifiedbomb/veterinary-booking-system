@@ -3,6 +3,7 @@
 import Loader from "@/components/common/Loader/Loader";
 import { Redirect, Slot } from "expo-router";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type Props = {
     role?: "ADMIN" | "STAFF" | "CUSTOMER"; // optional role restriction
@@ -28,6 +29,11 @@ export default function ProtectedLayout({
         return <Redirect href={fallback} />;
     }
 
-    return <Slot />;
+
+    return (
+        <SafeAreaView className="flex-1">
+            <Slot />
+        </SafeAreaView>
+    );
+
 }
-``
