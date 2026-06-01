@@ -15,7 +15,7 @@ export default function Home() {
     const router = useRouter();
 
     const [date, setDate] = useState(getTodayDate());
-    const [showModal, setShowModal] = useState(true);
+    const [showModal, setShowModal] = useState(false);
     const [modalChecking, setModalChecking] = useState(false);
 
     const { user, refreshSession } = useAuth();
