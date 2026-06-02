@@ -1,4 +1,3 @@
-
 import { API } from "@/utils/api/api.config";
 import { logger } from "@/utils/logger/logger";
 
@@ -83,7 +82,7 @@ export async function api<T>(
 
   try {
     // ✅ PRE-CHECK (faster UX)
-    if (typeof navigator !== "undefined" && !navigator.onLine) {
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NetworkError("No internet connection", "OFFLINE");
     }
 
