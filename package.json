@@ -2,51 +2,39 @@
   "name": "veterinary-booking-system",
   "main": "expo-router/entry",
   "version": "1.0.0",
-"scripts": {
-  "dev": "expo start",
-  "dev:clean": "expo start --clear",
-
-  "web:development": "dotenv -e .env.development -- expo start --web",
-  "web:staging": "dotenv -e .env.staging -- expo start --web",
-  "web:production": "dotenv -e .env.production -- expo start --web",
-
-  "build:web:development": "dotenv -e .env.development -- expo export --platform web",
-  "build:web:staging": "dotenv -e .env.staging -- expo export --platform web",
-  "build:web:production": "dotenv -e .env.production -- expo export --platform web",
-
-  "mobile:development": "dotenv -e .env.development -- expo start",
-  "mobile:staging": "dotenv -e .env.staging -- expo start",
-  "mobile:production": "dotenv -e .env.production -- expo start",
-
-  "build:android:development": "cd android && dotenv -e ../.env.development -- gradlew.bat assembleDebug",
-  "build:android:staging": "cd android && dotenv -e ../.env.staging -- gradlew.bat assembleRelease",
-  "build:android:production": "cd android && dotenv -e ../.env.production -- gradlew.bat assembleRelease",
-
-  "install:android:debug": "adb install -r android/app/build/outputs/apk/debug/app-debug.apk",
-  "install:android:staging": "adb install -r android/app/build/outputs/apk/release/app-release.apk",
-  "install:android:production": "adb install -r android/app/build/outputs/apk/release/app-release.apk",
-
-  "android:device": "dotenv -e .env.development -- expo run:android --device",
-
-  "adb:devices": "adb devices",
-  "adb:restart": "adb kill-server && adb start-server",
-  "adb:logs": "adb logcat *:S ReactNative:V ReactNativeJS:V",
-  "adb:reverse": "adb reverse tcp:3000 tcp:3000",
-
-  "android:clean": "cd android && gradlew.bat clean",
-
-  "clean:all": "rmdir /s /q node_modules android .expo dist && npm install",
-
-  "doctor": "expo-doctor",
-  "lint": "expo lint",
-  "typecheck": "tsc --noEmit",
-  "test": "jest",
-
-  "print:tree": "node scripts/print-repo-tree.js",
-  "post:install": "node scripts/patch-css-interop.js",
-  "check:no-console": "node scripts/check-no-console.js"
-},
-
+  "scripts": {
+    "dev": "expo start",
+    "dev:clean": "expo start --clear",
+    "web:development": "dotenv -e .env.development -- expo start --web",
+    "web:staging": "dotenv -e .env.staging -- expo start --web",
+    "web:production": "dotenv -e .env.production -- expo start --web",
+    "build:web:development": "dotenv -e .env.development -- expo export --platform web",
+    "build:web:staging": "dotenv -e .env.staging -- expo export --platform web",
+    "build:web:production": "dotenv -e .env.production -- expo export --platform web",
+    "mobile:development": "dotenv -e .env.development -- expo start",
+    "mobile:staging": "dotenv -e .env.staging -- expo start",
+    "mobile:production": "dotenv -e .env.production -- expo start",
+    "build:android:development": "cd android && dotenv -e ../.env.development -- gradlew.bat assembleDebug",
+    "build:android:staging": "cd android && dotenv -e ../.env.staging -- gradlew.bat assembleRelease",
+    "build:android:production": "cd android && dotenv -e ../.env.production -- gradlew.bat assembleRelease",
+    "install:android:debug": "adb install -r android/app/build/outputs/apk/debug/app-debug.apk",
+    "install:android:staging": "adb install -r android/app/build/outputs/apk/release/app-release.apk",
+    "install:android:production": "adb install -r android/app/build/outputs/apk/release/app-release.apk",
+    "android:device": "dotenv -e .env.development -- expo run:android --device",
+    "adb:devices": "adb devices",
+    "adb:restart": "adb kill-server && adb start-server",
+    "adb:logs": "adb logcat *:S ReactNative:V ReactNativeJS:V",
+    "adb:reverse": "adb reverse tcp:3000 tcp:3000",
+    "android:clean": "cd android && gradlew.bat clean",
+    "clean:all": "rmdir /s /q node_modules android .expo dist && npm install",
+    "doctor": "expo-doctor",
+    "lint": "expo lint",
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "print:tree": "node scripts/print-repo-tree.js",
+    "post:install": "node scripts/patch-css-interop.js",
+    "check:no-console": "node scripts/check-no-console.js"
+  },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
