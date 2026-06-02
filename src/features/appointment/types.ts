@@ -61,12 +61,13 @@ export interface AppointmentData {
 
 export interface CreateAppointmentResponse {
   message: string;
-  data: AppointmentData[];
+  data: AppointmentData;
 }
 
 export interface CreateAppointmentInput {
   petId: string;
   serviceType: ServiceType;
   appointmentDate: string;
+  appointmentTime: string;
   notes: string;
 }

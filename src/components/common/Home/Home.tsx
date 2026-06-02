@@ -1,3 +1,4 @@
+import BookingSuccessModal from "@/components/booking/BookingSuccessModal";
 import DateSelector from "@/components/booking/DateSelector";
 import AppBookingModal from "@/components/common/AppModal/AppBookingModal";
 import Container from "@/components/common/Container/Container";
@@ -8,24 +9,27 @@ import { useGetSlots } from "@/features/appointment/hooks/useGetSlots";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { getTodayDate } from "@/utils/dateandtime/date";
-import { useRouter } from "expo-router";
+import { router, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
+import { Platform } from "react-native";
 
 export default function Home() {
-    const router = useRouter();
 
     const [date, setDate] = useState(getTodayDate());
     const [showModal, setShowModal] = useState(false);
     const [modalChecking, setModalChecking] = useState(false);
-
-    const { user, refreshSession, updateUserAppointments } = useAuth();
+    const { user, refreshSession} = useAuth();
     const pets = user?.pets || [];
+    const [bookingSummary, setBookingSummary] = useState<any>(null);
+    const [successModalVisible, setSuccessModalVisible] = useState(false);
+    useEffect(() => {
+        refreshSession();
+    }, []);
 
     const {
         getSlots,
         slotsData,
         loading: slotsLoading,
-        error: slotFetch,
     } = useGetSlots(date);
 
     const slots = slotsData?.slots ?? [];
@@ -33,7 +37,6 @@ export default function Home() {
     const {
         createAppointment,
         loading: creating,
-        error: createError,
         success,
         resetSuccess,
     } = useCreateAppointment();
@@ -44,10 +47,6 @@ export default function Home() {
         setDate(newDate);
         await getSlots(newDate);
     };
-
-    useEffect(() => {
-        refreshSession();
-    }, []);
 
     useEffect(() => {
         if (!success) return;
@@ -65,33 +64,30 @@ export default function Home() {
         setShowModal(false);
         setModalChecking(false);
     };
-
     const handleSubmit = async (formData: any) => {
-        if (!formData.time) return;
-
+        if (!formData.appointmentTime) return;
         try {
             const response = await createAppointment({
                 petId: formData.petId,
                 serviceType: formData.serviceType,
-                appointmentDate:date,
+                appointmentDate: formData.appointmentDate,
+                appointmentTime: formData.appointmentTime,
                 notes: formData.notes || "",
             });
-
-            showAlert("Success", response.message);
-            updateUserAppointments(response.data[0])
+            setBookingSummary({
+                ...response,
+                selectedTime: formData.appointmentTime,
+            });
             handleCloseModal();
-            setTimeout(() => {
-                router.push({ pathname: "(web)/success" });
-            }, 300);
+            setSuccessModalVisible(true);
 
         } catch (err: any) {
             showAlert(
-                "Booking Failed",
-                err?.message || "Something went wrong"
+                "",
+                err?.message
             );
         }
     };
-
     return (
         <Container>
             <HeaderSection
@@ -99,13 +95,10 @@ export default function Home() {
                 description="Select date of appointment"
                 date={date}
             />
-
             <DateSelector
                 date={date}
                 onDateChange={handleSelectDate}
             />
-
-            {/* ✅ CLEAN MODAL USAGE */}
             <AppBookingModal
                 pets={pets}
                 slots={slots}
@@ -115,11 +108,21 @@ export default function Home() {
                 onClose={handleCloseModal}
                 onSubmit={handleSubmit}
             />
-
-            {/* ✅ LOADER FIX */}
+            <BookingSuccessModal
+                visible={successModalVisible}
+                data={bookingSummary}
+                onClose={() => {
+                    setSuccessModalVisible(false);
+                    if (Platform.OS === "web") {
+                        router.push({ pathname: "(web)/web-home" });
+                    } else {
+                        router.push({ pathname: "(app)/(tabs)/home" });
+                    }
+                }}
+            />
             {(slotsLoading || modalChecking) && (
                 <Loader fullScreen transparent />
-            )}
+            )}        
         </Container>
     );
 }
