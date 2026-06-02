@@ -18,7 +18,7 @@ export default function Home() {
     const [showModal, setShowModal] = useState(false);
     const [modalChecking, setModalChecking] = useState(false);
 
-    const { user, refreshSession } = useAuth();
+    const { user, refreshSession, updateUserAppointments } = useAuth();
     const pets = user?.pets || [];
 
     const {
@@ -70,19 +70,16 @@ export default function Home() {
         if (!formData.time) return;
 
         try {
-            const appointment = await createAppointment({
+            const response = await createAppointment({
                 petId: formData.petId,
-                petName: formData.petName,
                 serviceType: formData.serviceType,
-                time: formData.time,
-                date,
+                appointmentDate:date,
                 notes: formData.notes || "",
             });
 
-            showAlert("Success", appointment.message);
-
+            showAlert("Success", response.message);
+            updateUserAppointments(response.data[0])
             handleCloseModal();
-
             setTimeout(() => {
                 router.push({ pathname: "(web)/success" });
             }, 300);

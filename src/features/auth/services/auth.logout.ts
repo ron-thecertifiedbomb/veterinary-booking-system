@@ -1,6 +1,6 @@
 // src/features/auth/services/logout.ts
 
-import { api } from "@/utils/api/api";
+import { api } from "@/utils/api/api.client";
 import { logger } from "@/utils/logger/logger";
 
 type LogoutDependencies = {

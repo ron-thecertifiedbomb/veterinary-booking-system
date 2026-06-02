@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Loader from "@/components/common/Loader/Loader";
 import { useGetUserAppointments } from "@/features/users/hook/useGetUserAppointemts";
 import { formatDate, getTodayDate } from "@/utils/dateandtime/date";
-import { formatBookingCode } from "@/utils/formatter";
+import { formatBookingCode } from "@/utils/dateandtime/formatter";
 import { formatPHDate } from "@/utils/dateandtime/time";
 
 export default function Schedule() {
@@ -114,7 +114,7 @@ export default function Schedule() {
 
 
 
-        
+
                         return (
                             <View className="bg-surface border border-border rounded-2xl p-4 mb-3">
 

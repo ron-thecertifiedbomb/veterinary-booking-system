@@ -1,4 +1,5 @@
-import { API } from "@/utils/config/api";
+
+import { API } from "@/utils/api/api.config";
 import { logger } from "@/utils/logger/logger";
 
 // ==========================
@@ -13,9 +14,15 @@ type RequestOptions = RequestInit & {
 // Errors
 // ==========================
 export class NetworkError extends Error {
-  constructor(message = "No internet connection") {
+  type: "OFFLINE" | "SERVER_UNREACHABLE";
+
+  constructor(
+    message: string = "Network error",
+    type: "OFFLINE" | "SERVER_UNREACHABLE" = "SERVER_UNREACHABLE",
+  ) {
     super(message);
     this.name = "NetworkError";
+    this.type = type;
   }
 }
 
@@ -65,21 +72,21 @@ export async function api<T>(
   const url = `${API}${endpoint}`;
   const method = rest.method || "GET";
 
-  const requestBody = rest.body ? safeJsonParse(rest.body) : null;
-
-  // ✅ start time (for duration)
   const start = Date.now();
 
-  // ==========================
-  // ✅ REQUEST LOG (ALWAYS FIRST)
-  // ==========================
   logger.info("API Request", {
     endpoint,
+    method,
   });
 
   let response: Response;
 
   try {
+    // ✅ PRE-CHECK (faster UX)
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      throw new NetworkError("No internet connection", "OFFLINE");
+    }
+
     response = await fetch(url, {
       ...rest,
       headers: {
@@ -90,7 +97,7 @@ export async function api<T>(
     });
   } catch (error: any) {
     const isOffline =
-      typeof navigator !== "undefined" ? navigator.onLine === false : false;
+      typeof navigator !== "undefined" && navigator.onLine === false;
 
     logger.error("API Network Failure", {
       url,
@@ -98,11 +105,17 @@ export async function api<T>(
       isOffline,
     });
 
-    throw new NetworkError(
-      isOffline
-        ? "No internet connection"
-        : "Unable to reach the server. Please check your connection.",
-    );
+    // ✅ DIFFERENTIATE ERROR TYPES
+    if (isOffline) {
+      throw new NetworkError("No internet connection", "OFFLINE");
+    }
+
+    // ✅ Covers:
+    // - server down
+    // - refused connection
+    // - DNS failure
+    // - timeout (in some environments)
+    throw new NetworkError("Server cannot be reached", "SERVER_UNREACHABLE");
   }
 
   let data: any = null;
@@ -114,10 +127,6 @@ export async function api<T>(
   }
 
   const duration = Date.now() - start;
-
-  // ==========================
-  // ✅ RESPONSE LOG (ALWAYS SECOND)
-  // ==========================
 
   logger.info("API Response", {
     url,

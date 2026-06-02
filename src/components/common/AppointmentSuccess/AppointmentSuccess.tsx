@@ -1,41 +1,26 @@
 import Container from "@/components/common/Container/Container";
 import Loader from "@/components/common/Loader/Loader";
+import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { getStorageItem } from "@/features/auth/storage";
-import { formatDate, formatTime } from "@/utils/dateandtime/date";
+import { formatDate } from "@/utils/dateandtime/date";
+import { formatBookingCode } from "@/utils/dateandtime/formatter";
 import { formatPHDate } from "@/utils/dateandtime/time";
-import { formatBookingCode } from "@/utils/formatter";
+import { logger } from "@/utils/logger/logger";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AppoinmentSuccess() {
 
     const router = useRouter();
 
-    const [appointment, setAppointment] = useState<any>(null);
+    const { appointments } = useAuth();
 
-    useEffect(() => {
-        const loadAppointment = async () => {
-            try {
-                const stored = await getStorageItem("appointments");
-                const parsed = stored ? JSON.parse(stored) : [];
-
-                if (parsed.length > 0) {
-                    setAppointment(parsed[0]); // ✅ latest (we prepended earlier)
-                }
-            } catch {
-                // optional: log error
-            }
-        };
-
-        loadAppointment();
-    }, []);
-
+    logger.info('appointment from storage on AppoinmentSuccess', appointments)
 
     return (
         <Container>
-            {!appointment && <Loader fullScreen />}
+            {!appointments && <Loader fullScreen />}
             <View className="w-full max-w-md mx-auto bg-surface border border-border rounded-2xl p-6">
 
                 <Text className="text-2xl font-semibold text-text-primary text-center">
@@ -52,23 +37,21 @@ export default function AppoinmentSuccess() {
                     </Text>
 
                     <Text className="text-sm text-text-secondary mb-1">
-                        Booking Code: {formatBookingCode(appointment.bookingCode)}
+                        Booking Code: {formatBookingCode(appointments?.bookingCode)}
                     </Text>
 
                     <Text className="text-sm text-text-secondary mb-1">
-                        Pet: {appointment.petName}
+                        Pet: {appointments?.petId}
                     </Text>
 
                     <Text className="text-sm text-text-secondary mb-1">
-                        Service: {appointment.serviceType}
+                        Service: {appointments?.serviceType}
                     </Text>
 
                     <Text className="text-sm text-text-secondary mb-1">
-                        {formatDate(appointment.date)} 
+                        {appointments?.appointmentDate}
                     </Text>
-                    <Text className="text-sm text-text-secondary mb-1">
-                       {formatPHDate(appointment.date)}
-                    </Text>
+              
                 </View>
 
                 <TouchableOpacity

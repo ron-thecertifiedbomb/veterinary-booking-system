@@ -1,13 +1,11 @@
-import { useState } from "react";
-import { api } from "@/utils/api/api";
-import { logger } from "@/utils/logger/logger";
-import { getStorageItem } from "@/features/auth/storage";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { getStorageItem } from "@/features/auth/storage";
 import { CreatePetPayload, CreatePetResponse } from "@/features/pet/types";
-
+import { api } from "@/utils/api/api.client";
+import { logger } from "@/utils/logger/logger";
+import { useState } from "react";
 
 export function useAddPet() {
-  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);

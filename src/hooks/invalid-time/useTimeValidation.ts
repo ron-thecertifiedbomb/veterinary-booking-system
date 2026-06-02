@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { AppState } from "react-native";
 
-import { api } from "@/utils/api/api";
+import { api } from "@/utils/api/api.client";
 import { logger } from "@/utils/logger/logger";
 
 type ServerTimeResponse = {

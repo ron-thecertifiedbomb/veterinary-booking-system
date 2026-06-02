@@ -7,11 +7,11 @@ import {
     View,
 } from "react-native";
 
+import AppSelect from "@/components/common/AppSelect/AppSelect";
 import { Slot } from "@/features/appointment/types";
 import { Pet } from "@/features/pet/types";
-import { formatSlotTime } from "@/utils/formatter";
 import { formatDate } from "@/utils/dateandtime/date";
-import AppSelect from "@/components/common/AppSelect/AppSelect";
+import { formatSlotTime } from "@/utils/dateandtime/formatter";
 
 type Props = {
     pets: Pet[];
@@ -158,8 +158,8 @@ export default function BookingForm({
                     disabled={!isValid || creating}
                     onPress={handleSubmit}
                     className={`flex-1 rounded-xl py-3 ${isValid && !creating
-                            ? "bg-black"
-                            : "bg-gray-400"
+                        ? "bg-black"
+                        : "bg-gray-400"
                         }`}
                 >
                     {creating ? (

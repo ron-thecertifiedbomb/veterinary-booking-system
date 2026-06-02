@@ -2,7 +2,7 @@ import RegisterForm from "@/components/authentication/forms/RegisterForm";
 import ScreenContainer from "@/components/common/Layouts/ScreenContainer/ScreenContainer";
 
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { RegisterPayload } from "@/features/auth/types";
+import { RegisterPayload } from "@/features/auth/types/auth.types";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { getRouteByRole } from "@/utils/routes/routeResolver";
 import { useRouter } from "expo-router";
@@ -16,7 +16,7 @@ export default function Registration() {
   const router = useRouter();
 
   // ✅ useAuth handles session + routing
-  const { register, login, loading} = useAuth();
+  const { register, login, loading } = useAuth();
 
 
   const handleRegister = async (data: RegisterPayload) => {
