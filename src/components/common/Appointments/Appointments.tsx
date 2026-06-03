@@ -4,7 +4,7 @@ import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Loader from "@/components/common/Loader/Loader";
 import { useGetUserAppointments } from "@/features/users/hook/useGetUserAppointemts";
 import { formatDateTime } from "@/utils/dateandtime/dateandtimeformatter";
-import { formatBookingCode } from "@/utils/formatter";
+import { formatBookingCode } from "@/utils/dateandtime/formatter";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback } from "react";
 import { FlatList, Platform, Text, View } from "react-native";

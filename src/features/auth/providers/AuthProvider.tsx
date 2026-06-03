@@ -9,26 +9,25 @@ import {
     useState,
 } from "react";
 
-import { api, ApiError, NetworkError } from "@/utils/api/api";
-import { logger } from "@/utils/logger/logger";
-
-import { AuthContextType } from "@/features/auth/providers/types";
-
 import {
     getStorageItem,
     removeStorageItem,
     setStorageItem,
 } from "@/features/auth/storage";
+import { AuthContextType } from "@/features/auth/types/auth.context";
+import { api, ApiError, NetworkError } from "@/utils/api/api.client";
+import { logger } from "@/utils/logger/logger";
 
 import {
     AuthUser,
     LoginPayload,
     RegisterPayload,
-} from "@/features/auth/types";
+} from "@/features/auth/types/auth.types";
 
-import { login as loginService } from "@/features/auth/services/login";
-import { logout as logoutService } from "@/features/auth/services/logout";
-import { register as registerService } from "@/features/auth/services/register";
+import { login as loginService } from "@/features/auth/services/auth.login";
+import { logout as logoutService } from "@/features/auth/services/auth.logout";
+import { register as registerService } from "@/features/auth/services/auth.register";
+import { AppointmentData } from "@/features/appointment/types";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -42,6 +41,7 @@ let sessionCache: {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(null);
+    const [appointments, setUserAppointments] = useState<AppointmentData | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const hydrated = useRef(false);
@@ -165,23 +165,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         hydrateSession();
     }, []);
 
-    // -----------------------------------
-    // APPOINTMENTS
-    // -----------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     // -----------------------------------
     // SESSION HELPERS
@@ -206,18 +189,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logger.info("Session updated");
     }
 
-    async function updateUser(updatedUser: Partial<AuthUser>) {
+    async function updateUserAppointments(updatedUserAppointment: AppointmentData) {
         if (!user || !token) return;
 
-        const newUser = { ...user, ...updatedUser };
+        const newAppointment = { ...user, ...updatedUserAppointment };
 
-        await setStorageItem("user", JSON.stringify(newUser));
+        await setStorageItem("appointments", JSON.stringify(newAppointment));
+        sessionCache.user = newAppointment;
+        setUserAppointments(newAppointment);
+
+        logger.info("User Appointment updated in session", newAppointment);
+    }
+
+
+    async function updateUser(updateUser: Partial<AuthUser>) {
+        if (!user || !token) return;
+
+        const newUser = { ...user, ...updateUser };
+
+        await setStorageItem("user", JSON.stringify("newUser"));
         sessionCache.user = newUser;
         setUser(newUser);
 
         logger.info("User updated in session", newUser);
     }
-
     // -----------------------------------
     // AUTH
     // -----------------------------------
@@ -252,13 +247,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         token,
         loading,
         isAuthenticated: !!user && !!token,
-
+        appointments,
         role: user?.role ?? null, // ✅ single source of truth
-
         isAdmin: user?.role === "ADMIN",
         isStaff: user?.role === "STAFF",
         isCustomer: user?.role === "CUSTOMER",
-
+        updateUserAppointments,
         refreshSession,
         updateUser,
         setSession,
@@ -266,7 +260,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
     };
-    
+
 
     return (
         <AuthContext.Provider value={value}>

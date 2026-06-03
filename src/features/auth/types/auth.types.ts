@@ -1,6 +1,6 @@
-// src/features/auth/types.ts
-
+// src/features/auth/auth.types.ts
 import { Pet } from "@/features/pet/types";
+
 
 export type UserRole = "CUSTOMER" | "ADMIN" | "STAFF";
 
@@ -13,7 +13,6 @@ export type AuthUser = {
   isActive: boolean;
   specialization?: string;
   department?: string;
-
   pets?: Pet[];
 };
 export type LoginPayload = {
@@ -40,5 +39,6 @@ export type RegisterResponse = {
   message: string;
   data: AuthUser;
 };
+
 
 

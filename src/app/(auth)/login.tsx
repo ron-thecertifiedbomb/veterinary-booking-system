@@ -3,7 +3,7 @@ import LoginForm from "@/components/authentication/forms/LoginForm";
 import ScreenContainer from "@/components/common/Layouts/ScreenContainer/ScreenContainer";
 
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { LoginPayload } from "@/features/auth/types";
+import { LoginPayload } from "@/features/auth/types/auth.types";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { getRouteByRole } from "@/utils/routes/routeResolver";
 import { useRouter } from "expo-router";
@@ -40,7 +40,7 @@ export default function Login() {
             showAlert("Error", err.message);
         }
     };
-    
+
     return (
         <ScreenContainer>
             <KeyboardAvoidingView

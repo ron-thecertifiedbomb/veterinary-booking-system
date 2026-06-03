@@ -1,8 +1,9 @@
-
-import { AppointmentData, CreateAppointmentResponse } from "@/features/appointment/types";
+import {
+  AppointmentData,
+  CreateAppointmentResponse,
+} from "@/features/appointment/types";
 import { getStorageItem, setStorageItem } from "@/features/auth/storage";
-import { GetUserAppointmentsResponse } from "@/features/users/types";
-import { api } from "@/utils/api/api";
+import { api } from "@/utils/api/api.client";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
 

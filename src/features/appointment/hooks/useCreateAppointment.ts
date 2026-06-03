@@ -1,5 +1,5 @@
 import { getStorageItem, setStorageItem } from "@/features/auth/storage";
-import { api } from "@/utils/api/api";
+import { api } from "@/utils/api/api.client";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
 
@@ -43,15 +43,12 @@ export const useCreateAppointment = () => {
       const userId = parsedUser?.id;
       if (!userId) throw new Error("Invalid user session");
 
-      const appointmentDate = new Date(
-        `${input.date}T${input.time}:00+08:00`,
-      ).toISOString();
-
+   
       const payload = {
-        petName: input.petName,
+     
         petId: input.petId,
         serviceType: input.serviceType.toUpperCase(),
-        appointmentDate,
+        appointmentDate: input.appointmentDate,
         notes: input.notes || "",
       };
 

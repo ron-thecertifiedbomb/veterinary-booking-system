@@ -1,4 +1,4 @@
-import { AuthUser } from "@/features/auth/types";
+import { AuthUser } from "@/features/auth/types/auth.types";
 import { Pet } from "@/features/pet/types";
 
 export type Slot = {
@@ -56,10 +56,18 @@ export interface AppointmentData {
   customerId: string;
   petId: string;
   staffId: string | null;
-  pet: Pet
+  pet: Pet;
 }
 
 export interface CreateAppointmentResponse {
   message: string;
-  data: AppointmentData[];
+  data: AppointmentData;
+}
+
+export interface CreateAppointmentInput {
+  petId: string;
+  serviceType: ServiceType;
+  appointmentDate: string;
+  appointmentTime: string;
+  notes: string;
 }

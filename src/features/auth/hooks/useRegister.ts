@@ -1,8 +1,11 @@
 // src/features/auth/hooks/useRegister.ts
 
 import { setStorageItem } from "@/features/auth/storage";
-import { LoginResponse, RegisterPayload } from "@/features/auth/types";
-import { api } from "@/utils/api/api";
+import {
+  LoginResponse,
+  RegisterPayload,
+} from "@/features/auth/types/auth.types";
+import { api } from "@/utils/api/api.client";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
 

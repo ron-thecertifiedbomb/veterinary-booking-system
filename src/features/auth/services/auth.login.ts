@@ -1,8 +1,11 @@
 // src/features/auth/services/login.ts
 
-import { api } from "@/utils/api/api";
-
-import { AuthUser, LoginPayload, LoginResponse } from "@/features/auth/types";
+import {
+  AuthUser,
+  LoginPayload,
+  LoginResponse,
+} from "@/features/auth/types/auth.types";
+import { api } from "@/utils/api/api.client";
 
 type LoginDependencies = {
   setLoading: (value: boolean) => void;

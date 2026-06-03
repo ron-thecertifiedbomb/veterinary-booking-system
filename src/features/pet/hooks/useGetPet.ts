@@ -1,6 +1,6 @@
 import { getStorageItem, setStorageItem } from "@/features/auth/storage";
 import { GetPetsResponse, Pet } from "@/features/pet/types";
-import { api } from "@/utils/api/api";
+import { api } from "@/utils/api/api.client";
 import { useState } from "react";
 
 export function useGetPets() {
