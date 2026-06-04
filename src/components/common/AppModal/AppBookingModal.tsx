@@ -2,13 +2,13 @@ import { NoPets, NoSlots } from "@/components/booking";
 import BookingForm from "@/components/booking/BookingForm";
 import BookingModal from "@/components/booking/BookingModal";
 import Loader from "@/components/common/Loader/Loader";
+import { PetProfile } from "@/features/pet/pet.types";
 
-import { Pet } from "@/features/pet/pet.types";
 import { Slot } from "@/hooks/appointments/useBookingSystem";
 import { useState } from "react";
 
 type Props = {
-    pets: Pet[];
+    pets: PetProfile[];
     slots?: Slot[];
     date: string;
     creating?: boolean;

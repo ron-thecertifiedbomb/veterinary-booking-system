@@ -2,6 +2,7 @@ import BookingSuccessModal from "@/components/booking/BookingSuccessModal";
 import DateSelector from "@/components/booking/DateSelector";
 import AppBookingModal from "@/components/common/AppModal/AppBookingModal";
 import Container from "@/components/common/Container/Container";
+import EmptyState from "@/components/common/EmptyState/EmptyState";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Loader from "@/components/common/Loader/Loader";
 import { useCreateAppointment } from "@/features/appointment/hooks/useCreateAppointment";
@@ -9,23 +10,40 @@ import { useGetSlots } from "@/features/appointment/hooks/useGetSlots";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { getTodayDate } from "@/utils/dateandtime/date";
+import { logger } from "@/utils/logger/logger";
+import { getRouteByRole, routes } from "@/utils/routes/routeResolver";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
 
 export default function Home() {
-
     const [date, setDate] = useState(getTodayDate());
     const [showModal, setShowModal] = useState(false);
     const [modalChecking, setModalChecking] = useState(false);
-    const { user, refreshSession } = useAuth();
-    const pets = user?.pets || [];
+    const { user } = useAuth();
+    const pets = user?.customerProfile?.pets ?? [];
     const [bookingSummary, setBookingSummary] = useState<any>(null);
     const [successModalVisible, setSuccessModalVisible] = useState(false);
 
+
+    const handleAppPets = () => {
+        if (user?.role === "CUSTOMER" && Platform.OS === "web") {
+            router.replace("/(web)/web-add-pet");
+        } else {
+            router.replace("/(app)/add-pet");
+        }
+    };
+
+    const redirected = useRef(false);
+
     useEffect(() => {
-        refreshSession();
-    }, []);
+        if (!user || redirected.current) return;
+
+        if (user.role === "CUSTOMER" && pets.length === 0) {
+            redirected.current = true;
+            handleAppPets();
+        }
+    }, [user, pets.length]);
 
     const {
         fetchSlots,
@@ -47,6 +65,7 @@ export default function Home() {
         setDate(newDate);
         await fetchSlots(newDate);
     };
+
     useEffect(() => {
         if (!success) return;
         const timer = setTimeout(() => resetSuccess(), 2500);
@@ -63,9 +82,9 @@ export default function Home() {
         setModalChecking(false);
     };
 
-
     const handleSubmit = async (formData: any) => {
         if (!formData.appointmentTime) return;
+
         try {
             const response = await createAppointment({
                 petId: formData.petId,
@@ -74,20 +93,21 @@ export default function Home() {
                 appointmentTime: formData.appointmentTime,
                 notes: formData.notes || "",
             });
+
             setBookingSummary({
                 ...response,
                 selectedTime: formData.appointmentTime,
             });
+
             handleCloseModal();
             setSuccessModalVisible(true);
 
         } catch (err: any) {
-            showAlert(
-                "",
-                err?.message
-            );
+            showAlert("", err?.message);
         }
     };
+
+    // ✅ RETURN is now properly in Home()
     return (
         <Container>
             <HeaderSection
@@ -95,25 +115,41 @@ export default function Home() {
                 description="Select date of appointment"
                 date={currentDate}
             />
-            <DateSelector
-                date={date}
-                onDateChange={handleSelectDate}
-            />
-            <AppBookingModal
-                loading={slotsLoading || creating}
-                pets={pets}
-                slots={slots}
-                date={date}
-                creating={creating}
-                visible={showModal}
-                onClose={handleCloseModal}
-                onSubmit={handleSubmit}
-            />
+
+
+            {pets.length === 0 ? (
+                <EmptyState
+                    title="No Registered Pet"
+                    buttonLabel="Register your Pet"
+                    onPress={handleAppPets}
+                />
+            ) : (
+                <DateSelector
+                    date={date}
+                    onDateChange={handleSelectDate}
+                />
+            )}
+
+
+            {pets.length > 0 && (
+                <AppBookingModal
+                    loading={slotsLoading || creating}
+                    pets={pets}
+                    slots={slots}
+                    date={date}
+                    creating={creating}
+                    visible={showModal}
+                    onClose={handleCloseModal}
+                    onSubmit={handleSubmit}
+                />
+            )}
+
             <BookingSuccessModal
                 visible={successModalVisible}
                 data={bookingSummary}
                 onClose={() => {
                     setSuccessModalVisible(false);
+
                     if (Platform.OS === "web") {
                         router.push({ pathname: "(web)/web-home" });
                     } else {
@@ -121,9 +157,11 @@ export default function Home() {
                     }
                 }}
             />
+
             {(slotsLoading || modalChecking) && (
                 <Loader fullScreen transparent />
             )}
         </Container>
     );
 }
+
