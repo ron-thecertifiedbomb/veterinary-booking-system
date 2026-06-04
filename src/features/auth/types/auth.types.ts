@@ -32,17 +32,18 @@ export type StaffProfile = {
   userId: string;
 };
 
-// export type AuthenticatedStaffResponse = {
-//   message: string;
-//   data: {
-//     id: string;
-//     email: string;
-//     name: string;
-//     phone: string;
-//     role: UserRole;
-//     isActive: boolean;
-//     createdAt: string;
-//     updatedAt: string;
-//     staffProfile: StaffProfile;
-//   };
-// };
+export type AuthenticatedUserResponse = {
+  message: string;
+  data: {
+    id: string;
+    email: string;
+    name: string;
+    phone: string;
+    role: UserRole;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+    customerProfile?: CustomerProfile; // only if CUSTOMER
+    staffProfile?: StaffProfile;
+  };
+};

@@ -192,45 +192,20 @@ async function register(payload: RegisterPayload) {
     }
 
     // ----------------------------------
-    // UPDATE USER
+    // Refresh Session
     // ----------------------------------
-    async function updateUser(update: Partial<AuthenticatedUser>) {
-        if (!user || !token) return;
 
-        const updatedUser = { ...user, ...update };
-
-        await setSession(updatedUser, token);
+    async function refreshSession() {
+        await loadSession();
+        await validateSession(); // <-- this calls fetchMe ✅
     }
+
 
     // ----------------------------------
     // UPDATE APPOINTMENTS (NO DUPLICATION)
     // ----------------------------------
 
-    async function updateUserAppointments(appointment: any) {
-        if (!user || !token) return;
 
-        // ✅ ensure this is a CUSTOMER
-        if (user.role !== "CUSTOMER" || !user.customerProfile) {
-            logger.warn("User is not a customer");
-            return;
-        }
-
-        const current = user.customerProfile.appointments ?? [];
-
-        const updatedAppointments = [...current, appointment];
-
-        const updatedUser = {
-            ...user,
-            customerProfile: {
-                ...user.customerProfile,
-                appointments: updatedAppointments,
-            },
-        };
-
-        await setSession(updatedUser, token);
-
-        logger.info("Appointments updated");
-    }
 
     // ----------------------------------
     // INIT SESSION
@@ -264,8 +239,7 @@ async function register(payload: RegisterPayload) {
         register,
         login,
         logout,
-        updateUser,
-        updateUserAppointments,
+        refreshSession,
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

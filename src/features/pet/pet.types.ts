@@ -22,14 +22,21 @@ export type CreatePetResponse = {
 };
 
 
-export type PetProfile = {
+
+export type Pet = {
   id: string;
   petName: string;
   species: string;
   breed: string;
   weight: number;
   createdAt: string;
+  updatedAt: string;
+  customerId: string;
 };
 
+export type GetPetsResponse = {
+  message: string;
+  data: Pet[];
+};
 
-export type PetsProfile = PetProfile[];
+export type Pets = Pet[];

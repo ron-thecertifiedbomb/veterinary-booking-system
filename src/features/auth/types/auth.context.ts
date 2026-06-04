@@ -25,13 +25,8 @@ export type AuthContextType = {
     user: AuthenticatedUser;
     message: string;
   }>;
-
   register: (payload: RegisterPayload) => Promise<RegistrationResponse>;
-
+  refreshSession: () => Promise<void>;
   logout: () => Promise<void>;
 
-  // ✅ user updates
-  updateUser: (update: Partial<AuthenticatedUser>) => Promise<void>;
-
-  updateUserAppointments: (appointment: Appointment) => Promise<void>;
 };

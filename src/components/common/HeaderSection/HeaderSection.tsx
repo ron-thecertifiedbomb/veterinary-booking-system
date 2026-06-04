@@ -4,7 +4,7 @@ import { formatDate } from "@/utils/dateandtime/date";
 type Props = {
     title: string;
     description?: string;
-    date: string | null;
+    date?: string | null;
 
 };
 

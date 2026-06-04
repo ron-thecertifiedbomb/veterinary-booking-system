@@ -7,23 +7,21 @@ import {
     Platform,
 } from "react-native";
 import { router } from "expo-router";
-
 import AppTextInput from "@/components/common/AppTextInput/AppTextInput";
 import { addPetSchema } from "@/features/pet/schemas/addPet.schema";
 import { z } from "zod";
-
 import { useAddPet } from "@/features/pet/hooks/useAddPet";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 
-type AddPetFormData = z.infer<typeof addPetSchema>;
+type CreatePetPayload = z.infer<typeof addPetSchema>;
 type AddPetErrors = Partial<
-    Record<keyof AddPetFormData, string | null>
+    Record<keyof CreatePetPayload, string | null>
 >;
 
 export default function AddPetForm() {
     const { addPet, loading } = useAddPet();
 
-    const [form, setForm] = useState<AddPetFormData>({
+    const [form, setForm] = useState<CreatePetPayload>({
         petName: "",
         species: "",
         breed: "",
@@ -41,7 +39,7 @@ export default function AddPetForm() {
 
     // ✅ LIVE VALIDATION
     const updateField = (
-        key: keyof AddPetFormData,
+        key: keyof CreatePetPayload,
         value: string
     ) => {
         const newForm = { ...form, [key]: value };
@@ -70,8 +68,7 @@ export default function AddPetForm() {
         const result = addPetSchema.safeParse(form);
 
         if (!result.success) {
-            const fieldErrors =
-                result.error.flatten().fieldErrors;
+            const fieldErrors = result.error.flatten().fieldErrors;
 
             setErrors({
                 petName: fieldErrors.petName?.[0] ?? null,
@@ -84,8 +81,7 @@ export default function AddPetForm() {
         }
 
         try {
-            const { petName, species, breed, weight } =
-                result.data;
+            const { petName, species, breed, weight } = result.data;
 
             const response = await addPet({
                 petName,
@@ -94,17 +90,15 @@ export default function AddPetForm() {
                 weight: Number(weight),
             });
 
-            if (!response) {
-                showAlert("Error", "Failed to add pet");
-                return;
-            }
+            if (!response) return; // ✅ no hardcoded error
 
-            // ✅ SUCCESS
+            // ✅ SUCCESS (server message)
             showAlert("Success", response.message, () => {
+                // ✅ go back to Home → triggers booking flow
                 router.replace(
                     Platform.OS === "web"
                         ? "/(web)/web-pets"
-                        : "(app)/pets"
+                        : "(app)/(tabs)/pets"
                 );
             });
 
@@ -117,10 +111,7 @@ export default function AddPetForm() {
             });
 
         } catch (err: any) {
-            showAlert(
-                "Error",
-                err?.message || "Something went wrong"
-            );
+            showAlert("Error", err?.message);
         }
     };
 

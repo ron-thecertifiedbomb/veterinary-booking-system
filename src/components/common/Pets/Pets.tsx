@@ -2,22 +2,21 @@ import EmptyState from "@/components/common/EmptyState/EmptyState";
 import Loader from "@/components/common/Loader/Loader";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Container from "@/components/common/Container/Container";
-
-import { router, useFocusEffect } from "expo-router";
+import { router } from "expo-router";
 import { FlatList, Platform, Pressable, Text, View } from "react-native";
-
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useGetPets } from "@/features/pet/hooks/useGetPet";
 
 export default function Pets() {
+
     const { pets, fetchPets, loading } = useGetPets();
     const isEmpty = pets.length === 0;
 
-    useFocusEffect(
-        useCallback(() => {
-            fetchPets();
-        }, [])
-    );
+
+    useEffect(() => {
+        fetchPets()
+    }
+        , []);
 
     const handleAddPet = () => {
         const isWeb = Platform.OS === "web";
@@ -32,16 +31,14 @@ export default function Pets() {
                 title="My Pets"
                 description="Manage your pets and easily book appointments."
             />
-
             {isEmpty && (
                 <EmptyState
-                    title="No Pets Yet"
+                    title="No Registered Pets"
                     description="Add your first pet to start booking appointments."
                     buttonLabel="Add Pet"
                     onPress={handleAddPet}
                 />
             )}
-
             {!isEmpty && (
                 <>
                     <FlatList
@@ -102,7 +99,7 @@ export default function Pets() {
                         )}
                     />
 
-                    {/* ✅ FLOATING BUTTON (WHITE THEME FRIENDLY) */}
+
                     <Pressable
                         onPress={handleAddPet}
                         className="absolute bottom-6 right-6 bg-black px-6 py-4 rounded-full active:opacity-80"

@@ -1,14 +1,13 @@
 // ..\src\features\pet\hooks\useGetPet.ts
 
-import {
-  getStorageItem,
-  setStorageItem,
-} from "@/features/auth/storage/auth.storage";
-import { GetPetsResponse, Pet } from "@/features/pet/pet.types";
-import { api } from "@/utils/api/api.client";
+import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { Pet } from "@/features/pet/pet.types";
+import { getPetApi } from "@/features/pet/services/getPetsApi";
 import { useState } from "react";
 
 export function useGetPets() {
+  const { token } = useAuth();
+
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -18,32 +17,18 @@ export function useGetPets() {
       setLoading(true);
       setMessage(null);
 
-      const stored = await getStorageItem("pets");
-
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          setPets(parsed);
-        }
-      }
-      const token = await getStorageItem("access_token");
       if (!token) throw new Error("Not authenticated");
 
-      const response = await api<GetPetsResponse>("/api/vet/pets", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const safeData = Array.isArray(response.data) ? response.data : [];
-      setPets(safeData);
+      const response = await getPetApi(token);
+
+      const pets = Array.isArray(response.data) ? response.data : [];
+      setPets(pets);
       setMessage(response.message);
 
-      await setStorageItem("pets", JSON.stringify(safeData));
-
-      return safeData;
+      return pets;
     } catch (err: any) {
-      err?.message || "Failed to fetch pets";
+      const msg = err?.message || "Failed to fetch pets";
+      setMessage(msg);
       return null;
     } finally {
       setLoading(false);
