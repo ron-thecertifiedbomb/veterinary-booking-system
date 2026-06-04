@@ -1,3 +1,5 @@
+// ..\src\hooks\appointments\useBookingBootstrap.test.ts
+
 import { useBookingBootstrap } from "./useBookingBootstrap";
 import { renderHook, waitFor } from "@testing-library/react-native";
 import { useRouter } from "expo-router";

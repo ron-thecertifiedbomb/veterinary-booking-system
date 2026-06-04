@@ -9,7 +9,7 @@ import { useGetSlots } from "@/features/appointment/hooks/useGetSlots";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { getTodayDate } from "@/utils/dateandtime/date";
-import { router, useRouter } from "expo-router";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 
@@ -18,21 +18,21 @@ export default function Home() {
     const [date, setDate] = useState(getTodayDate());
     const [showModal, setShowModal] = useState(false);
     const [modalChecking, setModalChecking] = useState(false);
-    const { user, refreshSession} = useAuth();
+    const { user, refreshSession } = useAuth();
     const pets = user?.pets || [];
     const [bookingSummary, setBookingSummary] = useState<any>(null);
     const [successModalVisible, setSuccessModalVisible] = useState(false);
+
     useEffect(() => {
         refreshSession();
     }, []);
 
     const {
-        getSlots,
-        slotsData,
+        fetchSlots,
+        slots,
+        currentDate,
         loading: slotsLoading,
-    } = useGetSlots(date);
-
-    const slots = slotsData?.slots ?? [];
+    } = useGetSlots();
 
     const {
         createAppointment,
@@ -45,12 +45,10 @@ export default function Home() {
         setModalChecking(true);
         setShowModal(true);
         setDate(newDate);
-        await getSlots(newDate);
+        await fetchSlots(newDate);
     };
-
     useEffect(() => {
         if (!success) return;
-
         const timer = setTimeout(() => resetSuccess(), 2500);
         return () => clearTimeout(timer);
     }, [success, resetSuccess]);
@@ -64,6 +62,8 @@ export default function Home() {
         setShowModal(false);
         setModalChecking(false);
     };
+
+
     const handleSubmit = async (formData: any) => {
         if (!formData.appointmentTime) return;
         try {
@@ -93,13 +93,14 @@ export default function Home() {
             <HeaderSection
                 title="Book an Appointment"
                 description="Select date of appointment"
-                date={date}
+                date={currentDate}
             />
             <DateSelector
                 date={date}
                 onDateChange={handleSelectDate}
             />
             <AppBookingModal
+                loading={slotsLoading || creating}
                 pets={pets}
                 slots={slots}
                 date={date}
@@ -122,7 +123,7 @@ export default function Home() {
             />
             {(slotsLoading || modalChecking) && (
                 <Loader fullScreen transparent />
-            )}        
+            )}
         </Container>
     );
 }

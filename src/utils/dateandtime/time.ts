@@ -1,3 +1,5 @@
+// ..\src\utils\dateandtime\time.ts
+
 export const formatPHDate = (input: Date | string) => {
   if (!input) return ""; // ✅ prevent undefined/null
 

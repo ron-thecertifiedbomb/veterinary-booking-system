@@ -1,3 +1,5 @@
+// ..\src\components\NetworkGuard\useNetworkGuard.ts
+
 import { GuardStatus } from "@/components/NetworkGuard/NetworkGuard";
 import { API } from "@/utils/config/api";
 import { logger } from "@/utils/logger/logger";

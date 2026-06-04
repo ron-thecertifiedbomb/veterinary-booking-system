@@ -1,3 +1,5 @@
+// ..\src\utils\routes\routeContext.ts
+
 // src/utils/routeContext.ts
 
 let currentPathname = "UNKNOWN";

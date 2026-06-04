@@ -13,7 +13,21 @@ const IGNORE = [
   ".expo",
   ".next",
   "coverage",
+  "assets",
+  "android",
+  ".vscode",
+  ".idea",
+  ".github",
+  ".claude",
+  "scripts",
+  ".gitignore",
+  "AGENTS.md",
+  "CLAUDE.md",
+  "DEVELOPMENT_CYCLE.md",
+  "TESTING.md",
 ];
+
+const PATH = ["src"];
 
 // limit depth (VERY IMPORTANT)
 const MAX_DEPTH = 3;

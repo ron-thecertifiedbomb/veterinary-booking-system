@@ -1,3 +1,5 @@
+// ..\src\utils\styles\shadow.ts
+
 import { Platform } from "react-native";
 
 export function getSidebarShadow(strength: "light" | "medium" = "light") {

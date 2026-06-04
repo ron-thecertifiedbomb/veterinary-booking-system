@@ -10,7 +10,7 @@ type Props = {
     label?: string;
     value: string;
     onChange: (value: string) => void;
-    items: SelectItem[];
+    items?: SelectItem[];
     placeholder?: string;
     disabled?: boolean;
 };
@@ -57,7 +57,7 @@ export default function AppSelect({
                     />
 
                     {/* ✅ OPTIONS */}
-                    {items.map((item) => (
+                    {items?.map((item) => (
                         <Picker.Item
                             key={item.value}
                             label={item.label}

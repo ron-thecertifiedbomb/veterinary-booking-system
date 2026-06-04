@@ -1,5 +1,7 @@
+// ..\src\features\pet\hooks\useGetPet.ts
+
 import { getStorageItem, setStorageItem } from "@/features/auth/storage";
-import { GetPetsResponse, Pet } from "@/features/pet/types";
+import { GetPetsResponse, Pet } from "@/features/pet/pet.types";
 import { api } from "@/utils/api/api.client";
 import { useState } from "react";
 

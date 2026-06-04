@@ -1,3 +1,5 @@
+// ..\src\features\auth\types\auth.context.ts
+
 // src/features/auth/auth.context.ts
 import { AppointmentData } from "@/features/appointment/types";
 import {

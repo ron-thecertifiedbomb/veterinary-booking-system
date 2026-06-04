@@ -1,3 +1,5 @@
+// ..\src\utils\config\sidebar\sidebar.ts
+
 export const adminNav = [
   { label: "Dashboard", href: "/(admin-web)/dashboard" },
 

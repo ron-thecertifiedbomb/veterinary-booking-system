@@ -1,3 +1,5 @@
+// ..\src\utils\getInitials\getInitials.ts
+
 export const getInitials = (name?: string) => {
   if (!name) return "U";
 

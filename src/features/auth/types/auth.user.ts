@@ -1,3 +1,5 @@
+// ..\src\features\auth\types\auth.user.ts
+
 export interface AuthenticatedUserResponse {
   message: string;
   data: AuthenticatedUser;

@@ -1,3 +1,5 @@
+// ..\src\features\auth\schemas\register.schema.ts
+
 import { z } from "zod";
 
 export const registerSchema = z

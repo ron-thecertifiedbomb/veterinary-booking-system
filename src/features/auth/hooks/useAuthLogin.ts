@@ -1,3 +1,5 @@
+// ..\src\features\auth\hooks\useAuthLogin.ts
+
 // src/features/auth/hooks/useAuthLogin.ts
 
 import { useAuth } from "@/features/auth/providers/AuthProvider"; // ✓ add

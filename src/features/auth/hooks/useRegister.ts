@@ -1,3 +1,5 @@
+// ..\src\features\auth\hooks\useRegister.ts
+
 // src/features/auth/hooks/useRegister.ts
 
 import { setStorageItem } from "@/features/auth/storage";

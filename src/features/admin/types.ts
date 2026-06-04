@@ -1,3 +1,5 @@
+// ..\src\features\admin\types.ts
+
 // ✅ TYPES (recommended)
 export interface Appointment {
   id: number;

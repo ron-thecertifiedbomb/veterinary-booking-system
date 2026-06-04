@@ -1,3 +1,5 @@
+// ..\src\features\auth\types\auth.login.ts
+
 export interface LoginResponse {
   message: string;
   data: LoginData;

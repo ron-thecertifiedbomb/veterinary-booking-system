@@ -1,3 +1,5 @@
+// ..\src\utils\config\sidebar\types.ts
+
 import { Animated } from "react-native";
 
 export type NavItemType = {

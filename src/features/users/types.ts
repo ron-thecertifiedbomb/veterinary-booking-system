@@ -1,3 +1,5 @@
+// ..\src\features\users\types.ts
+
 import { Appointment } from "@/features/appointment/types";
 
 export type GetUserAppointmentsResponse = {

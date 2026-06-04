@@ -1,16 +1,19 @@
 import { NoPets, NoSlots } from "@/components/booking";
 import BookingForm from "@/components/booking/BookingForm";
 import BookingModal from "@/components/booking/BookingModal";
-import { Slot } from "@/features/appointment/types";
-import { Pet } from "@/features/pet/types";
+import Loader from "@/components/common/Loader/Loader";
+
+import { Pet } from "@/features/pet/pet.types";
+import { Slot } from "@/hooks/appointments/useBookingSystem";
 import { useState } from "react";
 
 type Props = {
     pets: Pet[];
-    slots: Slot[];
+    slots?: Slot[];
     date: string;
     creating?: boolean;
     visible: boolean;
+    loading: boolean;
     onClose: () => void;
     onSubmit: (data: any) => void;
 };
@@ -23,6 +26,7 @@ export default function AppBookingModal({
     date,
     creating = false,
     visible,
+    loading,
     onClose,
     onSubmit,
 }: Props) {
@@ -31,13 +35,13 @@ export default function AppBookingModal({
     const [selectedTime, setSelectedTime] = useState("");
     const [serviceType, setServiceType] = useState("");
     const [notes, setNotes] = useState("");
-    const availableSlots = slots.filter((s) => s.available);
+
     const isPetsEmpty = pets.length === 0;
-    const isSlotsEmpty = availableSlots.length === 0;
+    const noAvailableSlots = slots?.length === 0;
 
     const modalState: ModalState = isPetsEmpty
         ? "NO_PETS"
-        : isSlotsEmpty
+        : noAvailableSlots
             ? "NO_SLOTS"
             : "FORM";
 
@@ -47,43 +51,50 @@ export default function AppBookingModal({
                 return <NoPets />;
             case "NO_SLOTS":
                 return <NoSlots />;
-
             case "FORM":
                 return (
-                    <BookingForm
-                        pets={pets}
-                        slots={slots}
-                        date={date}
-                        selectedPetId={selectedPetId}
-                        selectedTime={selectedTime}
-                        serviceType={serviceType}
-                        notes={notes}
-                        setSelectedPetId={setSelectedPetId}
-                        setSelectedTime={setSelectedTime}
-                        setServiceType={setServiceType}
-                        setNotes={setNotes}
-                        creating={creating}
-                        handleSubmit={() =>
-                            onSubmit({
-                                petId: selectedPetId,
-                                petName:
-                                    pets.find((p) => p.id === selectedPetId)?.petName || "",
-                                serviceType,
-                                appointmentDate: new Date(date).toISOString(),
-                                appointmentTime: selectedTime, 
-                                notes,
-                            })
-                        }
-                        handleClose={onClose}
-                    />
+                    <>
+                        {loading ? (<Loader />) : (
+                            <BookingForm
+                                pets={pets}
+                                slots={slots}
+                                date={date}
+                                selectedPetId={selectedPetId}
+                                selectedTime={selectedTime}
+                                serviceType={serviceType}
+                                notes={notes}
+                                setSelectedPetId={setSelectedPetId}
+                                setSelectedTime={setSelectedTime}
+                                setServiceType={setServiceType}
+                                setNotes={setNotes}
+                                creating={creating}
+                                handleSubmit={() =>
+                                    onSubmit({
+                                        petId: selectedPetId,
+                                        petName:
+                                            pets.find((p) => p.id === selectedPetId)?.petName || "",
+                                        serviceType,
+                                        appointmentDate: new Date(date).toISOString(),
+                                        appointmentTime: selectedTime,
+                                        notes,
+                                    })
+                                }
+                                handleClose={onClose}
+                            />)}
+                    </>
                 );
             default:
                 return null;
         }
     };
+
     return (
+
         <BookingModal visible={visible} onClose={onClose}>
+
+
             {renderContent()}
+
         </BookingModal>
     );
 }

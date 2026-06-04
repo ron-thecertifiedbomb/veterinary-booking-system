@@ -1,3 +1,5 @@
+// ..\src\utils\logger\logger.ts
+
 const isDev = __DEV__;
 
 export const logger = {

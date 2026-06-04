@@ -1,3 +1,5 @@
+// ..\src\features\auth\services\auth.logout.ts
+
 // src/features/auth/services/logout.ts
 
 import { api } from "@/utils/api/api.client";

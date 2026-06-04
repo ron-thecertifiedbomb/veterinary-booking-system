@@ -1,3 +1,5 @@
+// ..\src\features\auth\hooks\useLogout.ts
+
 // src/features/auth/hooks/useLogout.ts
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { useState } from "react";

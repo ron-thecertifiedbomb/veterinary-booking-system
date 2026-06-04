@@ -1,6 +1,8 @@
+// ..\src\features\pet\hooks\useAddPet.ts
+
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { getStorageItem } from "@/features/auth/storage";
-import { CreatePetPayload, CreatePetResponse } from "@/features/pet/types";
+import { CreatePetPayload, CreatePetResponse } from "@/features/pet/pet.types";
 import { api } from "@/utils/api/api.client";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";

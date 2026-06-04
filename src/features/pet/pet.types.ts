@@ -1,3 +1,5 @@
+// ..\src\features\pet\types.ts
+
 export type Pet = {
   id: string;
   petName: string;

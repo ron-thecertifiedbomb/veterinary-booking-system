@@ -1,45 +1,51 @@
-// useGetSlots.ts
-
-import { fetchSlots } from "@/features/appointment/services/slots";
-import { SlotsResponse } from "@/features/appointment/types";
+// ..\src\features\appointment\hooks\useGetSlots.ts
+import { getSlots } from "@/features/appointment/services/get.slots";
+import { Slot, SlotsApiResponse, SlotsResponse } from "@/features/appointment/types/slots";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
 
-
-export function useGetSlots(date: string) {
+export function useGetSlots() {
 
   const { token } = useAuth(); 
   const [loading, setLoading] = useState(false);
-  const [slotsData, setSlotsData] = useState<SlotsResponse | null>(null);
+  const [fetchedSlot, setFetchedSlot] = useState<Slot[]>([]);
+  const [date, setDate] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const getSlots = async (selectedDate?: string) => {
-    const targetDate = selectedDate || date;
-    if (!targetDate || !token) return null;
+  const fetchSlots = async (selectedDate?: string) => {
+
+
+    if (!selectedDate || !token) return null;
     try {
       setLoading(true);
       setError(null);
-      const response = await fetchSlots(targetDate, token);
-      if (response?.data) {
-        setSlotsData(response.data);
+      const response = await getSlots(selectedDate, token);
+      if (response) {
+        setFetchedSlot(response.data.slots);
+        setDate(response.data.meta.date);
+        
       }
-      return response?.data;
+      return 
     } catch (err: any) {
       const msg =
-        err?.response?.data?.message || err?.message || "Failed to fetch slots";
+      err?.response?.data?.message || err?.message || "Failed to fetch slots";
       setError(msg);
       logger.error("Failed to fetch slots", msg);
-
       return null;
     } finally {
       setLoading(false);
     }
   };
+
+  const slots = fetchedSlot;
+  const currentDate = date;
+
   return {
-    slotsData,
+    slots,
+    currentDate,
     loading,
     error,
-    getSlots,
+    fetchSlots,
   };
 }

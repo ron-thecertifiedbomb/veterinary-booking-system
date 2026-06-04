@@ -4,15 +4,15 @@ import { formatDate } from "@/utils/dateandtime/date";
 type Props = {
     title: string;
     description?: string;
-    date?: string;
-    time?: string;
+    date: string | null;
+
 };
 
 export default function HeaderSection({
     title,
     description,
     date,
-    time,
+
 }: Props) {
     return (
         
@@ -26,7 +26,12 @@ export default function HeaderSection({
                         <Text className="text-sm text-text-secondary mt-1 leading-relaxed">
                             {description}
                         </Text>
-                    )}
+                )}
+             
+                <Text className="text-2xl lg:text-3xl font-bold tracking-tight text-text-primary">
+                    {date}
+                    </Text>
+            
                 </View>
             </View>  
     );

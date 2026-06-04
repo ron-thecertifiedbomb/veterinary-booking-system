@@ -8,14 +8,14 @@ import {
 } from "react-native";
 
 import AppSelect from "@/components/common/AppSelect/AppSelect";
-import { Slot } from "@/features/appointment/types";
-import { Pet } from "@/features/pet/types";
+import { Pet } from "@/features/pet/pet.types";
 import { formatDate } from "@/utils/dateandtime/date";
 import { formatSlotTime } from "@/utils/dateandtime/formatter";
+import { Slot } from "@/hooks/appointments/useBookingSystem";
 
 type Props = {
     pets: Pet[];
-    slots: Slot[];
+    slots?: Slot[];
 
     selectedPetId: string;
     selectedTime: string;
@@ -60,7 +60,6 @@ export default function BookingForm({
     handleClose,
     creating = false,
 }: Props) {
-    const availableSlots = slots.filter((slot) => slot.available);
 
     const isValid =
         !!selectedPetId &&
@@ -101,7 +100,7 @@ export default function BookingForm({
                     value={selectedTime}
                     onChange={setSelectedTime}
                     placeholder="Select a time..."
-                    items={availableSlots.map((slot) => ({
+                    items={slots?.map((slot) => ({
                         label: formatSlotTime(slot.time),
                         value: slot.time,
                     }))}

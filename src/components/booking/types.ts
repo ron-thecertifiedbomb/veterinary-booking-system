@@ -1,5 +1,7 @@
-import { Slot } from "@/features/appointment/types";
-import { Pet } from "@/features/pet/types";
+// ..\src\components\booking\types.ts
+
+import { Pet } from "@/features/pet/pet.types";
+import { Slot } from "@/hooks/appointments/useBookingSystem";
 
 export type BookingModalProps = {
   visible: boolean;
