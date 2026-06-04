@@ -1,43 +1,27 @@
 // ..\src\features\auth\types\auth.login.ts
 
-export interface LoginResponse {
+import { UserRole } from "@/features/auth/types/auth.user";
+
+export type LoginResponse = {
   message: string;
-  data: LoginData;
-}
+  data: {
+    access_token: string;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      phone: string;
+      role: UserRole;
+      isActive: boolean;
+    };
+    serverTime: {
+      iso: string;
+      local: string;
+    };
+  };
+};
 
-export interface LoginData {
-  access_token: string;
-  user: User;
-}
-
-export interface User {
-  id: string;
+export type LoginPayload = {
   email: string;
-  name: string;
-  phone: string;
-  role: "CUSTOMER";
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  customerProfile: CustomerProfile;
-  staffProfile: StaffProfile | null;
-  adminProfile: AdminProfile | null;
-  serverTime: ServerTime;
-}
-
-export interface CustomerProfile {
-  id: string;
-}
-
-export interface StaffProfile {
-  id: string;
-}
-
-export interface AdminProfile {
-  id: string;
-}
-
-export interface ServerTime {
-  iso: string;
-  display: string;
-}
+  password: string;
+};

@@ -1,42 +1,48 @@
-// ..\src\features\auth\types\auth.types.ts
-
 // src/features/auth/auth.types.ts
-import { Pet } from "@/features/pet/pet.types";
 
-export type UserRole = "CUSTOMER" | "ADMIN" | "STAFF";
+import { Appointment } from "@/features/appointment/types/appointment";
+import { StaffPosition, UserRole } from "@/features/auth/types/auth.user";
+import { PetProfile } from "@/features/pet/pet.types";
 
-export type AuthUser = {
+
+export type AuthenticatedUser = {
   id: string;
   email: string;
   name: string;
   phone: string;
   role: UserRole;
   isActive: boolean;
-  specialization?: string;
-  department?: string;
-  pets?: Pet[];
-};
-export type LoginPayload = {
-  email: string;
-  password: string;
+  createdAt: string;
+  updatedAt: string;
+  customerProfile?: CustomerProfile; // only if CUSTOMER
+  staffProfile?: StaffProfile;
 };
 
-export type LoginResponse = {
-  message: string;
-  data: {
-    access_token: string;
-    user: AuthUser;
-  };
+export interface CustomerProfile {
+  id: string;
+  pets: PetProfile[];
+  appointments: Appointment[];
+}
+
+export type StaffProfile = {
+  id: string;
+  specialization: string;
+  licenseNumber: string;
+  position: StaffPosition;
+  userId: string;
 };
 
-export type RegisterPayload = {
-  email: string;
-  password: string;
-  name: string;
-  phone?: string;
-};
-
-export type RegisterResponse = {
-  message: string;
-  data: AuthUser;
-};
+// export type AuthenticatedStaffResponse = {
+//   message: string;
+//   data: {
+//     id: string;
+//     email: string;
+//     name: string;
+//     phone: string;
+//     role: UserRole;
+//     isActive: boolean;
+//     createdAt: string;
+//     updatedAt: string;
+//     staffProfile: StaffProfile;
+//   };
+// };

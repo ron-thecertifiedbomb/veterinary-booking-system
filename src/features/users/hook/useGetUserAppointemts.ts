@@ -4,7 +4,10 @@ import {
   AppointmentData,
   CreateAppointmentResponse,
 } from "@/features/appointment/types";
-import { getStorageItem, setStorageItem } from "@/features/auth/storage";
+import {
+  getStorageItem,
+  setStorageItem,
+} from "@/features/auth/storage/auth.storage";
 import { api } from "@/utils/api/api.client";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";

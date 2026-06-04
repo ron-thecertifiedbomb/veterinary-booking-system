@@ -1,32 +1,37 @@
-// ..\src\features\auth\types\auth.context.ts
-
-// src/features/auth/auth.context.ts
-import { AppointmentData } from "@/features/appointment/types";
+import { Appointment } from "@/features/appointment/types/appointment";
+import { LoginPayload } from "@/features/auth/types/auth.login";
 import {
-  AuthUser,
-  LoginPayload,
-  LoginResponse,
   RegisterPayload,
-  RegisterResponse,
-} from "@/features/auth/types/auth.types";
+  RegistrationResponse,
+} from "@/features/auth/types/auth.registration";
+import { AuthenticatedUser } from "@/features/auth/types/auth.types";
 
 export type AuthContextType = {
   token: string | null;
-  appointments: AppointmentData | null;
   loading: boolean;
+
+  // ✅ session state
+  user: AuthenticatedUser | null;
   isAuthenticated: boolean;
+
+  // ✅ role helpers
   role: string | null;
   isAdmin: boolean;
   isStaff: boolean;
   isCustomer: boolean;
-  user: AuthUser | null;
-  updateUserAppointments: (
-    updateUserAppointments: AppointmentData,
-  ) => Promise<void>;
-  refreshSession: () => Promise<void>;
-  setSession: (user: AuthUser, token: string) => Promise<void>;
-  updateUser: (updatedUser: Partial<AuthUser>) => Promise<void>;
-  logout: () => Promise<any | null>;
-  login: (payload: LoginPayload) => Promise<LoginResponse>;
-  register: (payload: RegisterPayload) => Promise<RegisterResponse>;
+
+  // ✅ auth actions
+  login: (payload: LoginPayload) => Promise<{
+    user: AuthenticatedUser;
+    message: string;
+  }>;
+
+  register: (payload: RegisterPayload) => Promise<RegistrationResponse>;
+
+  logout: () => Promise<void>;
+
+  // ✅ user updates
+  updateUser: (update: Partial<AuthenticatedUser>) => Promise<void>;
+
+  updateUserAppointments: (appointment: Appointment) => Promise<void>;
 };

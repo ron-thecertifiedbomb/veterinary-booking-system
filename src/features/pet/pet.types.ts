@@ -1,13 +1,5 @@
 // ..\src\features\pet\types.ts
 
-export type Pet = {
-  id: string;
-  petName: string;
-  species: string;
-  breed: string;
-  weight: number;
-};
-
 export type CreatePetPayload = {
   petName: string;
   species: string;
@@ -15,14 +7,29 @@ export type CreatePetPayload = {
   weight: number;
 };
 
-
 export type CreatePetResponse = {
   message: string;
-  data: Pet;
+  data: {
+    id: string;
+    petName: string;
+    species: string;
+    breed: string;
+    weight: number;
+    createdAt: string;
+    updatedAt: string;
+    customerId: string;
+  };
 };
 
 
-export type GetPetsResponse = {
-  message: string;
-  data: Pet[];
+export type PetProfile = {
+  id: string;
+  petName: string;
+  species: string;
+  breed: string;
+  weight: number;
+  createdAt: string;
 };
+
+
+export type PetsProfile = PetProfile[];

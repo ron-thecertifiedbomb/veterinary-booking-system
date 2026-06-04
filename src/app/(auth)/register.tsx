@@ -2,7 +2,8 @@ import RegisterForm from "@/components/authentication/forms/RegisterForm";
 import ScreenContainer from "@/components/common/Layouts/ScreenContainer/ScreenContainer";
 
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { RegisterPayload } from "@/features/auth/types/auth.types";
+import { RegisterPayload } from "@/features/auth/types/auth.registration";
+
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { getRouteByRole } from "@/utils/routes/routeResolver";
 import { useRouter } from "expo-router";
@@ -18,36 +19,27 @@ export default function Registration() {
   // ✅ useAuth handles session + routing
   const { register, login, loading } = useAuth();
 
-
   const handleRegister = async (data: RegisterPayload) => {
     if (loading) return;
 
     try {
+      // ✅ 1. Register
       const response = await register(data);
-      if (!response) return;
 
       showAlert("Success", response.message);
-
       const loginResponse = await login({
         email: data.email,
         password: data.password,
       });
 
-      if (!loginResponse) return;
-
-
-      setTimeout(() => {
-        const target = getRouteByRole(
-          loginResponse.data.user.role,
-          true
-        );
-
-        router.replace(target);
-      }, 0);
-    } catch (err: any) {
+      const target = getRouteByRole(loginResponse.user.role, true);
+      router.replace(target);
+    }
+    catch (err: any) {
       showAlert("Error", err.message);
     }
   };
+
 
   return (
     <ScreenContainer>

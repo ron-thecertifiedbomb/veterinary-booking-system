@@ -1,6 +1,9 @@
 // ..\src\features\users\hook\useGetUserProfile.ts
 
-import { getStorageItem, setStorageItem } from "@/features/auth/storage";
+import {
+  getStorageItem,
+  setStorageItem,
+} from "@/features/auth/storage/auth.storage";
 import { GetUserProfileResponse, UserProfile } from "@/features/users/types";
 import { api } from "@/utils/api/api.client";
 import { logger } from "@/utils/logger/logger";

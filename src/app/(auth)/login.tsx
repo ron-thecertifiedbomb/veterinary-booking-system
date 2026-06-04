@@ -1,9 +1,8 @@
 // src/app/(auth)/login.tsx
 import LoginForm from "@/components/authentication/forms/LoginForm";
 import ScreenContainer from "@/components/common/Layouts/ScreenContainer/ScreenContainer";
-
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { LoginPayload } from "@/features/auth/types/auth.types";
+import { LoginPayload } from "@/features/auth/types/auth.login";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { getRouteByRole } from "@/utils/routes/routeResolver";
 import { useRouter } from "expo-router";
@@ -15,33 +14,25 @@ import {
 
 export default function Login() {
 
-
     const router = useRouter();
+
     const { login, loading } = useAuth();
 
     const handleLogin = async ({ email, password }: LoginPayload) => {
         try {
             const response = await login({ email, password });
 
-            if (response) {
-                showAlert("Success", response.message);
+            showAlert("Success", response.message);
 
-                // ✅ allow AuthProvider to update state first
-                setTimeout(() => {
-                    const target = getRouteByRole(
-                        response.data.user.role,
-                        true
-                    );
-
-                    router.replace(target);
-                }, 2);
-            }
+            const target = getRouteByRole(response.user.role, true);
+            router.replace(target);
 
         } catch (err: any) {
-            showAlert("Error", err.message);
+            showAlert("Error", err.message); 
         }
     };
 
+    
     return (
         <ScreenContainer>
             <KeyboardAvoidingView

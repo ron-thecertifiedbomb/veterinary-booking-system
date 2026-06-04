@@ -1,13 +1,9 @@
 import Container from "@/components/common/Container/Container";
 import Loader from "@/components/common/Loader/Loader";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { getStorageItem } from "@/features/auth/storage";
-import { formatDate } from "@/utils/dateandtime/date";
 import { formatBookingCode } from "@/utils/dateandtime/formatter";
-import { formatPHDate } from "@/utils/dateandtime/time";
 import { logger } from "@/utils/logger/logger";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 export default function AppoinmentSuccess() {
@@ -51,7 +47,7 @@ export default function AppoinmentSuccess() {
                     <Text className="text-sm text-text-secondary mb-1">
                         {appointments?.appointmentDate}
                     </Text>
-              
+
                 </View>
 
                 <TouchableOpacity

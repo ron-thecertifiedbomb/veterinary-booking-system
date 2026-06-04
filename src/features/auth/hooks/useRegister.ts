@@ -2,7 +2,7 @@
 
 // src/features/auth/hooks/useRegister.ts
 
-import { setStorageItem } from "@/features/auth/storage";
+import { setStorageItem } from "@/features/auth/storage/auth.storage";
 import {
   LoginResponse,
   RegisterPayload,

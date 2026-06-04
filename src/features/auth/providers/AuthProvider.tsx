@@ -1,55 +1,74 @@
-// src/features/auth/providers/AuthProvider.tsx
-
 import {
     createContext,
-    ReactNode,
     useContext,
     useEffect,
     useRef,
     useState,
+    ReactNode,
 } from "react";
+
+
 
 import {
     getStorageItem,
     removeStorageItem,
     setStorageItem,
-} from "@/features/auth/storage";
-import { AuthContextType } from "@/features/auth/types/auth.context";
-import { api, ApiError, NetworkError } from "@/utils/api/api.client";
+} from "../storage/auth.storage";
+
 import { logger } from "@/utils/logger/logger";
+import { ApiError, NetworkError } from "@/utils/api/api.client";
+import { AuthenticatedUser } from "@/features/auth/types/auth.types";
+import { AuthContextType } from "@/features/auth/types/auth.context";
+import { fetchMe } from "@/features/auth/services/fetchMe.api";
+import { LoginPayload } from "@/features/auth/types/auth.login";
+import { loginApi } from "@/features/auth/services/login.api";
+import { RegisterPayload } from "@/features/auth/types/auth.registration";
+import { registerApi } from "@/features/auth/services/register.api";
 
-import {
-    AuthUser,
-    LoginPayload,
-    RegisterPayload,
-} from "@/features/auth/types/auth.types";
-
-import { login as loginService } from "@/features/auth/services/auth.login";
-import { logout as logoutService } from "@/features/auth/services/auth.logout";
-import { register as registerService } from "@/features/auth/services/auth.register";
-import { AppointmentData } from "@/features/appointment/types";
-
-const AuthContext = createContext<AuthContextType | null>(null);
-
+// ----------------------------------
+// MEMORY CACHE (FAST ACCESS)
+// ----------------------------------
 let sessionCache: {
-    user: AuthUser | null;
+    user: AuthenticatedUser | null;
     token: string | null;
 } = {
     user: null,
     token: null,
 };
 
+const AuthContext = createContext<AuthContextType | null>(null);
+
+// ----------------------------------
+// PROVIDER
+// ----------------------------------
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<AuthUser | null>(null);
-    const [appointments, setUserAppointments] = useState<AppointmentData | null>(null);
+    const [user, setUser] = useState<AuthenticatedUser | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+
     const hydrated = useRef(false);
+    const validating = useRef(false);
 
-    // -----------------------------------
-    // LOAD SESSION
-    // -----------------------------------
+    // ----------------------------------
+    // SET SESSION (single source of truth)
+    // ----------------------------------
+    async function setSession(user: AuthenticatedUser, token: string) {
+        await Promise.all([
+            setStorageItem("user", JSON.stringify(user)),
+            setStorageItem("access_token", token),
+        ]);
 
+        sessionCache = { user, token };
+
+        setUser(user);
+        setToken(token);
+
+        logger.info("Session set");
+    }
+
+    // ----------------------------------
+    // LOAD SESSION (from storage)
+    // ----------------------------------
     async function loadSession() {
         try {
             const [storedUser, storedToken] = await Promise.all([
@@ -57,55 +76,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 getStorageItem("access_token"),
             ]);
 
-            const parsedUser: AuthUser | null = storedUser
-                ? JSON.parse(storedUser)
-                : null;
+            if (!storedUser || !storedToken) return;
 
-            sessionCache = {
-                user: parsedUser,
-                token: storedToken,
-            };
+            const parsedUser = JSON.parse(storedUser);
 
-            // ✅ only update state if we got data, don't flash null
-            if (parsedUser) setUser(parsedUser);
-            if (storedToken) setToken(storedToken);
+            sessionCache = { user: parsedUser, token: storedToken };
 
-            logger.info("Session loaded successfully");
+            setUser(parsedUser);
+            setToken(storedToken);
 
+            logger.info("Session loaded");
         } catch (err) {
-            logger.error("Auth load error", err);
-            sessionCache = { user: null, token: null };
-            setUser(null);
-            setToken(null);
+            logger.error("Load session error", err);
         }
     }
 
-    // -----------------------------------
-    // CLEAR SESSION
-    // -----------------------------------
-
-    async function clearSession() {
-        await Promise.all([
-            removeStorageItem("user"),
-            removeStorageItem("access_token"),
-        ]);
-
-        sessionCache = { user: null, token: null };
-        setUser(null);
-        setToken(null);
-
-        logger.info("Session cleared");
-    }
-
-    // -----------------------------------
-    // VALIDATE SESSION
-    // -----------------------------------
-
-    const validating = useRef(false);
-
+    // ----------------------------------
+    // VALIDATE SESSION (/me)
+    // ----------------------------------
     async function validateSession() {
-        if (validating.current) return; // ✅ prevent concurrent calls
+        if (validating.current) return;
         validating.current = true;
+
         try {
             const storedToken = await getStorageItem("access_token");
 
@@ -113,166 +105,175 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 await clearSession();
                 return;
             }
-            const response = await api<{
-                data: { user: AuthUser };
-            }>("/api/vet/auth/me", {
-                method: "GET",
-                token: storedToken,
-            });
 
-            if (!response?.data?.user) {
-                throw new Error("Invalid session");
-            }
-            const freshUser = {
-                ...response.data.user,
-                userId: response.data.user.id,
-            };
+            const meRes = await fetchMe(storedToken);
 
-            await setStorageItem("user", JSON.stringify(freshUser));
-            sessionCache.user = freshUser;
-            setUser(freshUser);
+            await setSession(meRes.data, storedToken);
 
-            logger.info("Session validated successfully");
-
+            logger.info("Session validated");
         } catch (err) {
             if (err instanceof NetworkError) {
-                logger.warn("No internet during validation, keeping session");
+                logger.warn("Offline - keeping session");
                 return;
             }
+
             if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
-                logger.error("Session expired, clearing session");
                 await clearSession();
-                return;
             }
         } finally {
-            validating.current = false; // ✅ release lock
+            validating.current = false;
             setLoading(false);
         }
     }
-    // -----------------------------------
-    // HYDRATE SESSION
-    // -----------------------------------
 
+    // ----------------------------------
+    // CLEAR SESSION
+    // ----------------------------------
+    async function clearSession() {
+        await Promise.all([
+            removeStorageItem("user"),
+            removeStorageItem("access_token"),
+        ]);
+
+        sessionCache = { user: null, token: null };
+
+        setUser(null);
+        setToken(null);
+
+        logger.info("Session cleared");
+    }
+
+    // ----------------------------------
+    // LOGIN (ORCHESTRATION ✅)
+    // ----------------------------------
+    async function login(payload: LoginPayload) {
+        try {
+            setLoading(true);
+
+            const loginRes = await loginApi(payload);
+            const access_token = loginRes.data.access_token;
+            const meRes = await fetchMe(access_token);
+            await setSession(meRes.data, access_token);
+            return {
+                user: meRes.data,
+                message: loginRes.message,
+            };
+        } finally {
+            setLoading(false);
+        }
+    }
+
+async function register(payload: RegisterPayload) {
+        try {
+            setLoading(true);
+
+            logger.info("Attempting registration", {
+                email: payload.email,
+            });
+
+            const response = await registerApi(payload);
+            const normalizedUser = {
+                ...response.data,
+                userId: response.data,
+            };
+            logger.info("Registration successful", normalizedUser);
+            return response;
+
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // ----------------------------------
+    // LOGOUT
+    // ----------------------------------
+    async function logout() {
+        await clearSession();
+    }
+
+    // ----------------------------------
+    // UPDATE USER
+    // ----------------------------------
+    async function updateUser(update: Partial<AuthenticatedUser>) {
+        if (!user || !token) return;
+
+        const updatedUser = { ...user, ...update };
+
+        await setSession(updatedUser, token);
+    }
+
+    // ----------------------------------
+    // UPDATE APPOINTMENTS (NO DUPLICATION)
+    // ----------------------------------
+
+    async function updateUserAppointments(appointment: any) {
+        if (!user || !token) return;
+
+        // ✅ ensure this is a CUSTOMER
+        if (user.role !== "CUSTOMER" || !user.customerProfile) {
+            logger.warn("User is not a customer");
+            return;
+        }
+
+        const current = user.customerProfile.appointments ?? [];
+
+        const updatedAppointments = [...current, appointment];
+
+        const updatedUser = {
+            ...user,
+            customerProfile: {
+                ...user.customerProfile,
+                appointments: updatedAppointments,
+            },
+        };
+
+        await setSession(updatedUser, token);
+
+        logger.info("Appointments updated");
+    }
+
+    // ----------------------------------
+    // INIT SESSION
+    // ----------------------------------
     useEffect(() => {
-        async function hydrateSession() {
+        async function init() {
             if (hydrated.current) return;
             hydrated.current = true;
+
             setLoading(true);
+
             await loadSession();
             await validateSession();
         }
 
-        hydrateSession();
+        init();
     }, []);
 
-
-    // -----------------------------------
-    // SESSION HELPERS
-    // -----------------------------------
-
-    async function refreshSession() {
-        // ✅ no setLoading(true) — silent refresh, avoids redirect flash
-        await loadSession();
-        await validateSession();
-    }
-
-    async function setSession(userData: AuthUser, accessToken: string) {
-        await Promise.all([
-            setStorageItem("user", JSON.stringify(userData)),
-            setStorageItem("access_token", accessToken),
-        ]);
-
-        sessionCache = { user: userData, token: accessToken };
-        setUser(userData);
-        setToken(accessToken);
-
-        logger.info("Session updated");
-    }
-
-    async function updateUserAppointments(updatedUserAppointment: AppointmentData) {
-        if (!user || !token) return;
-
-        const newAppointment = { ...user, ...updatedUserAppointment };
-
-        await setStorageItem("appointments", JSON.stringify(newAppointment));
-        sessionCache.user = newAppointment;
-        setUserAppointments(newAppointment);
-
-        logger.info("User Appointment updated in session", newAppointment);
-    }
-
-
-    async function updateUser(updateUser: Partial<AuthUser>) {
-        if (!user || !token) return;
-
-        const newUser = { ...user, ...updateUser };
-
-        await setStorageItem("user", JSON.stringify("newUser"));
-        sessionCache.user = newUser;
-        setUser(newUser);
-
-        logger.info("User updated in session", newUser);
-    }
-    // -----------------------------------
-    // AUTH
-    // -----------------------------------
-
-    async function login(payload: LoginPayload) {
-        return loginService(payload, { setLoading, setSession });
-    }
-
-    async function register(payload: RegisterPayload) {
-        return registerService(payload, { setLoading });
-    }
-
-    async function logout() {
-        return logoutService({
-            token,
-            setLoading,
-            setUser,
-            setToken,
-            removeStorageItem,
-            clearSessionCache: () => {
-                sessionCache = { user: null, token: null };
-            },
-        });
-    }
-
-    // -----------------------------------
+    // ----------------------------------
     // CONTEXT VALUE
-    // -----------------------------------
-
+    // ----------------------------------
     const value: AuthContextType = {
         user,
         token,
         loading,
         isAuthenticated: !!user && !!token,
-        appointments,
-        role: user?.role ?? null, // ✅ single source of truth
+        role: user?.role ?? null,
         isAdmin: user?.role === "ADMIN",
         isStaff: user?.role === "STAFF",
         isCustomer: user?.role === "CUSTOMER",
-        updateUserAppointments,
-        refreshSession,
-        updateUser,
-        setSession,
-        logout,
-        login,
         register,
+        login,
+        logout,
+        updateUser,
+        updateUserAppointments,
     };
 
-
-    return (
-        <AuthContext.Provider value={value}>
-            {children}
-        </AuthContext.Provider>
-    );
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// -----------------------------------
+// ----------------------------------
 // HOOK
-// -----------------------------------
-
+// ----------------------------------
 export function useAuth() {
     const context = useContext(AuthContext);
 

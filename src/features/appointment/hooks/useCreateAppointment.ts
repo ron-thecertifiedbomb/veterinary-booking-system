@@ -1,6 +1,9 @@
 // ..\src\features\appointment\hooks\useCreateAppointment.ts
 
-import { getStorageItem, setStorageItem } from "@/features/auth/storage";
+import {
+  getStorageItem,
+  setStorageItem,
+} from "@/features/auth/storage/auth.storage";
 import { api } from "@/utils/api/api.client";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
@@ -45,9 +48,7 @@ export const useCreateAppointment = () => {
       const userId = parsedUser?.id;
       if (!userId) throw new Error("Invalid user session");
 
-   
       const payload = {
-     
         petId: input.petId,
         serviceType: input.serviceType.toUpperCase(),
         appointmentDate: input.appointmentDate,
