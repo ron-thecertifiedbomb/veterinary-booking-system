@@ -2,8 +2,7 @@
 
 import { Appointment } from "@/features/appointment/types/appointment";
 import { StaffPosition, UserRole } from "@/features/auth/types/auth.user";
-import { PetProfile } from "@/features/pet/pet.types";
-
+import { Pet } from "@/features/pet/pet.types";
 
 export type AuthenticatedUser = {
   id: string;
@@ -20,7 +19,7 @@ export type AuthenticatedUser = {
 
 export interface CustomerProfile {
   id: string;
-  pets: PetProfile[];
+  pets: Pet[];
   appointments: Appointment[];
 }
 

@@ -1,6 +1,6 @@
 // ..\src\features\appointment\hooks\useGetSlots.ts
-import { getSlots } from "@/features/appointment/services/get.slots";
-import { Slot, SlotsApiResponse, SlotsResponse } from "@/features/appointment/types/slots";
+import { getSlots } from "@/features/appointment/services/getSlots.api";
+import { Slot } from "@/features/appointment/types/slots";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
