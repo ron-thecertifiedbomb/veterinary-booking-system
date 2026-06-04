@@ -14,9 +14,9 @@ export default function Profile() {
     const { user, loading, logout, isAuthenticated } = useAuth();
 
     const handleLogout = async () => {
-        const response = await logout();
-        if (response) showAlert("Success", response.message);
-        // ✅ allow AuthProvider to update state first
+       logout();
+       
+      
         setTimeout(() => {
             const target = getRouteByRole(
                 user?.role,
@@ -25,7 +25,6 @@ export default function Profile() {
             router.replace(target);
         }, 2);
     };
-
 
     if (loading) {
         return <Loader fullScreen />;

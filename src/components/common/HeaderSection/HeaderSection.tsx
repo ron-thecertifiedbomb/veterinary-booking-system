@@ -17,13 +17,13 @@ export default function HeaderSection({
     return (
         
 
-        <View className="w-full mb-4">
+        <View className="w-full mb-2 px-1">
                 <View>
                     <Text className="text-2xl lg:text-3xl font-bold tracking-tight text-text-primary">
                         {title}
                     </Text>
                     {description && (
-                        <Text className="text-sm text-text-secondary mt-1 leading-relaxed">
+                        <Text className="text-sm text-text-secondary mt-[0.8px] leading-relaxed">
                             {description}
                         </Text>
                 )}

@@ -1,32 +1,32 @@
-import RegisterForm from "@/components/authentication/forms/RegisterForm";
-import ScreenContainer from "@/components/common/Layouts/ScreenContainer/ScreenContainer";
-
+import AppSafeArea from "@/components/common/AppSafeArea/AppSafeArea";
+import RegistetrationForm from "@/components/common/AuthForms/RegistrationForm";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { RegisterPayload } from "@/features/auth/types/auth.registration";
-
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { getRouteByRole } from "@/utils/routes/routeResolver";
 import { useRouter } from "expo-router";
 import {
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
+  Animated,
+  View,
 } from "react-native";
+import { useEffect, useRef } from "react";
+import AnimatedSlide from "@/components/common/AnimatedSlide/AnimatedSlide";
 
-export default function Registration() {
+
+export default function RegistrationSceen() {
   const router = useRouter();
-
-  // ✅ useAuth handles session + routing
   const { register, login, loading } = useAuth();
 
   const handleRegister = async (data: RegisterPayload) => {
     if (loading) return;
 
     try {
-      // ✅ 1. Register
       const response = await register(data);
 
       showAlert("Success", response.message);
+
       const loginResponse = await login({
         email: data.email,
         password: data.password,
@@ -34,36 +34,28 @@ export default function Registration() {
 
       const target = getRouteByRole(loginResponse.user.role, true);
       router.replace(target);
-    }
-    catch (err: any) {
+
+    } catch (err: any) {
       showAlert("Error", err.message);
     }
   };
 
-
   return (
-    <ScreenContainer>
+    <AppSafeArea>
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1"
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        className="flex-1 justify-center items-center px-8"
       >
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="on-drag"
-          contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            paddingBottom: 24,
-          }}
-        >
-          <RegisterForm
-            loading={loading}
-            onSubmit={handleRegister}
-            onLoginPress={() => router.push("/(auth)/login")}
-          />
-        </ScrollView>
+        <AnimatedSlide>
+          <View className="w-full">
+            <RegistetrationForm
+              loading={loading}
+              onSubmit={handleRegister}
+              onLoginPress={() => router.push("/(auth)/login")}
+            />
+          </View>
+        </AnimatedSlide>
       </KeyboardAvoidingView>
-    </ScreenContainer>
+    </AppSafeArea>
   );
 }

@@ -8,11 +8,8 @@ type AppTextInputProps = {
     error?: string | null;
     keyboardType?: "default" | "email-address";
     secureTextEntry?: boolean;
-
-    // ✅ NEW
     autoComplete?: TextInputProps["autoComplete"];
     name?: string;
-
     rightIcon?: React.ReactNode;
     onRightIconPress?: () => void;
 };
@@ -31,15 +28,15 @@ export default function AppTextInput({
     onRightIconPress,
 }: AppTextInputProps) {
     return (
-        <View className="mb-2">
+        <View className="mb-[0.7px]">
 
             {/* LABEL */}
-            <Text className="text-sm font-medium text-text-primary mb-2">
+            <Text className="text-sm font-medium text-text-primary mb-1">
                 {label}
             </Text>
 
             {/* INPUT */}
-            <View className="bg-surface border border-gray-300 rounded-2xl flex-row items-center">
+            <View className="bg-surface border border-gray-300 rounded-2xl mb-1 flex-row items-center">
 
                 <TextInput
                     value={value}
@@ -80,7 +77,7 @@ export default function AppTextInput({
             </View>
 
             {/* ERROR */}
-            <Text className="text-red-500 text-xs mt-1 min-h-[16px]">
+            <Text className="text-red-500 text-xs  min-h-[16px]">
                 {error ?? ""}
             </Text>
 

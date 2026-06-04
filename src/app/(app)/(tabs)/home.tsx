@@ -1,3 +1,4 @@
+import AppSafeArea from "@/components/common/AppSafeArea/AppSafeArea";
 import Home from "@/components/common/Home/Home";
 
 
@@ -5,6 +6,8 @@ import Home from "@/components/common/Home/Home";
 export default function HomeScreen() {
 
     return (
-    <Home />
+        <AppSafeArea>
+            <Home />
+        </AppSafeArea>
     );
 }

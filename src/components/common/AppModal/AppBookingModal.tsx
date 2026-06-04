@@ -2,13 +2,15 @@ import { NoPets, NoSlots } from "@/components/booking";
 import BookingForm from "@/components/booking/BookingForm";
 import BookingModal from "@/components/booking/BookingModal";
 import Loader from "@/components/common/Loader/Loader";
-import { PetProfile } from "@/features/pet/pet.types";
+import { Pet } from "@/features/pet/pet.types";
+
 
 import { Slot } from "@/hooks/appointments/useBookingSystem";
+import { formatAppointmentDate } from "@/utils/dateandtime/dateandtimeformatter";
 import { useState } from "react";
 
 type Props = {
-    pets: PetProfile[];
+    pets: Pet[];
     slots?: Slot[];
     date: string;
     creating?: boolean;
@@ -71,11 +73,8 @@ export default function AppBookingModal({
                                 handleSubmit={() =>
                                     onSubmit({
                                         petId: selectedPetId,
-                                        petName:
-                                            pets.find((p) => p.id === selectedPetId)?.petName || "",
                                         serviceType,
-                                        appointmentDate: new Date(date).toISOString(),
-                                        appointmentTime: selectedTime,
+                                        appointmentDate: formatAppointmentDate(date, selectedTime),
                                         notes,
                                     })
                                 }

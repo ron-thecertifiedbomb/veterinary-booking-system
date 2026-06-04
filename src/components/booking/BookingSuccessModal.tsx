@@ -1,97 +1,135 @@
-import { CreateAppointmentResponse } from "@/features/appointment/types";
-import { View, Text, TouchableOpacity } from "react-native";
+import { Modal, View, Text, TouchableOpacity } from "react-native";
+import { CreateAppointmentResponse } from "@/features/appointment/types/appointment";
 
 type Props = {
     visible: boolean;
-    data: any;
+    items?: CreateAppointmentResponse | null;
     onClose: () => void;
 };
 
-const formatDate = (iso?: string) => {
-    if (!iso) return "-";
-    return new Date(iso).toLocaleDateString("en-PH", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-    });
-};
+function getStatusStyle(status: string) {
+    switch (status) {
+        case "APPROVED":
+            return "bg-emerald-100 text-emerald-700";
+        case "PENDING":
+            return "bg-amber-100 text-amber-700";
+        case "CANCELLED":
+            return "bg-rose-100 text-rose-600";
+        default:
+            return "bg-gray-100 text-gray-600";
+    }
+}
 
 export default function BookingSuccessModal({
     visible,
-    data,
+    items,
     onClose,
 }: Props) {
-    if (!visible || !data) return null;
+    if (!items) return null;
 
     return (
-        <View className="absolute inset-0 bg-black/70 justify-center items-center px-6 z-50">
+        <Modal
+            visible={visible}
+            transparent
+            animationType="fade"
+            onRequestClose={onClose}
+        >
+            {/* ✅ BACKDROP */}
+            <View className="flex-1 bg-black/50 justify-center items-center px-4">
 
-            <View className="bg-white w-full max-w-md rounded-3xl p-6">
+                {/* ✅ MODAL CARD */}
+                <View className="bg-white w-full max-w-2xl rounded-3xl p-6">
 
-                {/* Header */}
-                <Text className="text-2xl font-bold text-center mb-2">
-                    Booking Confirmed
-                </Text>
-
-                <Text className="text-gray-500 text-center mb-6">
-                    {data.message}
-                </Text>
-
-                {/* Divider */}
-                <View className="border-t border-gray-200 mb-4" />
-
-                {/* Details */}
-                <View className="space-y-3 mb-6">
-
-                    <View className="flex-row justify-between">
-                        <Text className="text-gray-500">Status</Text>
-                        <Text className="font-semibold">
-                            {data.data.status}
+                    {/* ✅ HEADER */}
+                    <View className="items-center mb-6">
+                        <Text className="text-2xl font-bold mb-1">
+                            Booking Confirmed 
+                        </Text>
+                        <Text className="text-gray-500 text-center">
+                            {items.message}
                         </Text>
                     </View>
 
-                    <View className="flex-row justify-between">
-                        <Text className="text-gray-500">Reference</Text>
-                        <Text className="font-semibold">
-                            {data.data.bookingCode}
-                        </Text>
+                    {/* ✅ STATUS BADGE */}
+                    <View className="items-center mb-6">
+                        <View className={`px-4 py-1 rounded-full ${getStatusStyle(items.data.status)}`}>
+                            <Text className="text-xs font-semibold">
+                                {items.data.status}
+                            </Text>
+                        </View>
                     </View>
 
-                    <View className="flex-row justify-between">
-                        <Text className="text-gray-500">Date</Text>
-                        <Text className="font-semibold">
-                            {formatDate(data.data.appointmentDate)}
-                        </Text>
+                    {/* ✅ GRID CONTENT */}
+                    <View className="flex-row flex-wrap gap-y-4">
+
+                        {/* LEFT COLUMN */}
+                        <View className="w-1/2 pr-2 space-y-3">
+
+                            <View>
+                                <Text className="text-xs text-gray-500">Reference</Text>
+                                <Text className="font-semibold">
+                                    {items.data.bookingCode}
+                                </Text>
+                            </View>
+
+                            <View>
+                                <Text className="text-xs text-gray-500">Booked On</Text>
+                                <Text className="font-semibold">
+                                    {items.data.bookedAt}
+                                </Text>
+                            </View>
+
+                            <View>
+                                <Text className="text-xs text-gray-500">Service</Text>
+                                <Text className="font-semibold">
+                                    {items.data.serviceType}
+                                </Text>
+                            </View>
+
+                        </View>
+
+                        {/* RIGHT COLUMN */}
+                        <View className="w-1/2 pl-2 space-y-3">
+
+                            <View>
+                                <Text className="text-xs text-gray-500">Date</Text>
+                                <Text className="font-semibold">
+                                    {items.data.appointmentDisplay?.date}
+                                </Text>
+                            </View>
+
+                            <View>
+                                <Text className="text-xs text-gray-500">Time</Text>
+                                <Text className="font-semibold">
+                                    {items.data.appointmentDisplay?.time}
+                                </Text>
+                            </View>
+
+                            <View>
+                                <Text className="text-xs text-gray-500">Reference Code</Text>
+                                <Text className="font-semibold font-mono tracking-wider">
+                                    {items.data.bookingCode}
+                                </Text>
+                            </View>
+
+                        </View>
+
                     </View>
 
-                    <View className="flex-row justify-between">
-                        <Text className="text-gray-500">Time</Text>
-                        <Text className="font-semibold">
-                            {data.selectedTime}
-                        </Text>
-                    </View>
+                    {/* ✅ DIVIDER */}
+                    <View className="border-t border-gray-200 my-6" />
 
-                    <View className="flex-row justify-between">
-                        <Text className="text-gray-500">Service</Text>
-                        <Text className="font-semibold">
-                            {data.data.serviceType}
+                    {/* ✅ ACTION BUTTON */}
+                    <TouchableOpacity
+                        onPress={onClose}
+                        className="bg-black py-4 rounded-xl"
+                    >
+                        <Text className="text-white text-center font-semibold text-base">
+                            Go to appointments sceen
                         </Text>
-                    </View>
-
+                    </TouchableOpacity>
                 </View>
-
-                {/* Action */}
-                <TouchableOpacity
-                    onPress={onClose}
-                    className="bg-black py-3 rounded-xl"
-                >
-                    <Text className="text-white text-center font-semibold">
-                        Back to Home
-                    </Text>
-                </TouchableOpacity>
-
             </View>
-        </View>
+        </Modal>
     );
 }
-``

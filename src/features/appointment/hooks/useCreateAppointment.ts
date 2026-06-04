@@ -7,94 +7,39 @@ import {
 import { api } from "@/utils/api/api.client";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
-
-import {
-  CreateAppointmentInput,
-  CreateAppointmentResponse,
-} from "@/features/appointment/types";
-
 import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { CreateAppointmentPayload, CreateAppointmentResponse } from "@/features/appointment/types/appointment";
+import { createAppointmentApi } from "@/features/appointment/services/createAppointment.api";
 
 export const useCreateAppointment = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-
-  const { token } = useAuth(); // ✅ keep it clean
+ const [message, setMessage] = useState<string | null>(null);
+  const { token } = useAuth();
 
   const createAppointment = async (
-    input: CreateAppointmentInput,
-  ): Promise<CreateAppointmentResponse> => {
+    input: CreateAppointmentPayload,
+  ): Promise<CreateAppointmentResponse | null> => {
     try {
       setLoading(true);
       setError(null);
-      setSuccess(false);
-
-      // ✅ TOKEN
+ 
       if (!token) {
         throw new Error("Unauthorized. Please login again.");
       }
-
-      // ✅ USER (safe parse)
-      const storedUser = await getStorageItem("user");
-
-      let parsedUser = null;
-      try {
-        parsedUser = storedUser ? JSON.parse(storedUser) : null;
-      } catch {
-        throw new Error("Corrupted user session");
-      }
-
-      const userId = parsedUser?.id;
-      if (!userId) throw new Error("Invalid user session");
-
       const payload = {
         petId: input.petId,
         serviceType: input.serviceType.toUpperCase(),
         appointmentDate: input.appointmentDate,
         notes: input.notes || "",
+
       };
-
-      // ✅ API CALL
-      const res = await api<CreateAppointmentResponse>(
-        "/api/vet/appointments",
-        {
-          method: "POST",
-          body: JSON.stringify(payload),
-          token,
-        },
-      );
-
-      const appointment = {
-        ...res.data,
-      };
-
-      // ✅ STORAGE
-      const existing = await getStorageItem("appointments");
-
-      let parsed: any[] = [];
-      try {
-        parsed = existing ? JSON.parse(existing) : [];
-      } catch {
-        parsed = [];
-      }
-
-      const updated = [appointment, ...parsed].slice(0, 20);
-
-      await setStorageItem("appointments", JSON.stringify(updated));
-
-      setSuccess(true);
-
-      return {
-        message: res.message,
-        data: res.data,
-      };
+      const response = await createAppointmentApi(payload, token);
+       setMessage(response.message);
+      return response;
     } catch (err: any) {
       const message =
-        err?.response?.data?.message ||
-        err?.message ||
-        "Failed to create appointment";
-
+        err?.response?.data?.message 
       setError(message);
       logger.error("Create appointment failed", message);
 
@@ -104,14 +49,13 @@ export const useCreateAppointment = () => {
     }
   };
 
-  const resetSuccess = () => setSuccess(false);
 
   return {
     createAppointment,
     loading,
     error,
-    success,
-    resetSuccess,
+    message,
+
   };
 };
-``;
+;

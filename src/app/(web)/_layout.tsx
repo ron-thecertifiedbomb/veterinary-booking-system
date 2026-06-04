@@ -25,18 +25,18 @@ export default function WebLayout() {
     return <Redirect href="/(auth)/login" />;
   }
   return (
-
     <DashboardShell navItems={customerNav}>
-
       <Container className="flex-1 w-full">
-        <View className="flex-1 items-center px-4 lg:pt-20">
-          <View className="w-full max-w-2xl">
+
+        <View className="flex-1 px-4 lg:pt-20"> 
+
+          <View className="w-full max-w-2xl mx-auto flex-1"> 
             <Slot />
           </View>
+
         </View>
+
       </Container>
-
     </DashboardShell>
-
   );
 }

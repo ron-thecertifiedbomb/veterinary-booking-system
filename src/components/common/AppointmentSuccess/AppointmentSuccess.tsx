@@ -1,22 +1,16 @@
 import Container from "@/components/common/Container/Container";
-import Loader from "@/components/common/Loader/Loader";
-import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { formatBookingCode } from "@/utils/dateandtime/formatter";
-import { logger } from "@/utils/logger/logger";
 import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
-
 export default function AppoinmentSuccess() {
 
     const router = useRouter();
 
-    const { appointments } = useAuth();
 
-    logger.info('appointment from storage on AppoinmentSuccess', appointments)
 
     return (
         <Container>
-            {!appointments && <Loader fullScreen />}
+
             <View className="w-full max-w-md mx-auto bg-surface border border-border rounded-2xl p-6">
 
                 <Text className="text-2xl font-semibold text-text-primary text-center">

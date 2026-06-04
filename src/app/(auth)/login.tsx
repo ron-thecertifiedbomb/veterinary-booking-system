@@ -1,5 +1,7 @@
 // src/app/(auth)/login.tsx
 import LoginForm from "@/components/authentication/forms/LoginForm";
+import AnimatedSlide from "@/components/common/AnimatedSlide/AnimatedSlide";
+import AppSafeArea from "@/components/common/AppSafeArea/AppSafeArea";
 import ScreenContainer from "@/components/common/Layouts/ScreenContainer/ScreenContainer";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { LoginPayload } from "@/features/auth/types/auth.login";
@@ -10,6 +12,7 @@ import {
     KeyboardAvoidingView,
     Platform,
     ScrollView,
+    View,
 } from "react-native";
 
 export default function Login() {
@@ -31,25 +34,22 @@ export default function Login() {
             showAlert("Error", err.message); 
         }
     };
-
-    
     return (
-        <ScreenContainer>
+        <AppSafeArea>
             <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                className="flex-1"
+                behavior={Platform.OS === "ios" ? "padding" : undefined}
+                className="flex-1 justify-center items-center px-8"
             >
-                <ScrollView
-                    contentContainerClassName="flex-grow justify-center items-center"
-                    keyboardShouldPersistTaps="handled"
-                >
+                <AnimatedSlide>
+                    <View className="w-full">
                     <LoginForm
                         loading={loading}
                         onSubmit={handleLogin}
                         onRegisterPress={() => router.push("/(auth)/register")}
                     />
-                </ScrollView>
+                    </View>
+                </AnimatedSlide>
             </KeyboardAvoidingView>
-        </ScreenContainer>
+        </AppSafeArea>
     );
 }

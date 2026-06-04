@@ -53,13 +53,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // SET SESSION (single source of truth)
     // ----------------------------------
     async function setSession(user: AuthenticatedUser, token: string) {
+
         await Promise.all([
+            
             setStorageItem("user", JSON.stringify(user)),
             setStorageItem("access_token", token),
         ]);
-
         sessionCache = { user, token };
-
         setUser(user);
         setToken(token);
 

@@ -64,3 +64,23 @@ export type Appointment = {
   };
   bookedAt: string;
 };
+
+
+
+export type AppointmentApiResponse = {
+  message: string;
+  data: {
+    id: string;
+    bookingCode: string;
+    customer: string;
+    pet: string;
+    serviceType: ServiceType;
+    notes: string;
+    status: AppointmentStatus;
+    appointmentDisplay: {
+      date: string;
+      time: string;
+    };
+    bookedAt: string;
+  };
+};
