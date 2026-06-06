@@ -3,20 +3,24 @@ import Loader from "@/components/common/Loader/Loader";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Container from "@/components/common/Container/Container";
 import { router } from "expo-router";
-import { FlatList, Platform, Pressable, Text, View } from "react-native";
-import { useCallback, useEffect } from "react";
+import {
+    FlatList,
+    Platform,
+    Pressable,
+    Text,
+    View,
+} from "react-native";
+import { useEffect } from "react";
 import { useGetPets } from "@/features/pet/hooks/useGetPet";
+import PetCard from "../PetCard/PetCard";
 
 export default function Pets() {
-
     const { pets, fetchPets, loading } = useGetPets();
     const isEmpty = pets.length === 0;
 
-
     useEffect(() => {
-        fetchPets()
-    }
-        , []);
+        fetchPets();
+    }, []);
 
     const handleAddPet = () => {
         const isWeb = Platform.OS === "web";
@@ -27,18 +31,23 @@ export default function Pets() {
 
     return (
         <Container className="flex-1">
+            {/* ✅ HEADER */}
             <HeaderSection
                 title="My Pets"
-                description="Manage your pets and easily book appointments."
+                description="Manage your pets and book appointments easily."
             />
+
+            {/* ✅ EMPTY */}
             {isEmpty && (
                 <EmptyState
-                    title="No Registered Pets"
+                    title="No Pets Yet"
                     description="Add your first pet to start booking appointments."
                     buttonLabel="Add Pet"
                     onPress={handleAddPet}
                 />
             )}
+
+            {/* ✅ LIST */}
             {!isEmpty && (
                 <>
                     <FlatList
@@ -46,69 +55,50 @@ export default function Pets() {
                         keyExtractor={(item) => item.id}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{
-                            paddingBottom: 120,
-                            paddingTop: 10,
+                            paddingTop: 12,
+                            paddingBottom: 140,
                         }}
                         renderItem={({ item }) => (
-                            <View
-                                className="bg-white rounded-2xl mb-4 p-5 border border-border"
-                                style={{
-                                    boxShadow: "0px 8px 20px rgba(2,6,23,0.06)",
-                                }}
-                            >
-                                {/* HEADER */}
-                                <View className="flex-row justify-between items-start mb-3">
-                                    <View>
-                                        <Text className="text-base font-semibold text-text-primary">
-                                            {item.petName}
-                                        </Text>
-
-                                        <Text className="text-sm text-text-muted mt-1">
-                                            {item.species} • {item.breed || "Unknown breed"}
-                                        </Text>
-                                    </View>
-
-                                    {/* ✅ ICON (minimal lang) */}
-                                    <Text className="text-lg opacity-70">🐾</Text>
-                                </View>
-
-                                {/* DIVIDER */}
-                                <View className="h-px bg-border my-3" />
-
-                                {/* INFO ROW */}
-                                <View className="flex-row justify-between">
-                                    <View>
-                                        <Text className="text-xs text-text-muted">
-                                            Weight
-                                        </Text>
-                                        <Text className="text-sm font-medium text-text-primary mt-1">
-                                            {item.weight} kg
-                                        </Text>
-                                    </View>
-
-                                    <View className="items-end">
-                                        <Text className="text-xs text-text-muted">
-                                            Status
-                                        </Text>
-                                        <Text className="text-sm font-medium text-text-primary mt-1">
-                                            Active
-                                        </Text>
-                                    </View>
-                                </View>
-                            </View>
+                            <PetCard
+                                item={item}
+                                onPress={() => router.push(`/pet/${item.id}`)}
+                            />
                         )}
                     />
 
-
+                    {/* ✅ FLOATING BUTTON */}
                     <Pressable
                         onPress={handleAddPet}
-                        className="absolute bottom-6 right-6 bg-black px-6 py-4 rounded-full active:opacity-80"
-                        style={{
-                            boxShadow: "0px 10px 20px rgba(2,6,23,0.15)",
-                        }}
+                        style={({ pressed }) => ({
+                            position: "absolute",
+                            bottom: 24,
+                            right: 24,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            borderRadius: 999,
+                            paddingVertical: 14,
+                            paddingHorizontal: 18,
+                            backgroundColor: "#000",
+                            transform: [
+                                {
+                                    scale: pressed ? 0.93 : 1,
+                                },
+                            ],
+                            shadowColor: "#000",
+                            shadowOpacity: 0.2,
+                            shadowRadius: 12,
+                            shadowOffset: {
+                                width: 0,
+                                height: 8,
+                            },
+                            elevation: 8,
+                        })}
                     >
+                        <Text className="text-white text-lg mr-1">
+                            +
+                        </Text>
                         <Text className="text-white font-semibold text-sm">
-                            + Add
+                            Add Pet
                         </Text>
                     </Pressable>
                 </>

@@ -63,12 +63,13 @@ export default function AddPetForm() {
         }
     };
 
-    // ✅ SUBMIT LOGIC (SELF-CONTAINED)
+    // ✅ SUBMIT
     const handleCreatePet = async () => {
         const result = addPetSchema.safeParse(form);
 
         if (!result.success) {
-            const fieldErrors = result.error.flatten().fieldErrors;
+            const fieldErrors =
+                result.error.flatten().fieldErrors;
 
             setErrors({
                 petName: fieldErrors.petName?.[0] ?? null,
@@ -81,7 +82,8 @@ export default function AddPetForm() {
         }
 
         try {
-            const { petName, species, breed, weight } = result.data;
+            const { petName, species, breed, weight } =
+                result.data;
 
             const response = await addPet({
                 petName,
@@ -90,11 +92,9 @@ export default function AddPetForm() {
                 weight: Number(weight),
             });
 
-            if (!response) return; // ✅ no hardcoded error
+            if (!response) return;
 
-            // ✅ SUCCESS (server message)
             showAlert("Success", response.message, () => {
-                // ✅ go back to Home → triggers booking flow
                 router.replace(
                     Platform.OS === "web"
                         ? "/(web)/web-pets"
@@ -102,14 +102,13 @@ export default function AddPetForm() {
                 );
             });
 
-            // ✅ RESET FORM
+            // ✅ RESET
             setForm({
                 petName: "",
                 species: "",
                 breed: "",
                 weight: "",
             });
-
         } catch (err: any) {
             showAlert("Error", err?.message);
         }
@@ -119,23 +118,44 @@ export default function AddPetForm() {
         !form.petName || !form.species || loading;
 
     return (
-        <View className= " bg-white flex-1 px-6 pt-6">
-
+        <View className="flex-1 bg-white px-6 pt-6">
             {/* ✅ HEADER */}
-            <View className="mb-10 items-center">
-                <Text className="text-3xl font-bold text-gray-900">
-                    Add a Pet
-                </Text>
-                <Text className="text-sm text-gray-500 mt-2 text-center">
-                    Enter your pet’s details to start booking appointments.
-                </Text>
+            <View className="mb-6">
+                {/* ✅ BACK BUTTON */}
+                <Pressable
+    onPress={() =>
+        router.replace(
+            Platform.OS === "web"
+                ? "/(web)/web-pets"
+                : "(app)/(tabs)/pets"
+        )
+    }
+    className="mb-4 self-start px-3 py-2 rounded-xl bg-gray-100"
+>
+    <Text className="text-gray-700 font-medium">
+        ← Back
+    </Text>
+</Pressable>
+
+                {/* ✅ TITLE */}
+                <View className="items-center">
+                    <Text className="text-3xl font-bold text-gray-900">
+                        Add a Pet
+                    </Text>
+
+                    <Text className="text-sm text-gray-500 mt-2 text-center px-4">
+                        Enter your pet’s details to start booking
+                        appointments.
+                    </Text>
+                </View>
+
+                {/* ✅ DIVIDER */}
+                <View className="border-b border-gray-100 mt-6" />
             </View>
 
             {/* ✅ CARD */}
-            <View className="bg-white rounded-3xl p-5 shadow-sm">
-
-                <View className="gap-2">
-
+            <View className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm">
+                <View className="gap-4">
                     <AppTextInput
                         label="Pet Name"
                         value={form.petName}
@@ -170,7 +190,10 @@ export default function AddPetForm() {
                         label="Weight (kg)"
                         value={form.weight ?? ""}
                         onChangeText={(text) =>
-                            updateField("weight", sanitizeNumber(text))
+                            updateField(
+                                "weight",
+                                sanitizeNumber(text)
+                            )
                         }
                         placeholder="12.5"
                         error={errors.weight}
@@ -185,14 +208,14 @@ export default function AddPetForm() {
                             borderRadius: 14,
                             paddingVertical: 16,
                             alignItems: "center",
-
                             backgroundColor: isDisabled
                                 ? "#E5E7EB"
                                 : pressed
-                                    ? "#111827"
-                                    : "#000000",
-
-                            transform: [{ scale: pressed ? 0.97 : 1 }],
+                                ? "#111827"
+                                : "#000000",
+                            transform: [
+                                { scale: pressed ? 0.97 : 1 },
+                            ],
                         })}
                     >
                         {loading ? (

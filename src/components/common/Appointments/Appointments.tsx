@@ -6,19 +6,22 @@ import Loader from "@/components/common/Loader/Loader";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { router } from "expo-router";
 import { useEffect } from "react";
-import { FlatList, Platform, Text, View } from "react-native";
+import { FlatList, Platform, View } from "react-native";
 
 export default function Appointments() {
+    const { refreshSession, user, loading } = useAuth();
 
-    const { refreshSession, user, loading } = useAuth()
-    const appointments = user?.customerProfile?.appointments
-    const isEmpty = user?.customerProfile?.appointments.length === 0;
+    const appointments = user?.customerProfile?.appointments || [];
+    const isEmpty = appointments.length === 0;
 
     useEffect(() => {
         refreshSession();
     }, []);
-    
-    if (!user && loading) return <Loader fullScreen />;
+
+    // ✅ FULLSCREEN LOADER (initial load)
+    if (loading && appointments.length === 0) {
+        return <Loader fullScreen />;
+    }
 
     const handleAddAppointment = () => {
         const isWeb = Platform.OS === "web";
@@ -27,11 +30,14 @@ export default function Appointments() {
 
     return (
         <Container>
+            {/* ✅ HEADER */}
             <HeaderSection
                 title="My Appointments"
                 description="Track your upcoming and past bookings."
             />
-            {isEmpty ? (
+
+            {/* ✅ EMPTY */}
+            {isEmpty && !loading ? (
                 <EmptyState
                     title="No appointments yet"
                     description="Start by booking your first visit."
@@ -39,19 +45,26 @@ export default function Appointments() {
                     onPress={handleAddAppointment}
                 />
             ) : (
-                <View className="flex-1"> 
+                <View className="flex-1">
                     <FlatList
                         data={appointments}
                         keyExtractor={(item) => item.bookingCode}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{
-                            paddingBottom: 24,
+                            paddingBottom: 32,
                             paddingTop: 8,
                         }}
                         onRefresh={refreshSession}
                         refreshing={loading}
-                        bounces={true}
-                        ListFooterComponent={<View style={{ height: 40 }} />}
+                        ListFooterComponent={
+                            loading ? (
+                                <View className="py-4">
+                                    <Loader />
+                                </View>
+                            ) : (
+                                <View style={{ height: 40 }} />
+                            )
+                        }
                         renderItem={({ item }) => (
                             <AppointmentCard item={item} />
                         )}

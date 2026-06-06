@@ -1,48 +1,56 @@
 import { Appointment } from "@/features/appointment/types/appointment";
-import { Text, View } from "react-native";
+import { Text, View, Pressable } from "react-native";
+import { router } from "expo-router";
 
 type AppointmentCardProps = {
     item: Appointment;
 };
 
-
 export default function AppointmentCard({ item }: AppointmentCardProps) {
     return (
-        <View
-            className="bg-white rounded-2xl mb-4 p-5 border border-border"
-            style={{
-                boxShadow: "0px 8px 20px rgba(2,6,23,0.06)",
-            }}
+        <Pressable
+            onPress={() => router.push(`/appointment/${item.id}`)}
+            style={({ pressed }) => ({
+                opacity: pressed ? 0.9 : 1,
+                transform: [{ scale: pressed ? 0.98 : 1 }],
+            })}
+            className="bg-white rounded-2xl mb-4 p-5 border border-gray-100"
         >
-
-            {/* TOP ROW */}
-            <View className="flex-row justify-between items-center mb-3">
+            {/* ✅ TOP ROW */}
+            <View className="flex-row justify-between items-start mb-4">
+                {/* LEFT */}
                 <View>
-                    <Text className="text-base font-semibold mb-[0.8px]">
-                      Name: {item.pet?.petName}
+                    <Text className="text-base font-semibold text-gray-900">
+                        {item.pet?.petName}
                     </Text>
-                    <Text className="text-sm opacity-70 font-semibold">
-                       Service Type: {item.serviceType}
+
+                    <Text className="text-sm text-gray-500 mt-1">
+                        {item.serviceType}
                     </Text>
                 </View>
 
-                <Text className="text-xs font-semibold opacity-70">
-                   STATUS:  {item.status}
+                {/* ✅ STATUS BADGE */}
+                <View className="px-3 py-1 rounded-full bg-gray-100">
+                    <Text className="text-xs font-medium text-gray-700">
+                        {item.status}
+                    </Text>
+                </View>
+            </View>
+
+            {/* ✅ SCHEDULE */}
+            <View className="mb-4">
+                <Text className="text-xs text-gray-400 mb-1">
+                    Appointment Schedule
+                </Text>
+
+                <Text className="text-sm font-medium text-gray-800">
+                    {item.appointmentDisplay?.date} •{" "}
+                    {item.appointmentDisplay?.time}
                 </Text>
             </View>
 
-            {/* SCHEDULE */}
-            <Text className="text-sm font-semibold mb-[2px]">
-              Appointment Schedule: 
-            </Text>
-
-            <Text className="text-xs font-semibold opacity-70 mb-2">
-                {item.appointmentDisplay?.date} • {item.appointmentDisplay?.time}
-            </Text>
-            {/* FOOTER (CLEAN DETAILS) */}
+            {/* ✅ FOOTER */}
             <View className="flex-row justify-between items-end">
-
-                {/* LEFT: BOOKED */}
                 <View>
                     <Text className="text-[10px] text-gray-400">
                         Booked on
@@ -52,17 +60,20 @@ export default function AppointmentCard({ item }: AppointmentCardProps) {
                     </Text>
                 </View>
 
-                {/* RIGHT: REFERENCE */}
                 <View className="items-end">
                     <Text className="text-[10px] text-gray-400">
                         Ref Code
                     </Text>
-                    <Text className="text-xs font-mono tracking-wider text-gray-700">
+                    <Text className="text-xs font-mono tracking-wider text-gray-800">
                         {item.bookingCode}
                     </Text>
                 </View>
-
             </View>
-        </View>
+
+            {/* ✅ OPTIONAL VISUAL HINT (arrow) */}
+            <View className="absolute right-4 top-4">
+                <Text className="text-gray-300 text-lg">›</Text>
+            </View>
+        </Pressable>
     );
 }
