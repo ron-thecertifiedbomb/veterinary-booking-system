@@ -1,6 +1,7 @@
 import { NoPets, NoSlots } from "@/components/booking";
 import BookingForm from "@/components/booking/BookingForm";
 import BookingModal from "@/components/booking/BookingModal";
+
 import Loader from "@/components/common/Loader/Loader";
 import { Pet } from "@/features/pet/pet.types";
 import { Slot } from "@/hooks/appointments/useBookingSystem";
