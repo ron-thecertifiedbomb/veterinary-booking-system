@@ -18,7 +18,7 @@ export default function Appointments() {
         refreshSession();
     }, []);
     
-    if (loading) return <Loader fullScreen />;
+    if (!user && loading) return <Loader fullScreen />;
 
     const handleAddAppointment = () => {
         const isWeb = Platform.OS === "web";
