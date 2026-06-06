@@ -52,11 +52,11 @@ export default function LoginForm({
     };
 
     return (
-        <View className="w-full max-w-md px-6 py-8">
+        <View className="w-full max-w-md py-8">
 
             <View className="mb-8 items-center">
-                <Text className="text-3xl font-semibold text-text-primary">
-                    Sign in
+                <Text className="text-xl lg:text-3xl font-semibold text-text-primary">
+               Sign in
                 </Text>
                 <Text className="text-xs text-text-secondary mt-1">
                     Login to continue managing your pet appointments.
@@ -103,7 +103,7 @@ export default function LoginForm({
             <Pressable
                 onPress={handleSubmit}
                 disabled={loading}
-                className="bg-black rounded-2xl py-4 items-center mt-6"
+                className="bg-black rounded-2xl py-2 lg:py-4 items-center mt-2 lg:mt-6"
             >
                 {loading ? (
                     <ActivityIndicator color="#FFFFFF" />

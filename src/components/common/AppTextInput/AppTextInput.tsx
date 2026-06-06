@@ -29,15 +29,10 @@ export default function AppTextInput({
 }: AppTextInputProps) {
     return (
         <View className="mb-[0.7px]">
-
-            {/* LABEL */}
-            <Text className="text-sm font-medium text-text-primary mb-1">
+            <Text className="text-xs lg:text-sm font-medium text-text-primary mb-1">
                 {label}
             </Text>
-
-            {/* INPUT */}
-            <View className="bg-surface border border-gray-300 rounded-2xl mb-1 flex-row items-center">
-
+            <View className="bg-transparent border border-gray-300 rounded-2xl mb-1 flex-row items-center">
                 <TextInput
                     value={value}
                     onChangeText={onChangeText}
@@ -61,27 +56,27 @@ export default function AppTextInput({
                         } as any)
                         : {})}
 
-                    className="flex-1 px-4 py-4 text-text-primary"
+                    className="flex-1 px-2 py-2 lg:px-4 lg:py-4 text-text-secondary "
                     style={
                         Platform.OS === "web"
-                            ? ({ outlineStyle: "none" } as any)
+                            ? ({
+                                outlineStyle: "none",
+                                WebkitBoxShadow: "0 0 0px 1000px transparent inset",
+                                boxShadow: "0 0 0px 1000px transparent inset",
+                                transition: "background-color 5000s ease-in-out 0s",
+                            } as any)
                             : undefined
                     }
                 />
-
                 {rightIcon && (
                     <Pressable onPress={onRightIconPress} className="px-4">
                         {rightIcon}
                     </Pressable>
                 )}
             </View>
-
-            {/* ERROR */}
-            <Text className="text-red-500 text-xs  min-h-[16px]">
+            <Text className="text-red-500 text-xs min-h-[16px]">
                 {error ?? ""}
             </Text>
-
         </View>
     );
 }
-``

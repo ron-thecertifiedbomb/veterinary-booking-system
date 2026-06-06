@@ -1,5 +1,5 @@
 import AppSafeArea from "@/components/common/AppSafeArea/AppSafeArea";
-import RegistetrationForm from "@/components/common/AuthForms/RegistrationForm";
+
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { RegisterPayload } from "@/features/auth/types/auth.registration";
 import { showAlert } from "@/hooks/crossPlatformAlert";
@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useEffect, useRef } from "react";
 import AnimatedSlide from "@/components/common/AnimatedSlide/AnimatedSlide";
+import RegistrationForm from "@/components/common/AuthForms/RegistrationForm";
 
 
 export default function RegistrationSceen() {
@@ -47,8 +48,8 @@ export default function RegistrationSceen() {
         className="flex-1 justify-center items-center px-8"
       >
         <AnimatedSlide>
-          <View className="w-full">
-            <RegistetrationForm
+          <View className="w-full items-center">
+            <RegistrationForm
               loading={loading}
               onSubmit={handleRegister}
               onLoginPress={() => router.push("/(auth)/login")}

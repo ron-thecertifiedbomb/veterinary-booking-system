@@ -1,7 +1,8 @@
 // src/app/(auth)/login.tsx
-import LoginForm from "@/components/authentication/forms/LoginForm";
+
 import AnimatedSlide from "@/components/common/AnimatedSlide/AnimatedSlide";
 import AppSafeArea from "@/components/common/AppSafeArea/AppSafeArea";
+import LoginForm from "@/components/common/AuthForms/LoginForm";
 import ScreenContainer from "@/components/common/Layouts/ScreenContainer/ScreenContainer";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { LoginPayload } from "@/features/auth/types/auth.login";
@@ -41,7 +42,7 @@ export default function Login() {
                 className="flex-1 justify-center items-center px-8"
             >
                 <AnimatedSlide>
-                    <View className="w-full">
+                    <View className="w-full items-center">
                     <LoginForm
                         loading={loading}
                         onSubmit={handleLogin}

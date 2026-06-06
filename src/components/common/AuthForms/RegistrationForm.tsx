@@ -22,7 +22,7 @@ type Props = {
     onLoginPress?: () => void;
 };
 
-export default function RegistetrationForm({
+export default function RegistrationForm({
     loading,
     onSubmit,
     onLoginPress,
@@ -65,9 +65,9 @@ export default function RegistetrationForm({
     };
 
     return (
-        <View>
+        <View className="w-full max-w-md  py-8">
             <View className="mb-4 items-center">
-                <Text className="text-3xl font-semibold text-text-primary">
+                <Text className="text-xl lg:text-3xl font-semibold text-text-primary">
                     Create an Account
                 </Text>
                 <Text className="text-xs text-text-secondary mt-1 text-center">
@@ -135,7 +135,7 @@ export default function RegistetrationForm({
             <Pressable
                 onPress={handleSubmit}
                 disabled={loading}
-                className="bg-black rounded-2xl py-4 items-center mt-6"
+                className="bg-black rounded-2xl py-2 lg:py-4 items-center mt-2 lg:mt-6"
             >
                 {loading ? (
                     <ActivityIndicator color="#FFFFFF" />
@@ -145,7 +145,7 @@ export default function RegistetrationForm({
                     </Text>
                 )}
             </Pressable>
-            <View className="mt-8 items-center">
+            <View className="mt-2 items-center">
                 <Text className="text-sm text-text-secondary">
                     Already have an account?
                 </Text>
