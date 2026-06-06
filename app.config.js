@@ -5,31 +5,69 @@ export default ({ config }) => {
   const isStaging = env === "staging";
 
   return {
-    expo: {
-      ...config.expo,
+    ...config,
 
-      name: isStaging ? "Rondev Vet System (Staging)" : "Rondev Vet System",
+    name: isStaging ? "Rondev Vet System (Staging)" : "Rondev Vet System",
 
-      android: {
-        ...config.expo.android,
-        package: isStaging
-          ? "com.rondev.vet.system.staging"
-          : "com.rondev.vet.system",
+    slug: "rondev-vet-system-app",
+    version: "1.0.0",
+    orientation: "portrait",
+
+    icon: "./assets/images/icon.png",
+    scheme: "rondevmobileapp",
+
+    userInterfaceStyle: "automatic", // ✅ fixes warning
+
+    ios: {
+      icon: "./assets/images/icon.png",
+      bundleIdentifier: isStaging
+        ? "com.rondev.vet.system.staging"
+        : "com.rondev.vet.system",
+    },
+
+    android: {
+      package: isStaging
+        ? "com.rondev.vet.system.staging"
+        : "com.rondev.vet.system",
+      adaptiveIcon: {
+        backgroundColor: "#E6F4FE",
+        foregroundImage: "./assets/images/android-icon-foreground.png",
+        backgroundImage: "./assets/images/android-icon-background.png",
+        monochromeImage: "./assets/images/android-icon-monochrome.png",
       },
+      predictiveBackGestureEnabled: false,
+    },
 
-      ios: {
-        ...config.expo.ios,
-        bundleIdentifier: isStaging
-          ? "com.rondev.vet.system.staging"
-          : "com.rondev.vet.system",
-      },
+    web: {
+      bundler: "metro",
+      output: "static",
+      favicon: "./assets/images/favicon.png",
+    },
 
-      extra: {
-        ...config.expo.extra,
-        appEnv: env,
-        apiWeb: process.env.EXPO_PUBLIC_API_WEB,
-        apiMobile: process.env.EXPO_PUBLIC_API_MOBILE,
+    plugins: [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          backgroundColor: "#208AEF",
+          image: "./assets/images/splash-icon.png",
+          imageWidth: 100,
+        },
+      ],
+      "expo-image",
+    ],
+
+    experiments: {
+      typedRoutes: false,
+    },
+
+    extra: {
+      eas: {
+        projectId: "8a8dbca3-6e42-4bb8-a9d5-8ec3357a835c",
       },
+      appEnv: env,
+      apiWeb: process.env.EXPO_PUBLIC_API_WEB,
+      apiMobile: process.env.EXPO_PUBLIC_API_MOBILE,
     },
   };
 };
