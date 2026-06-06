@@ -20,7 +20,7 @@ import { Platform } from "react-native";
 export default function Home() {
     const [date, setDate] = useState(getTodayDate());
     const [showModal, setShowModal] = useState(false);
-    const { user } = useAuth();
+    const { user, refreshSession } = useAuth();
 
     const pets = user?.customerProfile?.pets ?? [];
 
@@ -72,21 +72,26 @@ export default function Home() {
         setShowModal(false);
     };
 
-    // ✅ submit booking
-    const handleSubmit = async (
-        formData: CreateAppointmentPayload
-    ) => {
+
+    const handleSubmit = async (formData: CreateAppointmentPayload) => {
         try {
+            // ✅ prevent multiple triggers
+            if (creating) return;
+
             const response = await createAppointment(formData);
 
             setBookingSummary(response);
 
-            handleCloseModal();
+            // ✅ close booking modal first
+            setShowModal(false);
 
-            // ✅ small delay prevents flicker
+            // ✅ wait a bit longer (stable across devices)
             setTimeout(() => {
                 setSuccessModalVisible(true);
-            }, 100);
+            }, 500); // 🔥 500ms = safest for all devices
+
+            // ✅ run in background (no UI blocking)
+            refreshSession();
 
         } catch (err: any) {
             showAlert("Error", err?.message);

@@ -1,9 +1,9 @@
 import {
     Modal,
-    View,
-    TouchableOpacity,
     ScrollView,
+    TouchableOpacity,
     useWindowDimensions,
+    View,
 } from "react-native";
 
 export default function BookingModal({
@@ -17,16 +17,18 @@ export default function BookingModal({
     const isLargeScreen = width >= 768; // tablet / web
 
     return (
+
         <Modal
             visible={visible}
-            animationType={isLargeScreen ? "fade" : "slide"}
+            animationType="none" // ✅ disable default animation
             transparent
         >
+
             {/* ✅ BACKDROP */}
             <View
                 className={`flex-1 bg-black/40 ${isLargeScreen
-                        ? "justify-center items-center"
-                        : "justify-end"
+                    ? "justify-center items-center"
+                    : "justify-end"
                     }`}
             >
                 {/* ✅ TAP OUTSIDE */}
@@ -40,8 +42,8 @@ export default function BookingModal({
                 {/* ✅ MODAL CARD */}
                 <View
                     className={`bg-white ${isLargeScreen
-                            ? "w-full max-w-md rounded-2xl p-6"
-                            : "rounded-t-3xl px-4 pt-4 pb-6 max-h-[85%]"
+                        ? "w-full max-w-md rounded-2xl p-6"
+                        : "rounded-t-3xl px-4 pt-4 pb-6 max-h-[85%]"
                         }`}
                 >
                     {/* ✅ HANDLE (mobile only) */}

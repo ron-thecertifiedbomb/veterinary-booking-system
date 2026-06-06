@@ -36,7 +36,9 @@ export default function AppBookingModal({
     const [serviceType, setServiceType] = useState("");
     const [notes, setNotes] = useState("");
 
-    // ✅ FIXED checks
+    // ✅ HARD STOP RENDER WHEN CLOSED (KEY FIX 🔥)
+    if (!visible) return null;
+
     const isPetsEmpty = pets.length === 0;
     const noAvailableSlots = !slots || slots.length === 0;
 
