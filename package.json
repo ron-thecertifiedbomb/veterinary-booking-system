@@ -58,6 +58,7 @@
     "expo-symbols": "~55.0.9",
     "expo-system-ui": "~55.0.18",
     "expo-web-browser": "~55.0.16",
+    "lucide-react": "^1.17.0",
     "nativewind": "^4.2.4",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "react": "19.2.0",

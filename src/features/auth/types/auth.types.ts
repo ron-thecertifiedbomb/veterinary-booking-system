@@ -2,7 +2,9 @@
 
 import { Appointment } from "@/features/appointment/types/appointment";
 import { StaffPosition, UserRole } from "@/features/auth/types/auth.user";
+import { CustomerProfile } from "@/features/customer/types/customer.types";
 import { Pet } from "@/features/pet/pet.types";
+import { StaffProfile } from "@/features/staff/types/staff.types";
 
 export type AuthenticatedUser = {
   id: string;
@@ -17,19 +19,8 @@ export type AuthenticatedUser = {
   staffProfile?: StaffProfile;
 };
 
-export interface CustomerProfile {
-  id: string;
-  pets: Pet[];
-  appointments: Appointment[];
-}
 
-export type StaffProfile = {
-  id: string;
-  specialization: string;
-  licenseNumber: string;
-  position: StaffPosition;
-  userId: string;
-};
+
 
 export type AuthenticatedUserResponse = {
   message: string;
