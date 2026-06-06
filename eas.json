@@ -15,14 +15,20 @@
       "distribution": "internal",
       "env": {
         "NODE_ENV": "production",
-        "EXPO_PUBLIC_API_URL": "https://api.preview.yourdomain.com"
+
+        "EXPO_PUBLIC_API_WEB": "https://staging-api.rondev.com.ph",
+        "EXPO_PUBLIC_API_MOBILE": "https://staging-api.rondev.com.ph",
+        "EXPO_PUBLIC_APP_ENV": "staging"
       }
     },
     "production": {
       "autoIncrement": true,
       "env": {
         "NODE_ENV": "production",
-        "EXPO_PUBLIC_API_URL": "https://api.yourdomain.com"
+
+        "EXPO_PUBLIC_API_WEB": "https://api.rondev.com.ph",
+        "EXPO_PUBLIC_API_MOBILE": "https://api.rondev.com.ph",
+        "EXPO_PUBLIC_APP_ENV": "production"
       }
     }
   },
