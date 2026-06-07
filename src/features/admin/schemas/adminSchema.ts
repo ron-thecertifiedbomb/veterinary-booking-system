@@ -5,7 +5,6 @@ export const adminSchema = z.object({
   password: z.string().min(6, "Minimum 6 characters"),
   name: z.string().min(1, "Name is required"),
   phone: z.string().min(10, "Invalid phone"),
-  role: z.literal("ADMIN"),
-  position: z.string().min(1, "Position is required"),
+  position: z.enum(["MANAGER", "ACCOUNTANT", "RECEPTIONIST"]),
   department: z.string().min(1, "Department is required"),
 });

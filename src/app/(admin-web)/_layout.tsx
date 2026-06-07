@@ -10,31 +10,37 @@ import BookingModal from "@/components/booking/BookingModal";
 import AddStaffForm from "@/components/common/AddStaffForm/AddStaffForm";
 import { AdminFormData, StaffFormData } from "@/features/admin/types/admin.types";
 import AddAdminForm from "@/components/common/AddAdminForm/AddAdminForm";
+import { useAddAdmin } from "@/features/admin/hooks/useAddAdmin";
+import { useAddStaff } from "@/features/staff/hook/useAddStaff";
 
 
 type ModalType = "staff" | "admin" | null;
 
 export default function AdminWebLayout() {
     const { user, loading, isAuthenticated } = useAuth();
+    
+        const { addAdmin, loading: adminLoading } = useAddAdmin();
+        const { addStaff, loading: staffLoading } = useAddStaff();
 
     const [modalType, setModalType] = useState<ModalType>(null);
     const [submitting, setSubmitting] = useState(false);
 
     /* ---------------- GUARDS ---------------- */
 
-    if (loading) {
-        return <Loader fullScreen size="large" />;
-    }
+    if (loading) return <Loader fullScreen />;
 
     if (!isAuthenticated) {
         return <Redirect href="/(auth)/login" />;
     }
 
-    if (!user) return null;
-
-    if (user.role !== "ADMIN") {
-        return <Redirect href="/" />;
+    // ✅ BLOCK: not ADMIN
+    if (user?.role !== "ADMIN") {
+        return <Redirect href="/(auth)/login" />;
     }
+    /* ---------------- HOOKS ---------------- */
+
+
+    const isSubmitting = adminLoading || staffLoading;
 
     /* ---------------- HANDLERS ---------------- */
 
@@ -42,11 +48,17 @@ export default function AdminWebLayout() {
         try {
             setSubmitting(true);
 
-            console.log("Create staff:", data);
+            const payload = {
+                email: data.email,
+                password: data.password,
+                name: data.name,
+                phone: data.phone,
+                position: data.position,
+                specialization: data.specialization,
+                licenseNumber: data.licenseNumber,
+            };
 
-            // ✅ TODO: connect API
-            // await createStaff(data);
-
+            addStaff(payload)
             setModalType(null);
         } catch (err) {
             console.error(err);
@@ -64,19 +76,12 @@ export default function AdminWebLayout() {
                 password: data.password,
                 name: data.name,
                 phone: data.phone,
-                role: "ADMIN",
-                isActive: true,
-                adminProfile: {
-                    position: data.position,
-                    department: data.department,
-                },
+                position: data.position,
+                department: data.department,
+
             };
 
-            console.log("Create admin:", payload);
-
-            // ✅ TODO: connect API
-            // await createAdmin(payload);
-
+            addAdmin(payload)
             setModalType(null);
         } catch (err) {
             console.error(err);
@@ -121,7 +126,8 @@ export default function AdminWebLayout() {
             </DashboardShell>
 
             {/* ✅ GLOBAL MODAL */}
-            <BookingModal
+         { isSubmitting && <Loader fullScreen />}
+           <BookingModal
                 key={modalType} // ✅ reset form each open
                 visible={modalType !== null}
                 onClose={() => setModalType(null)}

@@ -1,5 +1,6 @@
 import Container from "@/components/common/Container/Container";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
+import Loader from "@/components/common/Loader/Loader";
 import { AuthenticatedUser } from "@/features/auth/types/auth.types";
 import { useAllGetStaff } from "@/features/staff/hook/useGetAllStaff";
 import { useEffect } from "react";
@@ -103,12 +104,7 @@ export default function Staff() {
             </View>
             {/* Loading */}
             {loading ? (
-                <View className="flex-1 ">
-                    <ActivityIndicator size="large" />
-                    <Text className="mt-2 text-slate-500">
-                        Loading staff...
-                    </Text>
-                </View>
+                <Loader fullScreen />
             ) : (
                 <FlatList
                     data={allStaff || []}

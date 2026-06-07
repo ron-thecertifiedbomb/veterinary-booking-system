@@ -1,6 +1,5 @@
 import { AuthenticatedUser } from "@/features/auth/types/auth.types";
 
-
 export type StaffPosition = "VETERINARIAN" | "VET_TECHNICIAN" | "GROOMER";
 
 export interface GetAllStaffResponse {
@@ -13,3 +12,21 @@ export interface StaffProfile {
   position: StaffPosition;
   licenseNumber: string;
 }
+
+export type CreateStaffResponse = {
+  message: string;
+  data: Staff;
+};
+
+export type Staff = {
+  id: string;
+  email: string;
+  name: string;
+  phone: string;
+  role: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  staffProfile: StaffProfile;
+};
+
