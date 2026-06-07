@@ -1,7 +1,8 @@
 // ..\src\features\admin\api.ts
 
 import { Appointment } from "@/features/admin/types";
-import { API } from "@/utils/config/api";
+import { API } from "@/utils/api/api.config";
+
 import { logger } from "@/utils/logger/logger";
 
 export const getAppointments = async (): Promise<Appointment[]> => {
