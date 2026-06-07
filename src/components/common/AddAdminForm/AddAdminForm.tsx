@@ -1,73 +1,83 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import { z } from "zod";
+
 
 import AppTextInput from "@/components/common/AppTextInput/AppTextInput";
-import { staffSchema } from "@/features/admin/schemas/staffSchema";
-import { StaffPosition } from "@/features/staff/types/staff.types";
-import { StaffFormData } from "@/features/admin/types/admin.types";
+import { adminSchema } from "@/features/admin/schemas/adminSchema";
+import { AdminFormData, AdminPosition } from "@/features/admin/types/admin.types";
+import { Picker } from "@react-native-picker/picker";
+
+/* ---------------- TYPES ---------------- */
 
 
-type StaffErrors = Partial<Record<keyof StaffFormData, string | null>>;
+type AdminErrors = Partial<Record<keyof AdminFormData, string | null>>;
 
 type Props = {
     loading?: boolean;
-    onSubmit: (data: StaffFormData) => void;
+    onSubmit: (data: AdminFormData) => void;
 };
 
-/* ---------------- CONSTANTS ---------------- */
 
-const STAFF_POSITIONS: { label: string; value: StaffPosition }[] = [
-    { label: "Veterinarian", value: "VETERINARIAN" },
-    { label: "Vet Technician", value: "VET_TECHNICIAN" },
-    { label: "Groomer", value: "GROOMER" },
+const ADMIN_POSITIONS: { label: string; value: AdminPosition }[] = [
+    { label: "Manager", value: "MANAGER" },
+    { label: "Accountant", value: "ACCOUNTANT" },
+    { label: "Receptionist", value: "RECEPTIONIST" },
 ];
+
 
 /* ---------------- COMPONENT ---------------- */
 
-export default function AddStaffForm({ loading, onSubmit }: Props) {
-    const [form, setForm] = useState<StaffFormData>({
+export default function AddAdminForm({ loading, onSubmit }: Props) {
+    const [form, setForm] = useState<AdminFormData>({
         email: "",
         password: "",
         name: "",
         phone: "",
-        position: "VETERINARIAN", // default
-        specialization: "",
-        licenseNumber: "",
+        role: "ADMIN",
+        position: "MANAGER",
+        department: "",
     });
 
-    const [errors, setErrors] = useState<StaffErrors>({});
+    const [errors, setErrors] = useState<AdminErrors>({});
 
-    // ✅ FIXED (important bug fixed here)
-    const updateField = <K extends keyof StaffFormData>(
+    /* ✅ FIXED typed update */
+    const updateField = <K extends keyof AdminFormData>(
         key: K,
-        value: StaffFormData[K]
+        value: AdminFormData[K]
     ) => {
         setForm((prev) => ({ ...prev, [key]: value }));
         setErrors((prev) => ({ ...prev, [key]: null }));
     };
+    const handlePositionChange = (value: AdminPosition) => {
+        updateField("position", value);
 
+        if (value === "MANAGER") {
+            updateField("department", "Operations");
+        } else if (value === "ACCOUNTANT") {
+            updateField("department", "Finance");
+        } else if (value === "RECEPTIONIST") {
+            updateField("department", "Front Desk");
+        }
+    };
     const handleSubmit = () => {
-        // ✅ clean inputs
         const cleanedForm = {
             ...form,
             name: form.name.trim(),
             email: form.email.trim(),
         };
 
-        const result = staffSchema.safeParse(cleanedForm);
+        const result = adminSchema.safeParse(cleanedForm);
 
         if (!result.success) {
             const fieldErrors = result.error.flatten().fieldErrors;
 
             const formattedErrors = Object.keys(fieldErrors).reduce(
                 (acc, key) => {
-                    acc[key as keyof StaffFormData] =
-                        fieldErrors[key as keyof StaffFormData]?.[0] || null;
+                    acc[key as keyof AdminFormData] =
+                        fieldErrors[key as keyof AdminFormData]?.[0] || null;
                     return acc;
                 },
-                {} as StaffErrors
+                {} as AdminErrors
             );
 
             setErrors(formattedErrors);
@@ -77,23 +87,13 @@ export default function AddStaffForm({ loading, onSubmit }: Props) {
         onSubmit(result.data);
     };
 
-    // ✅ Optional smart UX
-    const handlePositionChange = (value: StaffPosition) => {
-        updateField("position", value);
-
-        if (value === "VETERINARIAN") {
-            updateField("specialization", "Small Animals");
-        }
-    };
-
     return (
         <View className="w-full space-y-2">
-            {/* Title */}
+
             <Text className="text-xl font-semibold mb-2">
-                Add Staff
+                Add Admin
             </Text>
 
-            {/* Name */}
             <AppTextInput
                 label="Full Name"
                 value={form.name}
@@ -101,7 +101,6 @@ export default function AddStaffForm({ loading, onSubmit }: Props) {
                 error={errors.name}
             />
 
-            {/* Email */}
             <AppTextInput
                 label="Email"
                 value={form.email}
@@ -110,7 +109,6 @@ export default function AddStaffForm({ loading, onSubmit }: Props) {
                 error={errors.email}
             />
 
-            {/* Phone */}
             <AppTextInput
                 label="Phone"
                 value={form.phone}
@@ -120,7 +118,6 @@ export default function AddStaffForm({ loading, onSubmit }: Props) {
                 error={errors.phone}
             />
 
-            {/* Password */}
             <AppTextInput
                 label="Password"
                 value={form.password}
@@ -129,7 +126,6 @@ export default function AddStaffForm({ loading, onSubmit }: Props) {
                 error={errors.password}
             />
 
-            {/* ✅ Position Dropdown */}
             <View className="mb-2">
                 <Text className="text-xs lg:text-sm font-medium text-text-primary mb-1">
                     Position
@@ -139,10 +135,11 @@ export default function AddStaffForm({ loading, onSubmit }: Props) {
                     <Picker
                         selectedValue={form.position}
                         onValueChange={(value) =>
-                            handlePositionChange(value as StaffPosition)
+                            handlePositionChange(value as AdminPosition)
                         }
+
                     >
-                        {STAFF_POSITIONS.map((pos) => (
+                        {ADMIN_POSITIONS.map((pos) => (
                             <Picker.Item
                                 key={pos.value}
                                 label={pos.label}
@@ -159,24 +156,14 @@ export default function AddStaffForm({ loading, onSubmit }: Props) {
                 )}
             </View>
 
-            {/* Specialization */}
             <AppTextInput
-                label="Specialization"
-                value={form.specialization}
+                label="Department"
+                value={form.department}
                 onChangeText={(text) =>
-                    updateField("specialization", text)
+                    updateField("department", text)
                 }
-                error={errors.specialization}
-            />
-
-            {/* License */}
-            <AppTextInput
-                label="License Number"
-                value={form.licenseNumber}
-                onChangeText={(text) =>
-                    updateField("licenseNumber", text)
-                }
-                error={errors.licenseNumber}
+                placeholder="e.g. Operations"
+                error={errors.department}
             />
 
             {/* Submit */}
@@ -190,7 +177,7 @@ export default function AddStaffForm({ loading, onSubmit }: Props) {
                     <ActivityIndicator color="#fff" />
                 ) : (
                     <Text className="text-white font-semibold">
-                        Add Staff
+                        Add Admin
                     </Text>
                 )}
             </Pressable>

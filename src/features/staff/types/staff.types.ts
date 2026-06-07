@@ -1,5 +1,7 @@
 import { AuthenticatedUser } from "@/features/auth/types/auth.types";
-import { StaffPosition } from "@/features/auth/types/auth.user";
+
+
+export type StaffPosition = "VETERINARIAN" | "VET_TECHNICIAN" | "GROOMER";
 
 export interface GetAllStaffResponse {
   message: string;

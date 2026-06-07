@@ -1,54 +1,53 @@
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Pressable, Text } from "react-native";
-
+import { Pressable, Text, View } from "react-native";
 import DashboardShell from "@/components/common/Layouts/DashBoardShell/DashBoardShell";
 import Loader from "@/components/common/Loader/Loader";
-
-
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { adminNav } from "@/utils/config/sidebar/sidebar";
-
 import { Redirect, Slot } from "expo-router";
 import BookingModal from "@/components/booking/BookingModal";
 import AddStaffForm from "@/components/common/AddStaffForm/AddStaffForm";
+import { AdminFormData, StaffFormData } from "@/features/admin/types/admin.types";
+import AddAdminForm from "@/components/common/AddAdminForm/AddAdminForm";
+
+
+type ModalType = "staff" | "admin" | null;
 
 export default function AdminWebLayout() {
     const { user, loading, isAuthenticated } = useAuth();
 
-    // ✅ Modal state
-    const [open, setOpen] = useState(false);
+    const [modalType, setModalType] = useState<ModalType>(null);
     const [submitting, setSubmitting] = useState(false);
 
-    // ✅ loading
+    /* ---------------- GUARDS ---------------- */
+
     if (loading) {
         return <Loader fullScreen size="large" />;
     }
 
-    // ✅ BLOCK: not authenticated
     if (!isAuthenticated) {
         return <Redirect href="/(auth)/login" />;
     }
 
-    // ✅ safety
     if (!user) return null;
 
-    // ✅ BLOCK: not ADMIN
     if (user.role !== "ADMIN") {
         return <Redirect href="/" />;
     }
 
-    // ✅ handle submit
-    const handleCreateStaff = async (data: any) => {
+    /* ---------------- HANDLERS ---------------- */
+
+    const handleCreateStaff = async (data: StaffFormData) => {
         try {
             setSubmitting(true);
 
             console.log("Create staff:", data);
 
-            // 👉 connect API here
-            // await createStaff(data)
+            // ✅ TODO: connect API
+            // await createStaff(data);
 
-            setOpen(false);
+            setModalType(null);
         } catch (err) {
             console.error(err);
         } finally {
@@ -56,35 +55,90 @@ export default function AdminWebLayout() {
         }
     };
 
+    const handleCreateAdmin = async (data: AdminFormData) => {
+        try {
+            setSubmitting(true);
+
+            const payload = {
+                email: data.email,
+                password: data.password,
+                name: data.name,
+                phone: data.phone,
+                role: "ADMIN",
+                isActive: true,
+                adminProfile: {
+                    position: data.position,
+                    department: data.department,
+                },
+            };
+
+            console.log("Create admin:", payload);
+
+            // ✅ TODO: connect API
+            // await createAdmin(payload);
+
+            setModalType(null);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    /* ---------------- RENDER ---------------- */
+
     return (
         <SafeAreaView className="flex-1">
 
             <DashboardShell navItems={adminNav}>
 
-                {/* ✅ Top Action Bar (you can move this into header later) */}
-                <Pressable
-                    onPress={() => setOpen(true)}
-                    className="bg-black px-4 py-2 rounded-xl self-end m-4"
-                >
-                    <Text className="text-white font-semibold">
-                        + Add Staff
-                    </Text>
-                </Pressable>
+                {/* ✅ ACTION BUTTONS */}
+                <View className="flex-row gap-2 justify-end mr-4 lg:mt-4">
 
-                {/* ✅ Page Content */}
+                    <Pressable
+                        onPress={() => setModalType("staff")}
+                        className="bg-black px-4 py-2 rounded-xl"
+                    >
+                        <Text className="text-white font-semibold">
+                            + Staff
+                        </Text>
+                    </Pressable>
+
+                    <Pressable
+                        onPress={() => setModalType("admin")}
+                        className="bg-black px-4 py-2 rounded-xl"
+                    >
+                        <Text className="text-white font-semibold">
+                            + Admin
+                        </Text>
+                    </Pressable>
+
+                </View>
+
+                {/* ✅ PAGE CONTENT */}
                 <Slot />
 
             </DashboardShell>
 
             {/* ✅ GLOBAL MODAL */}
             <BookingModal
-                visible={open}
-                onClose={() => setOpen(false)}
+                key={modalType} // ✅ reset form each open
+                visible={modalType !== null}
+                onClose={() => setModalType(null)}
             >
-                <AddStaffForm
-                    loading={submitting}
-                    onSubmit={handleCreateStaff}
-                />
+                {modalType === "staff" && (
+                    <AddStaffForm
+                        loading={submitting}
+                        onSubmit={handleCreateStaff}
+                    />
+                )}
+
+                {modalType === "admin" && (
+                    <AddAdminForm
+                        loading={submitting}
+                        onSubmit={handleCreateAdmin}
+                    />
+                )}
             </BookingModal>
 
         </SafeAreaView>
