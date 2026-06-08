@@ -1,5 +1,3 @@
-import "dotenv/config";
-
 export default ({ config }) => {
   const env = process.env.EXPO_PUBLIC_APP_ENV || "production";
   const isStaging = env === "staging";
@@ -16,7 +14,7 @@ export default ({ config }) => {
     icon: "./assets/images/icon.png",
     scheme: "rondevmobileapp",
 
-    userInterfaceStyle: "automatic", // ✅ fixes warning
+    userInterfaceStyle: "automatic", 
 
     ios: {
       icon: "./assets/images/icon.png",
