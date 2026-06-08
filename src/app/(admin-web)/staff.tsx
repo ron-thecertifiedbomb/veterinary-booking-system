@@ -98,8 +98,8 @@ export default function Staff() {
         <Container className="flex-1  bg-background px-4 justify-center">
 <View className="max-w-4xl m-auto justify-center items-center py-8">
                 <HeaderSection
-                    title="List of all Staff"
-                    description="Manage staff profile."
+                    title="Staff Management"
+         
                 />
             </View>
             {/* Loading */}

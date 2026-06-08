@@ -10,6 +10,7 @@ import { useGetUserProfile } from "@/features/users/hook/useGetUserProfile";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 
 import { z } from "zod";
+import { BackButton } from "../BackButton/BackButton";
 
 // ✅ ZOD SCHEMA
 const editProfileSchema = z.object({
@@ -109,8 +110,8 @@ export default function EditProfileForm() {
     if (fetching) return <Loader fullScreen />;
 
     return (
-        <View className="flex-1  px-6 pt-6">
-
+        <View className="flex-1 max-w-md bg-white px-6 pt-6">
+     <BackButton webRoute="/(web)/web-profile" appRoute="(app)/(tabs)/profile" /> 
             {/* HEADER */}
             <View className="mb-10 items-center">
                 <Text className="text-3xl font-bold text-gray-900">

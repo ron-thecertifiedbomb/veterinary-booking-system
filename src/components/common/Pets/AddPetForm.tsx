@@ -12,6 +12,7 @@ import { addPetSchema } from "@/features/pet/schemas/addPet.schema";
 import { z } from "zod";
 import { useAddPet } from "@/features/pet/hooks/useAddPet";
 import { showAlert } from "@/hooks/crossPlatformAlert";
+import { BackButton } from "../BackButton/BackButton";
 
 type CreatePetPayload = z.infer<typeof addPetSchema>;
 type AddPetErrors = Partial<
@@ -118,25 +119,13 @@ export default function AddPetForm() {
         !form.petName || !form.species || loading;
 
     return (
-        <View className="flex-1 bg-white px-6 pt-6">
+        <View className="flex-1 max-w-md bg-white px-6 pt-6">
             {/* ✅ HEADER */}
             <View className="mb-6">
                 {/* ✅ BACK BUTTON */}
-                <Pressable
-    onPress={() =>
-        router.replace(
-            Platform.OS === "web"
-                ? "/(web)/web-pets"
-                : "(app)/(tabs)/pets"
-        )
-    }
-    className="mb-4 self-start px-3 py-2 rounded-xl bg-gray-100"
->
-    <Text className="text-gray-700 font-medium">
-        ← Back
-    </Text>
-</Pressable>
 
+                <BackButton webRoute="/(web)/web-pets" appRoute="(app)/(tabs)/pets" /> 
+      
                 {/* ✅ TITLE */}
                 <View className="items-center">
                     <Text className="text-3xl font-bold text-gray-900">
