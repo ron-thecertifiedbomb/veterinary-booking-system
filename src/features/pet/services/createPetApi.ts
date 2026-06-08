@@ -7,7 +7,7 @@ export async function createPetApi(
 ): Promise<CreatePetResponse> {
   return api<CreatePetResponse>("/api/vet/pets", {
     method: "POST",
-    token, // ✅ include token
+    token, 
     body: JSON.stringify(payload),
   });
 }
