@@ -65,14 +65,14 @@ export default function RegistrationForm({
     };
 
     return (
-        <View className="w-full max-w-md  py-8">
+        <View className="w-full max-w-md lg:px-12 py-8">
             <View className="mb-4 items-center">
-                <Text className="text-xl lg:text-3xl font-semibold text-text-primary">
+                <Text className="text-xl lg:text-xl font-semibold text-text-primary">
                     Create an Account
                 </Text>
-                <Text className="text-xs text-text-secondary mt-1 text-center">
+                {/* <Text className="text-xs text-text-secondary mt-1 text-center">
                     Register to start booking appointments for your pets.
-                </Text>
+                </Text> */}
             </View>
             <AppTextInput
                 label="Name"
@@ -150,7 +150,7 @@ export default function RegistrationForm({
                     Already have an account?
                 </Text>
                 <Pressable onPress={onLoginPress}>
-                    <Text className="text-sm font-semibold text-secondary mt-2">
+                    <Text className="text-sm font-semibold text-secondary mt-1">
                         Sign in here
                     </Text>
                 </Pressable>

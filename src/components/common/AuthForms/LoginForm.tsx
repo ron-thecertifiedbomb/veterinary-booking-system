@@ -52,15 +52,15 @@ export default function LoginForm({
     };
 
     return (
-        <View className="w-full max-w-md py-8">
+        <View className="w-full max-w-md lg:px-12 py-8">
 
-            <View className="mb-8 items-center">
-                <Text className="text-xl lg:text-3xl font-semibold text-text-primary">
+            <View className="mb-4 items-center">
+            <Text className="text-xl lg:text-xl font-semibold text-text-primary">
                Sign in
                 </Text>
-                <Text className="text-xs text-text-secondary mt-1">
+                {/* <Text className="text-xs text-text-secondary mt-1">
                     Login to continue managing your pet appointments.
-                </Text>
+                </Text> */}
             </View>
 
             {/* ✅ EMAIL */}
