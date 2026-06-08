@@ -8,5 +8,6 @@ export async function addAdminApi(
   return api<CreateAdminResponse>("/api/vet/admin/admins", {
     method: "POST",
     body: JSON.stringify(payload),
+    token
   });
 }
