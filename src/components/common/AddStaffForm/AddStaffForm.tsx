@@ -87,11 +87,8 @@ export default function AddStaffForm({ loading, onSubmit }: Props) {
     };
 
     return (
-        <View className="w-full space-y-2">
-            {/* Title */}
-            <Text className="text-xl font-semibold mb-2">
-                Add Staff
-            </Text>
+        <View className="w-full px-6 py-2">
+
 
             {/* Name */}
             <AppTextInput
@@ -131,11 +128,11 @@ export default function AddStaffForm({ loading, onSubmit }: Props) {
 
             {/* ✅ Position Dropdown */}
             <View className="mb-2">
-                <Text className="text-xs lg:text-sm font-medium text-text-primary mb-1">
+                <Text className="text-xs lg:text-xs font-medium text-text-primary mb-1">
                     Position
                 </Text>
 
-                <View className="border border-slate-200 rounded-xl bg-white px-1 py-2">
+                <View className="border border-slate-200 rounded-xl bg-white px-1 py-1">
                     <Picker
                         selectedValue={form.position}
                         onValueChange={(value) =>

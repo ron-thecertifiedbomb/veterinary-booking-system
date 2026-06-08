@@ -33,7 +33,6 @@ export default function AddAdminForm({ loading, onSubmit }: Props) {
         password: "",
         name: "",
         phone: "",
-        role: "ADMIN",
         position: "MANAGER",
         department: "",
     });
@@ -88,11 +87,8 @@ export default function AddAdminForm({ loading, onSubmit }: Props) {
     };
 
     return (
-        <View className="w-full space-y-2">
+        <View className="w-full px-6 py-4">
 
-            <Text className="text-xl font-semibold mb-2">
-                Add Admin
-            </Text>
 
             <AppTextInput
                 label="Full Name"
@@ -127,7 +123,7 @@ export default function AddAdminForm({ loading, onSubmit }: Props) {
             />
 
             <View className="mb-2">
-                <Text className="text-xs lg:text-sm font-medium text-text-primary mb-1">
+                <Text className="text-xs lg:text-xs font-medium text-text-primary mb-1">
                     Position
                 </Text>
 

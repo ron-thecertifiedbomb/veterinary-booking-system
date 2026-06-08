@@ -28,11 +28,11 @@ export default function AppTextInput({
     onRightIconPress,
 }: AppTextInputProps) {
     return (
-        <View className="mb-[0.7px]">
-            <Text className="text-xs lg:text-sm font-medium text-text-primary mb-1">
+        <View >
+            <Text className="text-xs lg:text-xs font-medium text-text-primary mb-1">
                 {label}
             </Text>
-            <View className="bg-transparent border border-gray-300 rounded-2xl mb-1 flex-row items-center">
+            <View className="bg-transparent border border-gray-300 rounded-2xl  flex-row items-center">
                 <TextInput
                     value={value}
                     onChangeText={onChangeText}
@@ -56,7 +56,7 @@ export default function AppTextInput({
                         } as any)
                         : {})}
 
-                    className="flex-1 px-2 py-2 lg:px-4 lg:py-4 text-text-secondary "
+                    className="flex-1 px-2 py-2 lg:px-2 lg:py-2 text-text-secondary "
                     style={
                         Platform.OS === "web"
                             ? ({
@@ -74,7 +74,7 @@ export default function AppTextInput({
                     </Pressable>
                 )}
             </View>
-            <Text className="text-red-500 text-xs min-h-[16px]">
+            <Text className="text-red-500 text-xs min-h-[12px]">
                 {error ?? ""}
             </Text>
         </View>
