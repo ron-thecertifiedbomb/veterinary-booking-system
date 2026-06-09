@@ -5,6 +5,7 @@ import {
   RegistrationResponse,
 } from "@/features/auth/types/auth.registration";
 import { AuthenticatedUser } from "@/features/auth/types/auth.types";
+import { LogOutResponse } from "./auth.logout";
 
 export type AuthContextType = {
   token: string | null;
@@ -27,6 +28,5 @@ export type AuthContextType = {
   }>;
   register: (payload: RegisterPayload) => Promise<RegistrationResponse>;
   refreshSession: () => Promise<void>;
-  logout: () => Promise<void>;
-
+  logout: () => Promise<LogOutResponse>,
 };

@@ -24,6 +24,7 @@ import { LoginPayload } from "@/features/auth/types/auth.login";
 import { loginApi } from "@/features/auth/services/login.api";
 import { RegisterPayload } from "@/features/auth/types/auth.registration";
 import { registerApi } from "@/features/auth/services/register.api";
+import { logoutApi } from "../services/logout.api";
 
 // ----------------------------------
 // MEMORY CACHE (FAST ACCESS)
@@ -188,7 +189,16 @@ async function register(payload: RegisterPayload) {
     // LOGOUT
     // ----------------------------------
     async function logout() {
-        await clearSession();
+        try {
+            setLoading(true);
+            const storedToken = await getStorageItem("access_token");  
+            const response = await logoutApi(storedToken);
+            await clearSession();
+            return response
+        } 
+        finally {
+            setLoading(false);
+        }
     }
 
     // ----------------------------------

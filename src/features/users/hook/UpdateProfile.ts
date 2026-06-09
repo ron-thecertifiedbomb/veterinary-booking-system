@@ -4,21 +4,14 @@ import {
   getStorageItem,
   setStorageItem,
 } from "@/features/auth/storage/auth.storage";
+import { updateCustomerProfile, UpdateProfileResponse } from "@/features/customer/types/customer.types";
 import { api } from "@/utils/api/api.client";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
 
 // ✅ types
-type UpdateProfilePayload = {
-  name?: string;
-  email?: string;
-  phone?: string;
-};
 
-type UpdateProfileResponse = {
-  message: string;
-  data: any;
-};
+
 
 export function useUpdateProfile() {
   const [loading, setLoading] = useState(false);
@@ -26,7 +19,8 @@ export function useUpdateProfile() {
   const [message, setMessage] = useState<string | null>(null);
 
   const updateProfile = async (
-    payload: UpdateProfilePayload,
+    
+    payload: updateCustomerProfile,
   ): Promise<UpdateProfileResponse | null> => {
     try {
       setLoading(true);

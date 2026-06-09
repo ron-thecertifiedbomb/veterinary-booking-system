@@ -1,17 +1,24 @@
 import { Text, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLogout } from "@/features/auth/hooks/useLogout";
+
 import { useRouter } from "expo-router";
+import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { showAlert } from "@/hooks/crossPlatformAlert";
 
 export default function Profile() {
-    const { logout, loading } = useLogout();
+ 
     const router = useRouter();
+    const {loading , logout} = useAuth()
+
 
     const handleLogout = async () => {
-        const success = await logout();
-
-        if (success) {
-            router.replace("/(auth)/login");
+        try {
+            const response = await logout();
+            const message = response.message
+            showAlert("Success", message);
+            router.replace("(auth)/login");
+        } catch (err: any) {
+            showAlert("Error", err.message); 
         }
     };
 

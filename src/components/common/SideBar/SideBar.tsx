@@ -1,5 +1,5 @@
-import { useLogout } from "@/features/auth/hooks/useLogout";
-import { showConfirm } from "@/hooks/crossPlatformAlert";
+
+import { showAlert, showConfirm } from "@/hooks/crossPlatformAlert";
 import { NavItemType, SidebarProps } from "@/utils/config/sidebar/types";
 
 import { Link, usePathname, useRouter } from "expo-router";
@@ -13,11 +13,13 @@ export default function Sidebar({
     translateX,
     sidebarOpen,
     toggleSidebar,
+    loading,
+    logout,
     navItems,
 }: SidebarProps) {
     const pathname = usePathname();
     const router = useRouter();
-    const { logout, loading } = useLogout();
+
 
     const getCleanPath = (path: string) => {
         return path.replace(/\/?\(.*?\)/g, "");
@@ -30,12 +32,18 @@ export default function Sidebar({
         return current === target || current.startsWith(target + "/");
     };
 
+   
     const handleLogout = async () => {
-        const success = await logout();
-        if (success) {
-            router.replace("/(auth)/login");
+        try {
+            const response = await logout();
+            const message = response.message
+            showAlert("Success", message);
+            router.replace("(auth)/login");
+        } catch (err: any) {
+            showAlert("Error", err.message); 
         }
     };
+
 
     const confirmLogout = () => {
         showConfirm(

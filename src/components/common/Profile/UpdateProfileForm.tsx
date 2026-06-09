@@ -1,50 +1,50 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Platform, Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
-
 import AppTextInput from "@/components/common/AppTextInput/AppTextInput";
 import Loader from "@/components/common/Loader/Loader";
-
 import { useUpdateProfile } from "@/features/users/hook/UpdateProfile";
 import { useGetUserProfile } from "@/features/users/hook/useGetUserProfile";
 import { showAlert } from "@/hooks/crossPlatformAlert";
-
 import { z } from "zod";
 import { BackButton } from "../BackButton/BackButton";
+import { useGetCustomerProfile } from "@/features/customer/hooks/useGetCustomerProfile";
+import { useUpdateCustomerProfile } from "@/features/customer/hooks/useUpdateCustomerProfile";
+import { useAuth } from "@/features/auth/providers/AuthProvider";
 
 // ✅ ZOD SCHEMA
 const editProfileSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    email: z.string().min(1, "Email is required").email("Invalid email"),
-    phone: z.string().optional(),
+    phone: z.string().min(1, "Phone is required"),
 });
 
 type FormData = z.infer<typeof editProfileSchema>;
 type Errors = Partial<Record<keyof FormData, string | null>>;
 
 export default function EditProfileForm() {
-    const router = useRouter();
 
-    const { updateProfile, loading } = useUpdateProfile();
-    const { profile, fetchUserProfile, loading: fetching } =
-        useGetUserProfile();
+
+
+
+    const router = useRouter();
+    const { updateProfile, loading } = useUpdateCustomerProfile();
+    const { profile, fetchCustomerProfile, loading: fetching } =
+    useGetCustomerProfile();
 
     const [form, setForm] = useState<FormData>({
         name: "",
-        email: "",
         phone: "",
     });
 
     const [original, setOriginal] = useState<FormData>({
         name: "",
-        email: "",
         phone: "",
     });
 
     const [errors, setErrors] = useState<Errors>({});
 
     useEffect(() => {
-        fetchUserProfile();
+        fetchCustomerProfile ();
     }, []);
 
     useEffect(() => {
@@ -52,7 +52,6 @@ export default function EditProfileForm() {
 
         const data = {
             name: profile.name || "",
-            email: profile.email || "",
             phone: profile.phone || "",
         };
 
@@ -67,29 +66,17 @@ export default function EditProfileForm() {
 
     const hasChanges =
         form.name !== original.name ||
-        form.email !== original.email ||
         form.phone !== original.phone;
 
     const isDisabled =
-        !form.name || !form.email || !hasChanges || loading;
+        !form.name ||  !hasChanges || loading;
 
     // ✅ ZOD VALIDATION
     const handleSubmit = async () => {
-        const result = editProfileSchema.safeParse(form);
 
-        if (!result.success) {
-            const fieldErrors = result.error.flatten().fieldErrors;
+        const payload = {name:form.name, phone: form.phone}
 
-            setErrors({
-                name: fieldErrors.name?.[0] || null,
-                email: fieldErrors.email?.[0] || null,
-                phone: fieldErrors.phone?.[0] || null,
-            });
-
-            return;
-        }
-
-        const res = await updateProfile(result.data);
+        const res = await updateProfile(payload);
 
         if (!res) {
             showAlert("Error", "Failed to update profile");
@@ -135,16 +122,7 @@ export default function EditProfileForm() {
                     />
                 </View>
 
-                <View className="mb-5">
-                    <AppTextInput
-                        label="Email Address"
-                        value={form.email}
-                        onChangeText={(text) => updateField("email", text)}
-                        placeholder="john@email.com"
-                        keyboardType="email-address"
-                        error={errors.email}
-                    />
-                </View>
+              
 
                 <View className="mb-6">
                     <AppTextInput

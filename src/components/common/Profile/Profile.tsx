@@ -2,34 +2,40 @@ import Container from "@/components/common/Container/Container";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Loader from "@/components/common/Loader/Loader";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { useGetCustomerProfile } from "@/features/customer/hooks/useGetCustomerProfile";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { getInitials } from "@/utils/getInitials/getInitials";
-import { getRouteByRole } from "@/utils/routes/routeResolver";
 import { useRouter } from "expo-router";
-import { Platform, Pressable, ScrollView, Text, View } from "react-native";
+import { useEffect } from "react";
+import { Platform, Pressable, Text, View } from "react-native";
 
 export default function Profile() {
 
     const router = useRouter();
-    const { user, loading, logout, isAuthenticated } = useAuth();
+    const {  logout, isAuthenticated } = useAuth();
 
-    const handleLogout = async () => {
-       logout();
-       
-      
-        setTimeout(() => {
-            const target = getRouteByRole(
-                user?.role,
-                isAuthenticated
-            );
-            router.replace(target);
-        }, 2);
-    };
+    const {loading, profile, fetchCustomerProfile} = useGetCustomerProfile()
+
+if (!isAuthenticated) return null
+
+ useEffect(() => {
+    fetchCustomerProfile()
+ }, [])
+
+ const handleLogout = async () => {
+    try {
+        const response = await logout();
+        const message = response.message
+        showAlert("Success", message);
+        router.replace("(auth)/login");
+    } catch (err: any) {
+        showAlert("Error", err.message); 
+    }
+};
 
     if (loading) {
         return <Loader fullScreen />;
     }
-
     return (
         <Container>
 
@@ -42,21 +48,21 @@ export default function Profile() {
                 {/* ✅ AVATAR */}
                 <View className="w-20 h-20 rounded-full bg-black items-center justify-center mb-3">
                     <Text className="text-2xl font-bold text-white">
-                        {getInitials(user?.name)}
+                        {getInitials(profile?.name)}
                     </Text>
                 </View>
 
                 <Text className="text-lg font-bold text-text-primary">
-                    {user?.name || "User"}
+                    {profile?.name || "User"}
                 </Text>
                 <Text className="text-sm text-text-muted mt-0.5">
-                    {user?.email || "-"}
+                    {profile?.email || "-"}
                 </Text>
 
                 {/* ✅ ROLE BADGE */}
                 <View className="mt-3 px-3 py-1 bg-black/5 rounded-full">
                     <Text className="text-xs font-medium text-text-secondary">
-                        {user?.role === "ADMIN" ? "Administrator" : "Pet Owner"}
+                        {profile?.role === "ADMIN" ? "Administrator" : "Pet Owner"}
                     </Text>
                 </View>
             </View>
@@ -89,7 +95,7 @@ export default function Profile() {
                         Full Name
                     </Text>
                     <Text className="text-sm font-medium text-text-primary">
-                        {user?.name || "-"}
+                        {profile?.name || "-"}
                     </Text>
                 </View>
 
@@ -99,7 +105,7 @@ export default function Profile() {
                         Email Address
                     </Text>
                     <Text className="text-sm font-medium text-text-primary">
-                        {user?.email || "-"}
+                        {profile?.email || "-"}
                     </Text>
                 </View>
 
@@ -109,7 +115,7 @@ export default function Profile() {
                         Phone Number
                     </Text>
                     <Text className="text-sm font-medium text-text-primary">
-                        {user?.phone || "Not provided"}
+                        {profile?.phone || "Not provided"}
                     </Text>
                 </View>
             </View>

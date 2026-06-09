@@ -1,6 +1,7 @@
 // src/components/layouts/DashboardShell.tsx
 
 import Sidebar from "@/components/common/SideBar/SideBar";
+import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { ReactNode, useRef, useState } from "react";
 import {
     Animated,
@@ -16,6 +17,7 @@ type Props = {
 };
 
 export default function DashboardShell({ children, navItems }: Props) {
+    const {logout, loading} = useAuth()
     const { width } = useWindowDimensions();
     const isMobile = width < 768;
 
@@ -38,6 +40,8 @@ export default function DashboardShell({ children, navItems }: Props) {
         <View style={{ flex: 1, flexDirection: "row" }}>
             {/* ✅ SIDEBAR */}
             <Sidebar
+            logout={logout}
+            loading={loading}
                 isMobile={isMobile}
                 translateX={translateX}
                 sidebarOpen={sidebarOpen}

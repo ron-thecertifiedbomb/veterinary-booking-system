@@ -1,7 +1,7 @@
 // src/features/auth/auth.types.ts
 
-import { Appointment } from "@/features/appointment/types/appointment";
-import { StaffPosition, UserRole } from "@/features/auth/types/auth.user";
+
+import { UserRole } from "@/features/auth/types/auth.user";
 import { CustomerProfile } from "@/features/customer/types/customer.types";
 import { Pet } from "@/features/pet/pet.types";
 import { StaffProfile } from "@/features/staff/types/staff.types";

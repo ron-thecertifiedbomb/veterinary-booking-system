@@ -1,5 +1,6 @@
 // ..\src\utils\config\sidebar\types.ts
 
+import { LogOutResponse } from "@/features/auth/types/auth.logout";
 import { Animated } from "react-native";
 
 export type NavItemType = {
@@ -12,5 +13,8 @@ export type NavItemType = {
   translateX: Animated.Value;
   sidebarOpen: boolean;
   toggleSidebar: () => void;
+  user?: string;
+  logout: () => Promise<LogOutResponse>,
+  loading: boolean;
   navItems: NavItemType[]; 
 };

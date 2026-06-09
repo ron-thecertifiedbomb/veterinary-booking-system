@@ -1,8 +1,54 @@
 import { Appointment } from "@/features/appointment/types/appointment";
+import { UserRole } from "@/features/auth/types/auth.user";
 import { Pet } from "@/features/pet/pet.types";
+import { StaffProfile } from "@/features/staff/types/staff.types";
 
 export interface CustomerProfile {
   id: string;
   pets: Pet[];
   appointments: Appointment[];
 }
+
+
+export type userProfile = {
+  id: string;
+  email: string;
+  name: string;
+  phone: string;
+  role: UserRole;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  customerProfile?: CustomerProfile; // only if CUSTOMER
+  staffProfile?: StaffProfile;
+};
+
+export type UpdateCustomerProfileResponse = {
+  message: string;
+  data: userProfile;
+};
+
+
+export type updateCustomerProfilePayload = {
+  name: string;
+  phone: string;
+};
+
+
+export type fetchCustomerProfileResponse = {
+  message: string;
+  data: {
+    id: string;
+    email: string;
+    name: string;
+    phone: string;
+    role: UserRole;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+    customerProfile?: CustomerProfile; // only if CUSTOMER
+    staffProfile?: StaffProfile;
+  };
+};
+
+
