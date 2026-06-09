@@ -125,7 +125,7 @@ export default function BookingSuccessModal({
                         className="bg-black py-4 rounded-xl"
                     >
                         <Text className="text-white text-center font-semibold text-base">
-                            Go to appointments sceen
+                            Go to your Appointment
                         </Text>
                     </TouchableOpacity>
                 </View>
