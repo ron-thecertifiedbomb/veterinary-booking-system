@@ -30,7 +30,7 @@ export default function AppointmentCard({ item }: AppointmentCardProps) {
                 </View>
 
                 {/* ✅ STATUS BADGE */}
-                <View className="px-3 py-1 rounded-full bg-gray-100">
+                <View className="px-3 py-1 rounded-full bg-gray-100 mr-2">
                     <Text className="text-xs font-medium text-gray-700">
                         {item.status}
                     </Text>

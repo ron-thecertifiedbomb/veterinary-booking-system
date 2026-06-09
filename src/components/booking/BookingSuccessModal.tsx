@@ -66,18 +66,18 @@ export default function BookingSuccessModal({
                         <View className="w-1/2 pr-2 space-y-3">
 
                             <View>
-                                <Text className="text-xs text-gray-500">Reference</Text>
+                                <Text className="text-xs text-gray-500">Name</Text>
                                 <Text className="font-semibold">
-                                    {items.data.bookingCode}
+                                    {items.data.pet}
                                 </Text>
                             </View>
-
                             <View>
-                                <Text className="text-xs text-gray-500">Booked On</Text>
+                                <Text className="text-xs text-gray-500">Date</Text>
                                 <Text className="font-semibold">
-                                    {items.data.bookedAt}
+                                    {items.data.appointmentDisplay?.date}
                                 </Text>
                             </View>
+                     
 
                             <View>
                                 <Text className="text-xs text-gray-500">Service</Text>
@@ -91,13 +91,12 @@ export default function BookingSuccessModal({
                         {/* RIGHT COLUMN */}
                         <View className="w-1/2 pl-2 space-y-3">
 
-                            <View>
-                                <Text className="text-xs text-gray-500">Date</Text>
+                        <View>
+                                <Text className="text-xs text-gray-500">Booked On</Text>
                                 <Text className="font-semibold">
-                                    {items.data.appointmentDisplay?.date}
+                                    {items.data.bookedAt}
                                 </Text>
                             </View>
-
                             <View>
                                 <Text className="text-xs text-gray-500">Time</Text>
                                 <Text className="font-semibold">
