@@ -3,25 +3,24 @@ import Container from "@/components/common/Container/Container";
 import EmptyState from "@/components/common/EmptyState/EmptyState";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Loader from "@/components/common/Loader/Loader";
+import { useGetAppointments } from "@/features/appointment/hooks/useGetAppointment";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import { FlatList, Platform, View } from "react-native";
 
 export default function Appointments() {
-    const { refreshSession, user, loading } = useAuth();
 
-    const appointments = user?.customerProfile?.appointments || [];
-    const isEmpty = appointments.length === 0;
+    const {loading, isEmpty, appointments, fetchAppointments} = useGetAppointments()
 
     useEffect(() => {
-        refreshSession();
+        fetchAppointments();
     }, []);
 
-    // ✅ FULLSCREEN LOADER (initial load)
     if (loading && appointments.length === 0) {
         return <Loader fullScreen />;
     }
+
 
     const handleAddAppointment = () => {
         const isWeb = Platform.OS === "web";
@@ -54,7 +53,7 @@ export default function Appointments() {
                             paddingBottom: 32,
                             paddingTop: 8,
                         }}
-                        onRefresh={refreshSession}
+                        onRefresh={fetchAppointments}
                         refreshing={loading}
                         ListFooterComponent={
                             loading ? (

@@ -5,7 +5,7 @@ import { AppointmentApiResponse } from "@/features/appointment/types/appointment
 import { api } from "@/utils/api/api.client";
 
 export async function getAppointmentsApi(token: string) {
-  return await api<AppointmentApiResponse>(`/api/vet/users`, {
+  return await api<AppointmentApiResponse>(`/api/vet/users/appointments`, {
     method: "GET",
     token,
   });
