@@ -16,15 +16,15 @@ export default function AdminAppTabsLayout() {
         <Tabs
             screenOptions={{
                 headerShown: false,
-                lazy: true,
                 tabBarActiveTintColor: "#111827",
                 tabBarInactiveTintColor: "#9CA3AF",
                 tabBarStyle: {
-                    height: 64 + insets.bottom,
-                    paddingTop: 8,
-                    paddingBottom: Math.max(insets.bottom, 12),
+                    height: 27 + insets.bottom,
+                    paddingTop: 4,
+                    paddingBottom: Math.max(insets.bottom, 4),
                     borderTopWidth: 0,
                     backgroundColor: "#FFFFFF",
+                    borderRadius: 12
                 },
                 tabBarLabelStyle: {
                     fontSize: 12,
@@ -32,7 +32,6 @@ export default function AdminAppTabsLayout() {
                 },
             }}
         >
-
             <Tabs.Screen
                 name="dashboard"
                 options={{

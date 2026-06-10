@@ -55,7 +55,7 @@ export default function Pets() {
                         keyExtractor={(item) => item.id}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{
-                            paddingTop: 12,
+                            paddingTop: 8,
                             paddingBottom: 140,
                         }}
                         renderItem={({ item }) => (
@@ -71,8 +71,8 @@ export default function Pets() {
                         onPress={handleAddPet}
                         style={({ pressed }) => ({
                             position: "absolute",
-                            bottom: 24,
-                            right: 24,
+                            bottom: 50,
+                            right: 50,
                             flexDirection: "row",
                             alignItems: "center",
                             borderRadius: 999,

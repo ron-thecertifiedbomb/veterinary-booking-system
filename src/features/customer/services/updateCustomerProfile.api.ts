@@ -6,7 +6,7 @@ export async function updateCustomerProfileApi(
     payload: updateCustomerProfilePayload,
   token: string,
 ): Promise<UpdateCustomerProfileResponse> {
-  return api<UpdateCustomerProfileResponse>("/api/vet/users/me", {
+  return api<UpdateCustomerProfileResponse>("/api/vet/customer/me", {
     method: "PATCH",
     token,
     body: JSON.stringify(payload),

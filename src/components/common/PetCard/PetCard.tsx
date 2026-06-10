@@ -8,8 +8,8 @@ export default function PetCard({ item, onPress }: any) {
             <View className="flex-row items-center">
                 
                 {/* ✅ AVATAR */}
-                <View className="w-12 h-12 rounded-full bg-gray-100 items-center justify-center mr-4">
-                    <Text className="text-lg">
+                <View className="w-16 h-16 rounded-full bg-gray-100 items-center justify-center mr-4">
+                    <Text className="text-4xl">
                         {item.species === "Dog" ? "🐶" : "🐱"}
                     </Text>
                 </View>
