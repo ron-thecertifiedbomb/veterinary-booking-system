@@ -5,7 +5,7 @@ import { fetchCustomerProfileResponse } from "../types/customer.types";
 export async function fetchProfileApi(
   token: string,
 ): Promise<fetchCustomerProfileResponse> {
-  return api<fetchCustomerProfileResponse>("/api/vet/users/me", {
+  return api<fetchCustomerProfileResponse>("/api/vet/customer/me", {
     method: "GET",
     token,
   });
