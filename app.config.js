@@ -1,19 +1,21 @@
 export default ({ config }) => {
-  const env = process.env.EXPO_PUBLIC_APP_ENV || "production";
-  const isStaging = env === "staging";
+  // Use a reliable, un-prefixed variable for build-time configuration
+  // Falls back to checking NODE_ENV or defaults to production
+  const currentEnv = process.env.APP_ENV || process.env.NODE_ENV || "production";
+  
+  // Safely catches "staging" or "test"
+  const isStaging = currentEnv === "staging" || currentEnv === "test";
 
   return {
     ...config,
 
     name: isStaging ? "Rondev Vet System (Staging)" : "Rondev Vet System",
-
     slug: "rondev-vet-system-app",
     version: "1.0.0",
     orientation: "portrait",
 
     icon: "./assets/images/icon.png",
     scheme: "rondevmobileapp",
-
     userInterfaceStyle: "automatic", 
 
     ios: {
@@ -23,12 +25,11 @@ export default ({ config }) => {
         : "com.rondev.vet.system",
     },
     android: {
-      jsEngine: "hermes", // 🛠️ Keeps Hermes off permanently for this build
+      jsEngine: "hermes", 
       package: isStaging
         ? "com.rondev.vet.system.staging"
         : "com.rondev.vet.system",
       
-      // 🚀 FIXED: Short uppercase strings force the prebuilder to grant actual network access
       permissions: [
         "INTERNET",
         "ACCESS_NETWORK_STATE"
@@ -65,16 +66,18 @@ export default ({ config }) => {
 
     experiments: {
       typedRoutes: false,
+      // Forces Expo Router to always know your custom application directory layout
+      srcDir: "./src"
     },
 
     extra: {
       eas: {
         projectId: "8a8dbca3-6e42-4bb8-a9d5-8ec3357a835c",
       },
-      appNode: process.NODE_ENV,
-      appEnv: process.EXPO_PUBLIC_APP_ENV,
-      apiWeb: process.env.EXPO_PUBLIC_API_WEB,
-      apiMobile: process.env.EXPO_PUBLIC_API_MOBILE,
+      appNode: currentEnv,
+      appEnv: currentEnv,
+      apiWeb: process.env.EXPO_PUBLIC_API_WEB || "",
+      apiMobile: process.env.EXPO_PUBLIC_API_MOBILE || "",
     },
   };
 };
