@@ -22,8 +22,8 @@
    "env": {
         "NODE_ENV": "test",
         "EXPO_PUBLIC_APP_ENV": "staging",
-        "EXPO_PUBLIC_API_WEB": "https://api.staging.rondev.com.ph",
-        "EXPO_PUBLIC_API_MOBILE": "https://api.staging.rondev.com.ph",
+        "EXPO_PUBLIC_API_WEB": "https://staging-api.rondev.com.ph",
+        "EXPO_PUBLIC_API_MOBILE": "https://staging-api.rondev.com.ph",
         "EXPO_ROUTER_APP_ROOT": "./src/app"
 }
     },
@@ -31,8 +31,8 @@
       "autoIncrement": true,
       "env": {
         "NODE_ENV": "production",
-        "EXPO_PUBLIC_API_WEB": "https://api.staging.rondev.com.ph",
-        "EXPO_PUBLIC_API_MOBILE": "https://api.staging.rondev.com.ph",
+        "EXPO_PUBLIC_API_WEB": "https://staging-api.rondev.com.ph",
+        "EXPO_PUBLIC_API_MOBILE": "https://staging-api.rondev.com.ph",
         "EXPO_PUBLIC_APP_ENV": "production"
       }
     }
