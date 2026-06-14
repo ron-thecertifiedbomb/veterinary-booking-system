@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "9731d882-45cd-4b58-b21c-59787de9462f"
+      }
+    },
+    "owner": "ronchiko",
+    "android": {
+      "package": "com.ronchiko.veterinarybookingsystem"
+    }
+  }
+}
