@@ -1,14 +1,13 @@
 import Container from "@/components/common/Container/Container";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Loader from "@/components/common/Loader/Loader";
+import { useAllGetStaff } from "@/features/admin/hooks/useGetAllStaff";
 import { AuthenticatedUser } from "@/features/auth/types/auth.types";
-import { useAllGetStaff } from "@/features/staff/hook/useGetAllStaff";
 import { useEffect } from "react";
 import {
-    Text,
-    View,
-    FlatList,
-    ActivityIndicator,
+  FlatList,
+  Text,
+  View
 } from "react-native";
 
 export default function Staff() {

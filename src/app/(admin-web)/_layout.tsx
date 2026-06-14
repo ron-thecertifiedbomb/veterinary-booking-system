@@ -1,17 +1,17 @@
-import { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Pressable, Text, View } from "react-native";
+import BookingModal from "@/components/booking/BookingModal";
+import AddAdminForm from "@/components/common/AddAdminForm/AddAdminForm";
+import AddStaffForm from "@/components/common/AddStaffForm/AddStaffForm";
 import DashboardShell from "@/components/common/Layouts/DashBoardShell/DashBoardShell";
 import Loader from "@/components/common/Loader/Loader";
+import { useAddAdmin } from "@/features/admin/hooks/useAddAdmin";
+import { useAddStaff } from "@/features/admin/hooks/useAddStaff";
+import { AdminFormData, StaffFormData } from "@/features/admin/types/admin.types";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { adminNav } from "@/utils/config/sidebar/sidebar";
 import { Redirect, Slot } from "expo-router";
-import BookingModal from "@/components/booking/BookingModal";
-import AddStaffForm from "@/components/common/AddStaffForm/AddStaffForm";
-import { AdminFormData, StaffFormData } from "@/features/admin/types/admin.types";
-import AddAdminForm from "@/components/common/AddAdminForm/AddAdminForm";
-import { useAddAdmin } from "@/features/admin/hooks/useAddAdmin";
-import { useAddStaff } from "@/features/staff/hook/useAddStaff";
+import { useState } from "react";
+import { Pressable, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 type ModalType = "staff" | "admin" | null;
