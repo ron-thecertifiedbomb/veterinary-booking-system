@@ -8,16 +8,21 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "NODE_ENV": "development"
+        "NODE_ENV": "development",
+        "EXPO_PUBLIC_API_WEB": "http://localhost:3000",
+        "EXPO_PUBLIC_API_MOBILE": "http://192.168.100.43:3000",
+        "EXPO_PUBLIC_APP_ENV": "development"
       }
     },
     "preview": {
       "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
       "env": {
-        "NODE_ENV": "staging",
-
-        "EXPO_PUBLIC_API_WEB": "https://staging-api.rondev.com.ph",
-        "EXPO_PUBLIC_API_MOBILE": "https://staging-api.rondev.com.ph",
+        "NODE_ENV": "test",
+        "EXPO_PUBLIC_API_WEB": "https://api.staging.rondev.com.ph",
+        "EXPO_PUBLIC_API_MOBILE": "https://api.staging.rondev.com.ph",
         "EXPO_PUBLIC_APP_ENV": "staging"
       }
     },
@@ -25,9 +30,8 @@
       "autoIncrement": true,
       "env": {
         "NODE_ENV": "production",
-
-        "EXPO_PUBLIC_API_WEB": "https://staging-api.rondev.com.ph",
-        "EXPO_PUBLIC_API_MOBILE": "https://staging-api.rondev.com.ph",
+        "EXPO_PUBLIC_API_WEB": "https://api.staging.rondev.com.ph",
+        "EXPO_PUBLIC_API_MOBILE": "https://api.staging.rondev.com.ph",
         "EXPO_PUBLIC_APP_ENV": "production"
       }
     }

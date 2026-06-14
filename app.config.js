@@ -22,11 +22,19 @@ export default ({ config }) => {
         ? "com.rondev.vet.system.staging"
         : "com.rondev.vet.system",
     },
-
     android: {
+      jsEngine: "hermes", // 🛠️ Keeps Hermes off permanently for this build
       package: isStaging
         ? "com.rondev.vet.system.staging"
         : "com.rondev.vet.system",
+      
+      // 🚀 FIXED: Short uppercase strings force the prebuilder to grant actual network access
+      permissions: [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ],
+      usesCleartextTraffic: true, 
+
       adaptiveIcon: {
         backgroundColor: "#E6F4FE",
         foregroundImage: "./assets/images/android-icon-foreground.png",
@@ -63,7 +71,8 @@ export default ({ config }) => {
       eas: {
         projectId: "8a8dbca3-6e42-4bb8-a9d5-8ec3357a835c",
       },
-      appEnv: env,
+      appNode: process.NODE_ENV,
+      appEnv: process.EXPO_PUBLIC_APP_ENV,
       apiWeb: process.env.EXPO_PUBLIC_API_WEB,
       apiMobile: process.env.EXPO_PUBLIC_API_MOBILE,
     },
