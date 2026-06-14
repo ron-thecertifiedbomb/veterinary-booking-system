@@ -8,6 +8,13 @@
     "owner": "ronchiko",
     "android": {
       "package": "com.ronchiko.veterinarybookingsystem"
+    },
+    "ios": {
+      "icon": "./assets/images/icon.png",
+      "bundleIdentifier": "com.rondev.vet.system",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     }
   }
 }
