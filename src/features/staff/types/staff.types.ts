@@ -30,3 +30,13 @@ export type Staff = {
   staffProfile: StaffProfile;
 };
 
+
+export type DashboardStatsResponse = {
+  message: string;
+  data: {
+      totalAssigned: number;
+      completed: number;
+      inProgress: number;
+      upcoming: number;
+  };
+};

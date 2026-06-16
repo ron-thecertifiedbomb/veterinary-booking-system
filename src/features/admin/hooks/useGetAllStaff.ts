@@ -1,8 +1,8 @@
 // ..\src\features\pet\hooks\useGetPet.ts
 
+import { getAllStaffApi } from "@/features/admin/services/getAllStaff.api";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { AuthenticatedUser } from "@/features/auth/types/auth.types";
-import { getAllStaffApi } from "@/features/staff/services/getAllStaff.api";
 import { useState } from "react";
 
 export function useAllGetStaff() {
