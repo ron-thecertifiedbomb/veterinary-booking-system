@@ -29,12 +29,10 @@ export default function Appointments() {
     if (loading && appointments.length === 0) {
         return <Loader fullScreen />;
     }
-
     const handleAddAppointment = () => {
         const isWeb = Platform.OS === "web";
         router.push(isWeb ? "/(web)/web-home" : "/(app)/(tabs)/home");
     };
-
     const handleDateSelection = (selectedDate: string) => {
         if (activePicker === "from") {
             setFilters(prev => ({ ...prev, from: selectedDate }));
@@ -43,23 +41,17 @@ export default function Appointments() {
         }
         setActivePicker(null); 
     };
-
     return (
         <Container>
-   
             <HeaderSection
                 title="My Appointments"
                 description="Track your upcoming and past bookings."
             />
-
-            <View className="flex-row items-center justify-between px-4 mb-4 gap-x-3">
             <DateRangePicker
         fromValue={filters.from}
         toValue={filters.to}
         onPress={(type) => setActivePicker(type)}
       />
-            </View>
-
             <Modal
                 visible={activePicker !== null}
                 transparent={true}
@@ -84,7 +76,7 @@ export default function Appointments() {
                     </View>
                 </View>
             </Modal>
-
+            
             {isEmpty && !loading ? (
                 <EmptyState
                     title="No appointments found"
