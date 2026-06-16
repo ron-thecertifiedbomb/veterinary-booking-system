@@ -83,7 +83,7 @@ export async function api<T>(
   let response: Response;
 
   try {
-    // ✅ PRE-CHECK (faster UX)
+   
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
       throw new NetworkError("No internet connection", "OFFLINE");
     }

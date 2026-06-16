@@ -1,3 +1,4 @@
+// @/components/common/DateSelector.tsx
 import { View } from "react-native";
 import { Calendar } from "react-native-calendars";
 
@@ -13,10 +14,10 @@ export default function DateSelector({
     onContinue,
 }: Props) {
     return (
-        <View className="bg-white border border-gray-200 rounded-xl p-4 mb-4">
+        <View className="bg-white border border-gray-200 rounded-xl p-4">
             <Calendar
                 current={date}
-                minDate={new Date().toISOString().split("T")[0]}
+                // Removed minDate so users can pick past booking dates
                 onDayPress={(day) => {
                     onDateChange(day.dateString);
                     onContinue?.();

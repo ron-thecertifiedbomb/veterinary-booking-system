@@ -1,17 +1,17 @@
 import { logger } from "@/utils/logger/logger";
 import {
-    ActivityIndicator,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 import AppSelect from "@/components/common/AppSelect/AppSelect";
 import { Pet } from "@/features/pet/pet.types";
-import { formatDate } from "@/utils/dateandtime/date";
-import { formatSlotTime } from "@/utils/dateandtime/formatter";
 import { Slot } from "@/hooks/appointments/useBookingSystem";
+import { formatSlotTime } from "@/utils/appointments/dateandtime/formatter";
+import { formatDate } from "@/utils/dateandtime/date";
 
 type Props = {
     pets: Pet[];

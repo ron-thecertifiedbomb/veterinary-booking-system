@@ -1,15 +1,16 @@
-import { Appointment } from "@/features/appointment/types/appointment";
-import { Text, View, Pressable } from "react-native";
+import { AppointmentHistoryItem } from "@/features/appointment/types/appointment";
+import { formatAppointmentSchedule } from "@/utils/appointments/dateandtime/formatter";
 import { router } from "expo-router";
+import { Pressable, Text, View } from "react-native";
 
 type AppointmentCardProps = {
-    item: Appointment;
+    appointments: AppointmentHistoryItem;
 };
 
-export default function AppointmentCard({ item }: AppointmentCardProps) {
+export default function AppointmentCard({ appointments }: AppointmentCardProps) {
     return (
         <Pressable
-            onPress={() => router.push(`/appointment/${item.id}`)}
+            onPress={() => router.push(`/appointment/${appointments.id}`)}
             style={({ pressed }) => ({
                 opacity: pressed ? 0.9 : 1,
                 transform: [{ scale: pressed ? 0.98 : 1 }],
@@ -21,18 +22,18 @@ export default function AppointmentCard({ item }: AppointmentCardProps) {
                 {/* LEFT */}
                 <View>
                     <Text className="text-base font-semibold text-gray-900">
-                        {item.pet?.petName}
+                        {appointments.pet?.petName}
                     </Text>
 
                     <Text className="text-sm text-gray-500 mt-1">
-                        {item.serviceType}
+                        {appointments.serviceType}
                     </Text>
                 </View>
 
                 {/* ✅ STATUS BADGE */}
                 <View className="px-3 py-1 rounded-full bg-gray-100 mr-2">
                     <Text className="text-xs font-medium text-gray-700">
-                        {item.status}
+                        {appointments.status}
                     </Text>
                 </View>
             </View>
@@ -44,8 +45,8 @@ export default function AppointmentCard({ item }: AppointmentCardProps) {
                 </Text>
 
                 <Text className="text-sm font-medium text-gray-800">
-                    {item.appointmentDisplay?.date} •{" "}
-                    {item.appointmentDisplay?.time}
+                    {formatAppointmentSchedule(appointments.appointmentDate)} 
+                  
                 </Text>
             </View>
 
@@ -56,7 +57,7 @@ export default function AppointmentCard({ item }: AppointmentCardProps) {
                         Booked on
                     </Text>
                     <Text className="text-xs text-gray-600">
-                        {item.bookedAt}
+                        {appointments.createdAt}
                     </Text>
                 </View>
 
@@ -65,7 +66,7 @@ export default function AppointmentCard({ item }: AppointmentCardProps) {
                         Ref Code
                     </Text>
                     <Text className="text-xs font-mono tracking-wider text-gray-800">
-                        {item.bookingCode}
+                        {appointments.bookingCode}
                     </Text>
                 </View>
             </View>

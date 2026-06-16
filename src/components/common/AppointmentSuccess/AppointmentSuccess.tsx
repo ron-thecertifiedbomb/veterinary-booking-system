@@ -1,5 +1,5 @@
 import Container from "@/components/common/Container/Container";
-import { formatBookingCode } from "@/utils/dateandtime/formatter";
+import { formatBookingCode } from "@/utils/appointments/dateandtime/formatter";
 import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 export default function AppoinmentSuccess() {

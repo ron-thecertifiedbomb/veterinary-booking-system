@@ -84,3 +84,33 @@ export type AppointmentApiResponse = {
     bookedAt: string;
   };
 };
+
+
+export type AppointmentHistoryResponse = AppointmentHistoryItem[];
+
+export interface AppointmentHistoryItem {
+  id: string;
+  bookingCode: string;
+  serviceType: string; // e.g. "CHECKUP"
+  appointmentDate: string; // ISO datetime
+  status: string; // e.g. "BOOKED"
+  notes: string | null;
+  createdAt: string; // ISO datetime
+  pet: PetSummary;
+  staff: StaffSummary | null;
+}
+
+export interface PetSummary {
+  id: string;
+  petName: string;
+  species: string;
+  breed: string;
+}
+
+export interface StaffSummary {
+  id: string;
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
+  [key: string]: unknown;
+}

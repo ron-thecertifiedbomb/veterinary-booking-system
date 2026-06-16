@@ -1,3 +1,4 @@
+import DateSelector from "@/components/booking/DateSelector";
 import AppointmentCard from "@/components/common/Appointments/AppointmentCard";
 import Container from "@/components/common/Container/Container";
 import EmptyState from "@/components/common/EmptyState/EmptyState";
@@ -6,16 +7,24 @@ import Loader from "@/components/common/Loader/Loader";
 import { useGetAppointments } from "@/features/appointment/hooks/useGetAppointment";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { router } from "expo-router";
-import { useEffect } from "react";
-import { FlatList, Platform, View } from "react-native";
+import { useEffect, useState } from "react";
+import { FlatList, Platform, Text, TouchableOpacity, View, Modal } from "react-native";
 
 export default function Appointments() {
 
-    const {loading, isEmpty, appointments, fetchAppointments} = useGetAppointments()
+    
+    const { token } = useAuth(); 
+
+    const { loading, isEmpty, appointments, fetchAppointments, filters, setFilters } = useGetAppointments();
+
+
+    const [activePicker, setActivePicker] = useState<"from" | "to" | null>(null);
 
     useEffect(() => {
-        fetchAppointments();
-    }, []);
+        if (token) {
+            fetchAppointments();
+        }
+    }, [token, filters]);
 
     if (loading && appointments.length === 0) {
         return <Loader fullScreen />;
@@ -27,19 +36,85 @@ export default function Appointments() {
         router.push(isWeb ? "/(web)/web-home" : "/(app)/(tabs)/home");
     };
 
+
+
+    const handleDateSelection = (selectedDate: string) => {
+        if (activePicker === "from") {
+            setFilters(prev => ({ ...prev, from: selectedDate }));
+        } else if (activePicker === "to") {
+            setFilters(prev => ({ ...prev, to: selectedDate }));
+        }
+        setActivePicker(null); 
+    };
+
     return (
         <Container>
-            {/* ✅ HEADER */}
+   
             <HeaderSection
                 title="My Appointments"
                 description="Track your upcoming and past bookings."
             />
 
-            {/* ✅ EMPTY */}
+         
+            <View className="flex-row items-center justify-between px-4 mb-4 gap-x-3">
+                {/* From Field */}
+                <View className="flex-1">
+                    <Text className="text-xs text-gray-500 font-medium mb-1 pl-1">From Date</Text>
+                    <TouchableOpacity 
+                        onPress={() => setActivePicker("from")}
+                        className="flex-row items-center justify-between bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 p-3 rounded-xl"
+                    >
+                        <Text className="text-gray-800 dark:text-gray-100 text-sm font-medium">{filters.from}</Text>
+                        <Text className="text-base text-gray-400">📅</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* To Field */}
+                <View className="flex-1">
+                    <Text className="text-xs text-gray-500 font-medium mb-1 pl-1">To Date</Text>
+                    <TouchableOpacity 
+                        onPress={() => setActivePicker("to")}
+                        className="flex-row items-center justify-between bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 p-3 rounded-xl"
+                    >
+                        <Text className="text-gray-800 dark:text-gray-100 text-sm font-medium">{filters.to}</Text>
+                        <Text className="text-base text-gray-400">📅</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+         
+            <Modal
+                visible={activePicker !== null}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => setActivePicker(null)}
+            >
+                <View className="flex-1 justify-end bg-black/40">
+                    {/* Click outside dismiss layer */}
+                    <TouchableOpacity className="flex-1" onPress={() => setActivePicker(null)} />
+                    
+                    <View className="bg-white dark:bg-zinc-900 rounded-t-3xl p-5 pb-8">
+                        <View className="flex-row justify-between items-center mb-4">
+                            <Text className="text-lg font-bold text-gray-900 dark:text-white">
+                                Select {activePicker === "from" ? "Start" : "End"} Date
+                            </Text>
+                            <TouchableOpacity onPress={() => setActivePicker(null)}>
+                                <Text className="text-blue-500 font-semibold">Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                        
+                        <DateSelector
+                            date={(activePicker === "from" ? filters.from : filters.to) || ""}
+                            onDateChange={handleDateSelection}
+                        />
+                    </View>
+                </View>
+            </Modal>
+
             {isEmpty && !loading ? (
                 <EmptyState
-                    title="No appointments yet"
-                    description="Start by booking your first visit."
+                    title="No appointments found"
+                    description="Try adjusting your range or book a new one."
                     buttonLabel="Book an Appointment"
                     onPress={handleAddAppointment}
                 />
@@ -65,7 +140,7 @@ export default function Appointments() {
                             )
                         }
                         renderItem={({ item }) => (
-                            <AppointmentCard item={item} />
+                            <AppointmentCard appointments={item} />
                         )}
                     />
                 </View>

@@ -1,11 +1,11 @@
-// ..\src\utils\logger\logger.ts
+
 
 const isDev = __DEV__;
 
 export const logger = {
   info: (message: string, data?: unknown) => {
     if (isDev) {
-      // 🔴 FIX: Alisin ang string fallback structure para hindi i-flat text ng engine ang object
+
       if (data !== undefined) {
         console.log(`ℹ️ ${message}`, data);
       } else {
