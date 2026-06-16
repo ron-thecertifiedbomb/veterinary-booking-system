@@ -40,3 +40,28 @@ export type DashboardStatsResponse = {
       upcoming: number;
   };
 };
+
+
+type ISODateString = string;
+
+export type AssignedPatientsResponse = {
+    message: string;
+    data: {
+        id: string;
+        petName: string;
+        species: string;
+        breed: string;
+        weight: number;
+        createdAt: ISODateString;
+        updatedAt: ISODateString;
+        customerId: string;
+        customer: {
+            user: {
+                id: string;
+                name: string;
+                email: string;
+                phone: string;
+            };
+        };
+    }[];
+};

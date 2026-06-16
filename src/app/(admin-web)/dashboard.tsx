@@ -10,7 +10,7 @@ const {fetchAllAppointments, setFilters} = useGetAllAppointments()
 
 useEffect(() => {
     setFilters({
-        from: "2026-06-16",
+        from: "2026-06-17",
         to: "2026-06-17",
         sortBy: "appointmentDate",
         sortOrder: "desc",
