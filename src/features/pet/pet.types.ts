@@ -34,7 +34,7 @@ export type Pet = {
   customerId: string;
 };
 
-export type GetPetsResponse = {
+export type GetAllPetsResponse = {
   message: string;
   data: Pet[];
 };
