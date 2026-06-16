@@ -1,6 +1,5 @@
 import React from "react";
-import { Text, View } from "react-native";
-import AppPetCard from "../AppPetCard/AppPetCard";
+import { Text, View, Pressable } from "react-native";
 
 interface PetItem {
   id: string;
@@ -17,34 +16,34 @@ interface PetCardProps {
 
 export default function PetCard({ item, onPress }: PetCardProps) {
   return (
-    <AppPetCard onPress={onPress}>
-      {/* 
-        Parent Card Framework Shell is configured as a high-contrast container 
-        with rounded-3xl geometry matching your Appointment cards.
-      */}
-      <View className="bg-white dark:bg-black  lg:p-4 rounded-3xl flex-row items-center justify-between">
-        
-        {/* ─── LEFT: PRIMARY CORE DATA ─── */}
-        <View className="flex-1 mr-4">
-          <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500  lg:mb-1">
-           Name
-          </Text>
-          <Text className="text-xl lg:text-2xl font-black tracking-tighter text-black dark:text-white uppercase">
-            {item.petName}
-          </Text>
-          <Text className="text-xs font-bold text-zinc-500 dark:text-zinc-400 lg:mt-1 uppercase tracking-wide">
-            {item.species} / {item.breed || "UNKNOWN"}
-          </Text>
-        </View>
-
-        {/* Dynamic Structural Partition Line */}
-        <View className="w-[1px] h-10 bg-zinc-200 dark:bg-zinc-800 mx-4" />
-
-        <View className="ml-4 pl-2">
-          <Text className="text-black dark:text-white text-xl font-black">›</Text>
-        </View>
-
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => ({
+        opacity: pressed ? 0.85 : 1,
+        transform: [{ scale: pressed ? 0.99 : 1 }],
+      })}
+      className="bg-white border border-zinc-100 p-5 rounded-3xl flex-row items-center justify-between mb-4"
+    >
+      {/* ─── LEFT: PRIMARY CORE DATA ─── */}
+      <View className="flex-1 mr-4">
+        <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
+          Name
+        </Text>
+        <Text className="text-xl font-black tracking-tighter text-black uppercase">
+          {item.petName}
+        </Text>
+        <Text className="text-xs font-bold text-zinc-500 mt-1 uppercase tracking-wide">
+          {item.species} {item.breed ? `/ ${item.breed}` : "/ UNKNOWN"}
+        </Text>
       </View>
-    </AppPetCard>
+
+      {/* Dynamic Structural Partition Line aligned to the global zinc profile style */}
+      <View className="w-[1px] h-10 bg-zinc-100 mx-4" />
+
+      {/* ─── RIGHT: STARK INDICATOR ARROW ─── */}
+      <View className="pl-2">
+        <Text className="text-zinc-300 text-xl font-black">›</Text>
+      </View>
+    </Pressable>
   );
 }

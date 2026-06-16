@@ -9,6 +9,8 @@ type AppointmentCardProps = {
 };
 
 export default function AppointmentCard({ appointments }: AppointmentCardProps) {
+    const hasStatus = appointments.status === "BOOKED" || appointments.status === "COMPLETED";
+
     return (
         <Pressable
             onPress={() => router.push(`/appointments/${appointments.id}`)}
@@ -16,65 +18,66 @@ export default function AppointmentCard({ appointments }: AppointmentCardProps) 
                 opacity: pressed ? 0.85 : 1,
                 transform: [{ scale: pressed ? 0.99 : 1 }],
             })}
-            // Stark high-contrast borders, shadow-none for flat print aesthetics
-            className="bg-white dark:bg-black p-6 lg:p-8 rounded-3xl mb-4 border border-zinc-200 dark:border-white shadow-none relative"
+            className="bg-white p-5 rounded-3xl mb-4 border border-zinc-100 relative"
         >
-            {/* ─── TOP ROW ─── */}
-            <View className="flex-row justify-between items-start mb-2 lg:mb-4">
+            {/* ─── HEADER ROW ─── */}
+            <View className="flex-row justify-between items-start mb-4 pr-6">
                 <View>
-                <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-1">
-                    Appointment Schedule
-                </Text>
-                <Text className="text-sm font-black text-black dark:text-white uppercase">
-                    {formatAppointmentSchedule(appointments.appointmentDate)} 
-                </Text>
-                    
-                </View>            
-            </View>
-            <View className="mb-2 lg:mb-4">
-            <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-0.5">
-                        Pet Name
+                    <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
+                        Appointment Schedule
                     </Text>
-                    <Text className="text-base font-black tracking-tight text-black dark:text-white uppercase">
-                        {appointments.pet?.petName || "Unknown Patient"}
+                    <Text className="text-sm font-black text-black uppercase">
+                        {formatAppointmentSchedule(appointments.appointmentDate)} 
                     </Text>
+                </View>
+
+                {/* Pill Status Badge to match Profile screen active state flags */}
+                <View className={`px-2.5 py-0.5 border rounded-full ${hasStatus ? 'bg-black border-black' : 'border-zinc-200'}`}>
+                    <Text className={`text-[8px] font-black tracking-widest uppercase ${hasStatus ? 'text-white' : 'text-zinc-400'}`}>
+                        {appointments.status}
+                    </Text>
+                </View>
             </View>
-        
-     <View className="mb-2 lg:mb-4">
-                <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-1">
-                    Status
+
+            {/* ─── PATIENT BODY INFORMATION ─── */}
+            <View className="mb-4">
+                <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-0.5">
+                    Pet Name
                 </Text>
-                <Text className="text-sm font-black text-black dark:text-white uppercase">
-                    {appointments.status    } 
+                <Text className="text-base font-black tracking-tight text-black uppercase">
+                    {appointments.pet?.petName || "Unknown Patient"}
                 </Text>
+                {appointments.pet?.species && (
+                    <Text className="text-xs text-zinc-500 font-medium mt-0.5">
+                        {appointments.pet.species} {appointments.pet.breed ? `/ ${appointments.pet.breed}` : ''}
+                    </Text>
+                )}
             </View>
 
-
-
-            {/* ─── BOTTOM METADATA ROW ─── */}
-            {/* <View className="flex-row justify-between items-end pt-3 border-t border-zinc-200 dark:border-white">
+            {/* ─── BOTTOM METADATA GRID (UNCOMMENTED & STYLED) ─── */}
+            <View className="flex-row justify-between items-end pt-3 border-t border-zinc-100 mt-2">
                 <View>
-                    <Text className="text-[8px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-0.5">
+                    <Text className="text-[8px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-0.5">
                         Booked on
                     </Text>
-                    <Text className="text-xs font-black text-black dark:text-white uppercase">
+                    <Text className="text-xs font-bold text-zinc-800 uppercase">
                         {formatAppointmentSchedule(appointments.createdAt)}   
                     </Text>
                 </View>
 
                 <View className="items-end">
-                    <Text className="text-[8px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-0.5">
+                    <Text className="text-[8px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-0.5">
                         Ref Code
                     </Text>
-                    <Text className="text-xs font-mono font-black tracking-wide text-black dark:text-white">
+                    <Text className="text-xs font-mono font-bold tracking-tight text-zinc-600">
                         {formatBookingCode(appointments.bookingCode)}
                     </Text>
                 </View>
-            </View> */}
+            </View>
 
-            {/* ─── STARK HINT ARROW ─── */}
-            <View className="absolute right-5 top-6">
-                <Text className="text-black dark:text-white text-xl font-black">›</Text>
+            {/* ─── STARK HINT ARROW INDICATOR ─── */}
+            <View className="absolute right-5 top-[26px]">
+                <Text className="text-zinc-300 text-xl font-black">›</Text>
             </View>
         </Pressable>
     );

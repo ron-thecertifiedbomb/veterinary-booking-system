@@ -167,7 +167,7 @@ export default function Profile() {
                     className="w-full bg-black py-4 rounded-full items-center mb-12 active:opacity-80 disabled:opacity-50"
                 >
                     <Text className="text-white text-xs font-black tracking-[0.2em] uppercase">
-                        {loading ? "Disconnecting session..." : "Disconnect Account"}
+                        {loading ? "loading..." : "Logout"}
                     </Text>
                 </Pressable>
             </ScrollView>
