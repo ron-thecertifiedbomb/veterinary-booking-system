@@ -17,10 +17,10 @@ export default function AppointmentCard({ appointments }: AppointmentCardProps) 
                 transform: [{ scale: pressed ? 0.99 : 1 }],
             })}
             // Stark high-contrast borders, shadow-none for flat print aesthetics
-            className="bg-white dark:bg-black p-8 rounded-3xl mb-4 border border-zinc-200 dark:border-white shadow-none relative"
+            className="bg-white dark:bg-black p-6 lg:p-8 rounded-3xl mb-4 border border-zinc-200 dark:border-white shadow-none relative"
         >
             {/* ─── TOP ROW ─── */}
-            <View className="flex-row justify-between items-start mb-4">
+            <View className="flex-row justify-between items-start mb-2 lg:mb-4">
                 <View>
                 <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-1">
                     Appointment Schedule
@@ -31,7 +31,7 @@ export default function AppointmentCard({ appointments }: AppointmentCardProps) 
                     
                 </View>            
             </View>
-            <View className="mb-4">
+            <View className="mb-2 lg:mb-4">
             <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-0.5">
                         Pet Name
                     </Text>
@@ -40,7 +40,7 @@ export default function AppointmentCard({ appointments }: AppointmentCardProps) 
                     </Text>
             </View>
         
-     <View className="mb-4">
+     <View className="mb-2 lg:mb-4">
                 <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-1">
                     Status
                 </Text>

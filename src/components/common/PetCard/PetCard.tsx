@@ -22,17 +22,17 @@ export default function PetCard({ item, onPress }: PetCardProps) {
         Parent Card Framework Shell is configured as a high-contrast container 
         with rounded-3xl geometry matching your Appointment cards.
       */}
-      <View className="bg-white dark:bg-black p-4 rounded-3xl flex-row items-center justify-between">
+      <View className="bg-white dark:bg-black  lg:p-4 rounded-3xl flex-row items-center justify-between">
         
         {/* ─── LEFT: PRIMARY CORE DATA ─── */}
         <View className="flex-1 mr-4">
-          <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-1">
+          <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500  lg:mb-1">
            Name
           </Text>
-          <Text className="text-2xl font-black tracking-tighter text-black dark:text-white uppercase">
+          <Text className="text-xl lg:text-2xl font-black tracking-tighter text-black dark:text-white uppercase">
             {item.petName}
           </Text>
-          <Text className="text-xs font-bold text-zinc-500 dark:text-zinc-400 mt-1 uppercase tracking-wide">
+          <Text className="text-xs font-bold text-zinc-500 dark:text-zinc-400 lg:mt-1 uppercase tracking-wide">
             {item.species} / {item.breed || "UNKNOWN"}
           </Text>
         </View>

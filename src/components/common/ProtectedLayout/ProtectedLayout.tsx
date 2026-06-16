@@ -6,8 +6,8 @@ import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type Props = {
-    role?: "ADMIN" | "STAFF" | "CUSTOMER"; // optional role restriction
-    fallback?: string; // optional fallback route
+    role?: "ADMIN" | "STAFF" | "CUSTOMER"; 
+    fallback?: string; 
 };
 
 export default function ProtectedLayout({

@@ -23,7 +23,7 @@ export default function AppPetCard({ children, onPress, style }: Props) {
                     {
                         backgroundColor: "#fff",
                         borderRadius: 16,
-                        padding: 16,
+                        padding: 14,
                         marginBottom: 12,
 
                         // ✅ Cross-platform shadow
@@ -31,7 +31,7 @@ export default function AppPetCard({ children, onPress, style }: Props) {
                         shadowOpacity: 0.06,
                         shadowRadius: 10,
                         shadowOffset: { width: 0, height: 4 },
-                        elevation: 2,
+                        elevation: 1,
                     },
                     style,
                 ]}
