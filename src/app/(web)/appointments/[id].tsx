@@ -1,3 +1,4 @@
+
 import { AppointmentDetailCard } from "@/components/common/Appointments/AppointmentDetailedCard";
 import { BackButton } from "@/components/common/BackButton/BackButton";
 import Container from "@/components/common/Container/Container";

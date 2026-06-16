@@ -1,3 +1,4 @@
+import { AdminProfile } from "@/features/admin/types/admin.types";
 import { Appointment } from "@/features/appointment/types/appointment";
 import { UserRole } from "@/features/auth/types/auth.user";
 import { Pet } from "@/features/pet/pet.types";
@@ -9,7 +10,6 @@ export interface CustomerProfile {
   appointments: Appointment[];
 }
 
-
 export type userProfile = {
   id: string;
   email: string;
@@ -19,8 +19,9 @@ export type userProfile = {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  customerProfile?: CustomerProfile; // only if CUSTOMER
+  customerProfile?: CustomerProfile; 
   staffProfile?: StaffProfile;
+  adminProfile?: AdminProfile
 };
 
 export type UpdateCustomerProfileResponse = {
@@ -46,7 +47,7 @@ export type fetchCustomerProfileResponse = {
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
-    customerProfile?: CustomerProfile; // only if CUSTOMER
+    customerProfile?: CustomerProfile;
     staffProfile?: StaffProfile;
   };
 };

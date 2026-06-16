@@ -1,49 +1,49 @@
-// ..\src\features\users\hook\useGetUserProfile.ts
 
-import {
-  getStorageItem,
-  setStorageItem,
-} from "@/features/auth/storage/auth.storage";
-import { GetUserProfileResponse, UserProfile } from "@/features/users/types";
-import { api } from "@/utils/api/api.client";
+import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
+import { userProfile } from "../types/types";
+import { fetchProfileApi } from "../services/fetchProfileApi.api";
 
-export const useGetUserProfile = () => {
+
+export function useGetUserProfile() {
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [profile, setProfile] = useState<userProfile | null>(null);
+  const { token } = useAuth(); 
 
-  const fetchUserProfile = async (): Promise<UserProfile | null> => {
+  const fetchUserProfile = async (
+  )=> {
     try {
-      if (loading) return null;
       setLoading(true);
       setError(null);
+      setMessage(null);
 
-      const token = await getStorageItem("access_token");
       if (!token) {
-        throw new Error("Unauthorized. Please login again.");
+        throw new Error("Not authenticated");
       }
-      const response = await api<GetUserProfileResponse>("/api/vet/users/me", {
-        method: "GET",
-        token,
-      });
-      await setStorageItem("user_profile", JSON.stringify(response.data));
-      setProfile(response.data);
-      return response.data;
+
+      const response = await fetchProfileApi(token);
+      setProfile(response.data)
+      setMessage(response.message);
+      return response;
     } catch (err: any) {
-      logger.error("Error fetching profile ❌", err);
-      const message = err?.message || "Failed to fetch user profile";
-      setError(message);
-      return null;
+      const errorMessage = err?.message || "Failed to create admin";
+      setError(errorMessage);
+      logger.error("Add admin failed", err);
+      
     } finally {
       setLoading(false);
     }
   };
+
   return {
     fetchUserProfile,
-    profile,
     loading,
     error,
+    message,
+    profile
   };
-};
+}
