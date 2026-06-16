@@ -26,7 +26,7 @@ export async function getAppointmentsApi(
     });
   }
 
-  const user = role === "ADMIN" ? "admin" : "users" 
+  const roleType = role === "STAFF" ? "staff" : "customer" 
   
 
   const cleanFilters: Record<string, string> = {};
@@ -40,7 +40,7 @@ export async function getAppointmentsApi(
     ? "?" + new URLSearchParams(cleanFilters).toString()
     : "";
 
-  return await api<GetMyAppointmentHistoryResponse>(`/api/vet/${user}/appointments${queryParams}`, {
+  return await api<GetMyAppointmentHistoryResponse>(`/api/vet/${roleType}/appointments${queryParams}`, {
     method: "GET",
     token,
   });
