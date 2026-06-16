@@ -78,8 +78,7 @@ export default function Appointments() {
             
             {isEmpty && !loading ? (
                 <EmptyState
-                    title="No appointments found"
-                    description="Try adjusting your range or book a new one."
+                    title="No Appointments found"
                     buttonLabel="Book an Appointment"
                     onPress={handleAddAppointment}
                 />
