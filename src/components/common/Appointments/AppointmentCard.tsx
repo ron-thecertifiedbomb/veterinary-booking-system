@@ -24,7 +24,7 @@ export default function AppointmentCard({ appointments }: AppointmentCardProps) 
             <View className="flex-row justify-between items-start mb-4 pr-6">
                 <View>
                     <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
-                        Appointment Schedule
+                   Schedule
                     </Text>
                     <Text className="text-sm font-black text-black uppercase">
                         {formatAppointmentSchedule(appointments.appointmentDate)} 
@@ -32,11 +32,11 @@ export default function AppointmentCard({ appointments }: AppointmentCardProps) 
                 </View>
 
                 {/* Pill Status Badge to match Profile screen active state flags */}
-                <View className={`px-2.5 py-0.5 border rounded-full ${hasStatus ? 'bg-black border-black' : 'border-zinc-200'}`}>
+                {/* <View className={`px-2.5 py-0.5 border rounded-full ${hasStatus ? 'bg-black border-black' : 'border-zinc-200'}`}>
                     <Text className={`text-[8px] font-black tracking-widest uppercase ${hasStatus ? 'text-white' : 'text-zinc-400'}`}>
                         {appointments.status}
                     </Text>
-                </View>
+                </View> */}
             </View>
 
             {/* ─── PATIENT BODY INFORMATION ─── */}
@@ -55,7 +55,7 @@ export default function AppointmentCard({ appointments }: AppointmentCardProps) 
             </View>
 
             {/* ─── BOTTOM METADATA GRID (UNCOMMENTED & STYLED) ─── */}
-            <View className="flex-row justify-between items-end pt-3 border-t border-zinc-100 mt-2">
+            {/* <View className="flex-row justify-between items-end pt-3 border-t border-zinc-100 mt-2">
                 <View>
                     <Text className="text-[8px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-0.5">
                         Booked on
@@ -73,7 +73,7 @@ export default function AppointmentCard({ appointments }: AppointmentCardProps) 
                         {formatBookingCode(appointments.bookingCode)}
                     </Text>
                 </View>
-            </View>
+            </View> */}
 
             {/* ─── STARK HINT ARROW INDICATOR ─── */}
             <View className="absolute right-5 top-[26px]">
