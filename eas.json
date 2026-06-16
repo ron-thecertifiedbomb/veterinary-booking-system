@@ -26,6 +26,7 @@
         "EXPO_PUBLIC_APP_ENV": "staging",
         "EXPO_PUBLIC_API_WEB": "https://staging-api.rondev.com.ph",
         "EXPO_PUBLIC_API_MOBILE": "https://staging-api.rondev.com.ph"
+        "EXPO_PUBLIC_API_MOBILE": "https://staging-api.rondev.com.ph"
       }
     },
     "production": {
