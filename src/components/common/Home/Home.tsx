@@ -91,7 +91,7 @@ export default function Home() {
         <Container>
             <HeaderSection
                 title="Book an Appointment"
-                description="Select date of appointment"
+    
             />
 
             {/* ✅ EMPTY STATE */}

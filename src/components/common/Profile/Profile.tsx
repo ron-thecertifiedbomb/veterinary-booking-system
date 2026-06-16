@@ -41,7 +41,6 @@ if (!isAuthenticated) return null
 
             <HeaderSection
                 title="My Profile"
-                description="View and manage your account information."
 
             />
             <View className="bg-surface border border-border rounded-2xl p-6 mb-4 items-center">
@@ -78,7 +77,7 @@ if (!isAuthenticated) return null
                     <Pressable
                         onPress={() => router.push(
                             Platform.OS === "web"
-                                ? "/(web)/edit-profile"
+                                ? "/(web)/profile/edit"
                                 : "(app)/edit-profile"
                         )}
                         className="px-3 py-1 rounded-full border border-border active:opacity-60"

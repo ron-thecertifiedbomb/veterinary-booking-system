@@ -24,8 +24,6 @@ type Errors = Partial<Record<keyof FormData, string | null>>;
 export default function EditProfileForm() {
 
 
-
-
     const router = useRouter();
     const { updateProfile, loading } = useUpdateCustomerProfile();
     const { profile, fetchCustomerProfile, loading: fetching } =
@@ -98,7 +96,7 @@ export default function EditProfileForm() {
 
     return (
         <View className="flex-1 max-w-md bg-white px-6 pt-6">
-     <BackButton webRoute="/(web)/web-profile" appRoute="(app)/(tabs)/profile" /> 
+     <BackButton webRoute="/(web)/profile" appRoute="(app)/(tabs)/profile" /> 
             {/* HEADER */}
             <View className="mb-10 items-center">
                 <Text className="text-3xl font-bold text-gray-900">

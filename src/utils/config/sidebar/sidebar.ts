@@ -16,8 +16,8 @@ export const adminNav = [
 ];
 
 export const customerNav = [
-  { label: "Home", href: "/(web)/web-home" },
-  { label: "Appointments", href: "/(web)/web-appointments" },
-  { label: "Pets", href: "/(web)/web-pets" },
-  { label: "Profile", href: "/(web)/web-profile" },
+  { label: "Home", href: "/(web)/home" },
+  { label: "Appointments", href: "/(web)/appointments" },
+  { label: "Pets", href: "/(web)/pets" },
+  { label: "Profile", href: "/(web)/profile" },
 ];

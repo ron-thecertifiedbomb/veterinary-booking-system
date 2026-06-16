@@ -27,7 +27,7 @@ export const routes = {
     app: "/(staff-app)/(tabs)/dashboard",
   },
   customer: {
-    web: "/(web)/web-home",
+    web: "/(web)/home",
     app: "/(app)/(tabs)/home",
   },
   public: {

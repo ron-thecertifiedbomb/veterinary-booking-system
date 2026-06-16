@@ -2,6 +2,7 @@ import { DateRangePicker } from "@/components/booking/DateRangePicker";
 import DateSelector from "@/components/booking/DateSelector";
 import AppointmentCard from "@/components/common/Appointments/AppointmentCard";
 import { AppointmentDetailCard } from "@/components/common/Appointments/AppointmentDetailedCard";
+import { BackButton } from "@/components/common/BackButton/BackButton";
 import Container from "@/components/common/Container/Container";
 import EmptyState from "@/components/common/EmptyState/EmptyState";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
@@ -33,12 +34,12 @@ export default function AppointmentScreen() {
 
     return (
         <Container>
+            <View className="w-full flex flex-row justify-center px-10">
             <HeaderSection
                 title={id ? "Appointment Details" : "My Appointments"}
-            
             />
-           
-     
+             <BackButton webRoute="/(web)/appointments" appRoute="(app)/(tabs)/appointments" /> 
+             </View>
                     <AppointmentDetailCard appointment={singleAppointment} />
            
         </Container>

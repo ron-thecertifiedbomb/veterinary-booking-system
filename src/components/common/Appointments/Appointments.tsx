@@ -44,7 +44,7 @@ export default function Appointments() {
         <Container>
             <HeaderSection
                 title="My Appointments"
-                description="Track your upcoming and past bookings."
+             
             />
             {/* <DateRangePicker
         fromValue={filters.from}
