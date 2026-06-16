@@ -1,15 +1,13 @@
-import { DateRangePicker } from "@/components/booking/DateRangePicker";
-import DateSelector from "@/components/booking/DateSelector";
 import AppointmentCard from "@/components/common/Appointments/AppointmentCard";
 import Container from "@/components/common/Container/Container";
 import EmptyState from "@/components/common/EmptyState/EmptyState";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Loader from "@/components/common/Loader/Loader";
-import { useGetAppointments } from "@/features/appointment/hooks/useGetAppointment";
+import { useGetAppointments } from "@/features/appointment/hooks/useGetAppointments";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, Platform, Text, TouchableOpacity, View, Modal } from "react-native";
+import { FlatList, Platform, View } from "react-native";
 
 export default function Appointments() {
 

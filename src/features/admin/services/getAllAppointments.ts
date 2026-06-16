@@ -1,11 +1,9 @@
-// ..\src\features\appointment\services\slots.ts
 
 import { Appointment, GetMyAppointmentHistoryResponse } from "@/features/appointment/types/appointment";
-import { UserRole } from "@/features/auth/types/auth.user";
 import { api } from "@/utils/api/api.client";
 
-// Define a type for the query parameters
-export interface GetAppointmentsFilters {
+
+export interface GetAllAppointmentsFilters {
   from?: string;
   to?: string;
   sortBy?: "appointmentDate" | "status" | string;
@@ -14,20 +12,9 @@ export interface GetAppointmentsFilters {
 
 export async function getAppointmentsApi(
   token: string, 
-  filters?: GetAppointmentsFilters,
-  appointmentId?: string,
-  role?: UserRole
-) {
-  // 1. If an ID is passed, target the specific item endpoint directly
-  if (appointmentId) {
-    return await api<Appointment>(`/api/vet/appointments/${appointmentId}`, {
-      method: "GET",
-      token,
-    });
-  }
+  filters?: GetAllAppointmentsFilters,
 
-  const user = role === "ADMIN" ? "admin" : "users" 
-  
+) {
 
   const cleanFilters: Record<string, string> = {};
   if (filters) {
@@ -40,7 +27,7 @@ export async function getAppointmentsApi(
     ? "?" + new URLSearchParams(cleanFilters).toString()
     : "";
 
-  return await api<GetMyAppointmentHistoryResponse>(`/api/vet/${user}/appointments${queryParams}`, {
+  return await api<GetMyAppointmentHistoryResponse>(`/api/vet/admin/appointments${queryParams}`, {
     method: "GET",
     token,
   });
