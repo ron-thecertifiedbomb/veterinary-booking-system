@@ -17,8 +17,6 @@ export default function Appointments() {
     const { loading, isEmpty, appointments, fetchAppointments, filters, setFilters } = useGetAppointments();
     const [activePicker, setActivePicker] = useState<"from" | "to" | null>(null);
   
-
-
     useEffect(() => {
         if (token) {
             fetchAppointments();
@@ -33,6 +31,7 @@ export default function Appointments() {
         const isWeb = Platform.OS === "web";
         router.push(isWeb ? "/(web)/web-home" : "/(app)/(tabs)/home");
     };
+
     const handleDateSelection = (selectedDate: string) => {
         if (activePicker === "from") {
             setFilters(prev => ({ ...prev, from: selectedDate }));
@@ -47,7 +46,7 @@ export default function Appointments() {
                 title="My Appointments"
                 description="Track your upcoming and past bookings."
             />
-            <DateRangePicker
+            {/* <DateRangePicker
         fromValue={filters.from}
         toValue={filters.to}
         onPress={(type) => setActivePicker(type)}
@@ -75,7 +74,7 @@ export default function Appointments() {
                         />
                     </View>
                 </View>
-            </Modal>
+            </Modal> */}
             
             {isEmpty && !loading ? (
                 <EmptyState

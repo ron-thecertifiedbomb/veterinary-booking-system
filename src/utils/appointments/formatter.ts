@@ -15,36 +15,6 @@ export const formatSlotTime = (time: string) => {
   return `${formattedHour}:${minute} ${ampm}`;
 };
 
-
-/**
- * Formats an ISO string date into a human-readable appointment schedule string.
- * @param isoString - The string date representation (e.g., "2026-06-16T02:00:00.000Z")
- * @returns Formatted label string (e.g., "June 16, 2026 Appointment Schedule")
- */
-export function formatAppointmentSchedule(isoString: string): string {
-  if (!isoString) return "";
-
-  const date = new Date(isoString);
-
-  // Fallback check for invalid date formats passed into the function
-  if (isNaN(date.getTime())) {
-    return "Invalid Date Schedule";
-  }
-
-  // Define months manually to avoid environment/locale variations across systems
-  const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-
-  const monthName = months[date.getUTCMonth()];
-  const day = date.getUTCDate();
-  const year = date.getUTCFullYear();
-
-  return `${monthName} ${day}, ${year}`;
-}
-
-
 export const parseServerNow = (serverNow?: string | null) => {
   const date = serverNow ? new Date(serverNow) : new Date();
 
@@ -175,4 +145,54 @@ export const formatReadableDate = (dateString?: string | null): string => {
     day: "2-digit",
     year: "numeric",
   }).format(date);
+};
+
+
+
+
+/**
+ * Formats an ISO string into a clean date layout.
+ * @example "2026-06-17T01:00:00.000Z" -> "June 17, 2026"
+ */
+export const formatAppointmentDateOnly = (dateString?: string | null): string => {
+  if (!dateString) return "No Date";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return dateString;
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "2-digit",
+    year: "numeric",
+  }).format(date);
+};
+
+/**
+ * Formats an ISO string into a clean 12-hour time layout without leading zeros.
+ * @example "2026-06-17T01:00:00.000Z" -> "1:00 AM" (No leading zero)
+ */
+export const formatAppointmentTimeOnly = (dateString?: string | null): string => {
+  if (!dateString) return "No Time";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return dateString;
+
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric", // FIX: Changed from "2-digit" to remove leading zeros natively
+    minute: "2-digit",
+    hour12: true,
+  }).format(date);
+};
+
+/**
+ * Combines both formatters to return a unified string.
+ * @example "2026-06-17T01:00:00.000Z" -> "June 17, 2026 at 1:00 AM"
+ */
+export const formatAppointmentSchedule = (dateString?: string | null): string => {
+  if (!dateString) return "Not Scheduled";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "Not Scheduled";
+
+  const datePart = formatAppointmentDateOnly(dateString);
+  const timePart = formatAppointmentTimeOnly(dateString);
+
+  return `${datePart} at ${timePart}`;
 };

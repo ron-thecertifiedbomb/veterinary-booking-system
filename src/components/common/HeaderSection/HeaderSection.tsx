@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { formatDate } from "@/utils/dateandtime/date";
+
 
 type Props = {
     title: string;
@@ -17,7 +17,7 @@ export default function HeaderSection({
     return (
         
 
-        <View className="w-full mb-1 px-1">
+        <View className="w-full mb-8">
                 <View>
                     <Text className="text-2xl lg:text-3xl font-bold tracking-tight text-text-primary">
                         {title}

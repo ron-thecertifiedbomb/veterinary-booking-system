@@ -1,8 +1,7 @@
-
-import { Appointment, GetMyAppointmentHistoryResponse } from "@/features/appointment/types/appointment";
+import { Appointment } from "@/features/appointment/types/appointment";
 import { formatAppointmentSchedule, formatBookingCode } from "@/utils/appointments/formatter";
-
 import { router } from "expo-router";
+import React from "react";
 import { Pressable, Text, View } from "react-native";
 
 type AppointmentCardProps = {
@@ -12,68 +11,70 @@ type AppointmentCardProps = {
 export default function AppointmentCard({ appointments }: AppointmentCardProps) {
     return (
         <Pressable
-            onPress={() => router.push(`/appointment/${appointments.id}`)}
+            onPress={() => router.push(`/appointments/${appointments.id}`)}
             style={({ pressed }) => ({
-                opacity: pressed ? 0.9 : 1,
-                transform: [{ scale: pressed ? 0.98 : 1 }],
+                opacity: pressed ? 0.85 : 1,
+                transform: [{ scale: pressed ? 0.99 : 1 }],
             })}
-            className="bg-white rounded-2xl mb-4 p-5 border border-gray-100"
+            // Stark high-contrast borders, shadow-none for flat print aesthetics
+            className="bg-white dark:bg-black p-5 rounded-3xl mb-4 border border-zinc-200 dark:border-white shadow-none relative"
         >
-            {/* ✅ TOP ROW */}
+            {/* ─── TOP ROW ─── */}
             <View className="flex-row justify-between items-start mb-4">
-                {/* LEFT */}
                 <View>
-                    <Text className="text-base font-semibold text-gray-900">
-                        {appointments.pet?.petName}
+                    <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-0.5">
+                        Patient
                     </Text>
-
-                    <Text className="text-sm text-gray-500 mt-1">
+                    <Text className="text-base font-black tracking-tight text-black dark:text-white uppercase">
+                        {appointments.pet?.petName || "Unknown Patient"}
+                    </Text>
+                    <Text className="text-xs font-black tracking-tight text-black dark:text-white mt-0.5 uppercase">
                         {appointments.serviceType}
                     </Text>
                 </View>
 
-                {/* ✅ STATUS BADGE */}
-                <View className="px-3 py-1 rounded-full bg-gray-100 mr-2">
-                    <Text className="text-xs font-medium text-gray-700">
+                {/* Pill-shaped stark status badge */}
+                <View className="px-3 py-1 border border-zinc-200 dark:border-white rounded-full mr-6">
+                    <Text className="text-[9px] font-black tracking-widest uppercase text-black dark:text-white">
                         {appointments.status}
                     </Text>
                 </View>
             </View>
 
-            {/* ✅ SCHEDULE */}
+            {/* ─── SCHEDULE BLOCK ─── */}
             <View className="mb-4">
-                <Text className="text-xs text-gray-400 mb-1">
+                <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-1">
                     Appointment Schedule
                 </Text>
-
-                <Text className="text-sm font-medium text-gray-800">
+                <Text className="text-sm font-black text-black dark:text-white uppercase">
                     {formatAppointmentSchedule(appointments.appointmentDate)} 
-                  
                 </Text>
             </View>
-            <View className="flex-row justify-between items-end">
+
+            {/* ─── BOTTOM METADATA ROW ─── */}
+            <View className="flex-row justify-between items-end pt-3 border-t border-zinc-200 dark:border-white">
                 <View>
-                    <Text className="text-[10px] text-gray-400">
+                    <Text className="text-[8px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-0.5">
                         Booked on
                     </Text>
-                    <Text className="text-xs text-gray-600">
-                    {formatAppointmentSchedule(appointments.createdAt)}   
+                    <Text className="text-xs font-black text-black dark:text-white uppercase">
+                        {formatAppointmentSchedule(appointments.createdAt)}   
                     </Text>
                 </View>
 
                 <View className="items-end">
-                    <Text className="text-[10px] text-gray-400">
+                    <Text className="text-[8px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-0.5">
                         Ref Code
                     </Text>
-                    <Text className="text-xs font-mono tracking-wider text-gray-800">
+                    <Text className="text-xs font-mono font-black tracking-wide text-black dark:text-white">
                         {formatBookingCode(appointments.bookingCode)}
                     </Text>
                 </View>
             </View>
 
-            {/* ✅ OPTIONAL VISUAL HINT (arrow) */}
-            <View className="absolute right-4 top-4">
-                <Text className="text-gray-300 text-lg">›</Text>
+            {/* ─── STARK HINT ARROW ─── */}
+            <View className="absolute right-5 top-6">
+                <Text className="text-black dark:text-white text-xl font-black">›</Text>
             </View>
         </Pressable>
     );
