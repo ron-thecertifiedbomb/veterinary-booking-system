@@ -151,3 +151,28 @@ export const formatShortDate = (date: string) => {
 export function formatAppointmentDate(date: string, time: string) {
   return `${date}T${time}:00+08:00`;
 }
+
+
+
+export const todayStr = new Date().toISOString().split("T")[0];
+
+
+
+/**
+ * Converts a date string into a readable format like "June 16, 2026".
+ * Handles null or undefined values by returning a placeholder string.
+ */
+export const formatReadableDate = (dateString?: string | null): string => {
+  if (!dateString) return "Select Date";
+  
+  const date = new Date(dateString);
+  
+  // Check if the date conversion is valid
+  if (isNaN(date.getTime())) return dateString;
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "2-digit",
+    year: "numeric",
+  }).format(date);
+};

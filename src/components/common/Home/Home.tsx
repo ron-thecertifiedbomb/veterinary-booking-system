@@ -12,25 +12,36 @@ import {
 } from "@/features/appointment/types/appointment";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { showAlert } from "@/hooks/crossPlatformAlert";
-import { getTodayDate } from "@/utils/dateandtime/date";
+import { getTodayDate } from "@/utils/appointments/formatter";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
 
+
 export default function Home() {
+
+    const {
+        fetchSlots,
+        slots,
+        currentDate,
+        loading: slotsLoading,
+    } = useGetSlots();
+
+    const {
+        createAppointment,
+        loading: creating,
+    } = useCreateAppointment();
+
+
     const [date, setDate] = useState(getTodayDate());
     const [showModal, setShowModal] = useState(false);
     const { user, refreshSession } = useAuth();
-
-    const pets = user?.customerProfile?.pets ?? [];
-
     const [bookingSummary, setBookingSummary] =
         useState<CreateAppointmentResponse | null>(null);
-
     const [successModalVisible, setSuccessModalVisible] =
         useState(false);
 
-    // ✅ redirect if no pets
+    const pets = user?.customerProfile?.pets ?? [];
     const redirected = useRef(false);
 
     useEffect(() => {
@@ -47,50 +58,28 @@ export default function Home() {
         }
     }, [user, pets.length]);
 
-    // ✅ hooks
-    const {
-        fetchSlots,
-        slots,
-        currentDate,
-        loading: slotsLoading,
-    } = useGetSlots();
-
-    const {
-        createAppointment,
-        loading: creating,
-    } = useCreateAppointment();
-
-    // ✅ open modal + fetch slots
+  
     const handleSelectDate = async (newDate: string) => {
         setDate(newDate);
-        setShowModal(true); // ✅ open immediately
-        await fetchSlots(newDate); // modal handles loading
+        setShowModal(true); 
+        await fetchSlots(newDate); 
     };
 
-    // ✅ close modal
     const handleCloseModal = () => {
         setShowModal(false);
     };
 
-
     const handleSubmit = async (formData: CreateAppointmentPayload) => {
         try {
-            // ✅ prevent multiple triggers
+          
             if (creating) return;
 
             const response = await createAppointment(formData);
-
             setBookingSummary(response);
-
-            // ✅ close booking modal first
             setShowModal(false);
-
-            // ✅ wait a bit longer (stable across devices)
             setTimeout(() => {
-                setSuccessModalVisible(true);
-            }, 500); // 🔥 500ms = safest for all devices
-
-            // ✅ run in background (no UI blocking)
+            setSuccessModalVisible(true);
+            }, 500); 
             refreshSession();
 
         } catch (err: any) {
@@ -124,8 +113,6 @@ export default function Home() {
                     onDateChange={handleSelectDate}
                 />
             )}
-
-            {/* ✅ BOOKING MODAL */}
             {pets.length > 0 && (
                 <AppBookingModal
                     loading={slotsLoading || creating} // ✅ handled INSIDE modal
@@ -137,14 +124,11 @@ export default function Home() {
                     onSubmit={handleSubmit}
                 />
             )}
-
-            {/* ✅ SUCCESS MODAL */}
             <BookingSuccessModal
                 visible={successModalVisible}
                 items={bookingSummary}
                 onClose={() => {
                     setSuccessModalVisible(false);
-
                     router.push(
                         Platform.OS === "web"
                             ? "/(web)/web-appointments"

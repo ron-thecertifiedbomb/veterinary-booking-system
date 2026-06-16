@@ -1,10 +1,12 @@
-import { AppointmentHistoryItem } from "@/features/appointment/types/appointment";
-import { formatAppointmentSchedule } from "@/utils/appointments/dateandtime/formatter";
+
+import { Appointment, GetMyAppointmentHistoryResponse } from "@/features/appointment/types/appointment";
+import { formatAppointmentSchedule, formatBookingCode } from "@/utils/appointments/formatter";
+
 import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
 type AppointmentCardProps = {
-    appointments: AppointmentHistoryItem;
+    appointments: Appointment;
 };
 
 export default function AppointmentCard({ appointments }: AppointmentCardProps) {
@@ -49,15 +51,13 @@ export default function AppointmentCard({ appointments }: AppointmentCardProps) 
                   
                 </Text>
             </View>
-
-            {/* ✅ FOOTER */}
             <View className="flex-row justify-between items-end">
                 <View>
                     <Text className="text-[10px] text-gray-400">
                         Booked on
                     </Text>
                     <Text className="text-xs text-gray-600">
-                        {appointments.createdAt}
+                    {formatAppointmentSchedule(appointments.createdAt)}   
                     </Text>
                 </View>
 
@@ -66,7 +66,7 @@ export default function AppointmentCard({ appointments }: AppointmentCardProps) 
                         Ref Code
                     </Text>
                     <Text className="text-xs font-mono tracking-wider text-gray-800">
-                        {appointments.bookingCode}
+                        {formatBookingCode(appointments.bookingCode)}
                     </Text>
                 </View>
             </View>

@@ -10,8 +10,8 @@ import {
 import AppSelect from "@/components/common/AppSelect/AppSelect";
 import { Pet } from "@/features/pet/pet.types";
 import { Slot } from "@/hooks/appointments/useBookingSystem";
-import { formatSlotTime } from "@/utils/appointments/dateandtime/formatter";
-import { formatDate } from "@/utils/dateandtime/date";
+import { formatDate, formatSlotTime } from "@/utils/appointments/formatter";
+
 
 type Props = {
     pets: Pet[];

@@ -1,12 +1,12 @@
 import Container from "@/components/common/Container/Container";
-import { formatBookingCode } from "@/utils/appointments/dateandtime/formatter";
+import { formatBookingCode } from "@/utils/appointments/formatter";
 import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
+
+
 export default function AppoinmentSuccess() {
 
     const router = useRouter();
-
-
 
     return (
         <Container>
@@ -25,7 +25,7 @@ export default function AppoinmentSuccess() {
                     <Text className="text-xs text-text-muted uppercase mb-2">
                         Booking Details
                     </Text>
-
+{/* 
                     <Text className="text-sm text-text-secondary mb-1">
                         Booking Code: {formatBookingCode(appointments?.bookingCode)}
                     </Text>
@@ -40,7 +40,7 @@ export default function AppoinmentSuccess() {
 
                     <Text className="text-sm text-text-secondary mb-1">
                         {appointments?.appointmentDate}
-                    </Text>
+                    </Text> */}
 
                 </View>
 

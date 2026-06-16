@@ -5,7 +5,7 @@ import BookingModal from "@/components/booking/BookingModal";
 import Loader from "@/components/common/Loader/Loader";
 import { Pet } from "@/features/pet/pet.types";
 import { Slot } from "@/hooks/appointments/useBookingSystem";
-import { formatAppointmentDate } from "@/utils/dateandtime/dateandtimeformatter";
+import { formatAppointmentDate } from "@/utils/appointments/formatter";
 import { useState } from "react";
 
 type Props = {

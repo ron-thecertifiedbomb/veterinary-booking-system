@@ -1,5 +1,4 @@
 // ..\src\features\appointment\types\appointment.ts
-
 import { AuthenticatedUserResponse } from "@/features/auth/types/auth.types";
 
 export type AppointmentDependencies = {
@@ -66,7 +65,6 @@ export type Appointment = {
 };
 
 
-
 export type AppointmentApiResponse = {
   message: string;
   data: {
@@ -86,31 +84,13 @@ export type AppointmentApiResponse = {
 };
 
 
-export type AppointmentHistoryResponse = AppointmentHistoryItem[];
-
-export interface AppointmentHistoryItem {
-  id: string;
-  bookingCode: string;
-  serviceType: string; // e.g. "CHECKUP"
-  appointmentDate: string; // ISO datetime
-  status: string; // e.g. "BOOKED"
-  notes: string | null;
-  createdAt: string; // ISO datetime
-  pet: PetSummary;
-  staff: StaffSummary | null;
+export interface ServerTime {
+  iso: string;
+  local: string;
 }
 
-export interface PetSummary {
-  id: string;
-  petName: string;
-  species: string;
-  breed: string;
-}
-
-export interface StaffSummary {
-  id: string;
-  firstName?: string;
-  lastName?: string;
-  fullName?: string;
-  [key: string]: unknown;
+export interface GetMyAppointmentHistoryResponse {
+  message: string;
+  data: Appointment[];
+  serverTime: ServerTime;
 }

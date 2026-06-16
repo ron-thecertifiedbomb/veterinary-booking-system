@@ -1,3 +1,4 @@
+import { DateRangePicker } from "@/components/booking/DateRangePicker";
 import DateSelector from "@/components/booking/DateSelector";
 import AppointmentCard from "@/components/common/Appointments/AppointmentCard";
 import Container from "@/components/common/Container/Container";
@@ -12,31 +13,27 @@ import { FlatList, Platform, Text, TouchableOpacity, View, Modal } from "react-n
 
 export default function Appointments() {
 
-    
     const { token } = useAuth(); 
-
     const { loading, isEmpty, appointments, fetchAppointments, filters, setFilters } = useGetAppointments();
-
-
     const [activePicker, setActivePicker] = useState<"from" | "to" | null>(null);
+  
+
 
     useEffect(() => {
         if (token) {
             fetchAppointments();
         }
-    }, [token, filters]);
+    }, [token,filters]);
+
 
     if (loading && appointments.length === 0) {
         return <Loader fullScreen />;
     }
 
-
     const handleAddAppointment = () => {
         const isWeb = Platform.OS === "web";
         router.push(isWeb ? "/(web)/web-home" : "/(app)/(tabs)/home");
     };
-
-
 
     const handleDateSelection = (selectedDate: string) => {
         if (activePicker === "from") {
@@ -55,34 +52,14 @@ export default function Appointments() {
                 description="Track your upcoming and past bookings."
             />
 
-         
             <View className="flex-row items-center justify-between px-4 mb-4 gap-x-3">
-                {/* From Field */}
-                <View className="flex-1">
-                    <Text className="text-xs text-gray-500 font-medium mb-1 pl-1">From Date</Text>
-                    <TouchableOpacity 
-                        onPress={() => setActivePicker("from")}
-                        className="flex-row items-center justify-between bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 p-3 rounded-xl"
-                    >
-                        <Text className="text-gray-800 dark:text-gray-100 text-sm font-medium">{filters.from}</Text>
-                        <Text className="text-base text-gray-400">📅</Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* To Field */}
-                <View className="flex-1">
-                    <Text className="text-xs text-gray-500 font-medium mb-1 pl-1">To Date</Text>
-                    <TouchableOpacity 
-                        onPress={() => setActivePicker("to")}
-                        className="flex-row items-center justify-between bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 p-3 rounded-xl"
-                    >
-                        <Text className="text-gray-800 dark:text-gray-100 text-sm font-medium">{filters.to}</Text>
-                        <Text className="text-base text-gray-400">📅</Text>
-                    </TouchableOpacity>
-                </View>
+            <DateRangePicker
+        fromValue={filters.from}
+        toValue={filters.to}
+        onPress={(type) => setActivePicker(type)}
+      />
             </View>
 
-         
             <Modal
                 visible={activePicker !== null}
                 transparent={true}
@@ -90,9 +67,7 @@ export default function Appointments() {
                 onRequestClose={() => setActivePicker(null)}
             >
                 <View className="flex-1 justify-end bg-black/40">
-                    {/* Click outside dismiss layer */}
                     <TouchableOpacity className="flex-1" onPress={() => setActivePicker(null)} />
-                    
                     <View className="bg-white dark:bg-zinc-900 rounded-t-3xl p-5 pb-8">
                         <View className="flex-row justify-between items-center mb-4">
                             <Text className="text-lg font-bold text-gray-900 dark:text-white">
@@ -102,7 +77,6 @@ export default function Appointments() {
                                 <Text className="text-blue-500 font-semibold">Cancel</Text>
                             </TouchableOpacity>
                         </View>
-                        
                         <DateSelector
                             date={(activePicker === "from" ? filters.from : filters.to) || ""}
                             onDateChange={handleDateSelection}
