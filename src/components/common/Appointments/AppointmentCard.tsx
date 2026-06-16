@@ -17,42 +17,42 @@ export default function AppointmentCard({ appointments }: AppointmentCardProps) 
                 transform: [{ scale: pressed ? 0.99 : 1 }],
             })}
             // Stark high-contrast borders, shadow-none for flat print aesthetics
-            className="bg-white dark:bg-black p-5 rounded-3xl mb-4 border border-zinc-200 dark:border-white shadow-none relative"
+            className="bg-white dark:bg-black p-8 rounded-3xl mb-4 border border-zinc-200 dark:border-white shadow-none relative"
         >
             {/* ─── TOP ROW ─── */}
             <View className="flex-row justify-between items-start mb-4">
                 <View>
-                    <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-0.5">
-                        Patient
-                    </Text>
-                    <Text className="text-base font-black tracking-tight text-black dark:text-white uppercase">
-                        {appointments.pet?.petName || "Unknown Patient"}
-                    </Text>
-                    <Text className="text-xs font-black tracking-tight text-black dark:text-white mt-0.5 uppercase">
-                        {appointments.serviceType}
-                    </Text>
-                </View>
-
-                {/* Pill-shaped stark status badge */}
-                <View className="px-3 py-1 border border-zinc-200 dark:border-white rounded-full mr-6">
-                    <Text className="text-[9px] font-black tracking-widest uppercase text-black dark:text-white">
-                        {appointments.status}
-                    </Text>
-                </View>
-            </View>
-
-            {/* ─── SCHEDULE BLOCK ─── */}
-            <View className="mb-4">
                 <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-1">
                     Appointment Schedule
                 </Text>
                 <Text className="text-sm font-black text-black dark:text-white uppercase">
                     {formatAppointmentSchedule(appointments.appointmentDate)} 
                 </Text>
+                    
+                </View>            
+            </View>
+            <View className="mb-4">
+            <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-0.5">
+                        Pet Name
+                    </Text>
+                    <Text className="text-base font-black tracking-tight text-black dark:text-white uppercase">
+                        {appointments.pet?.petName || "Unknown Patient"}
+                    </Text>
+            </View>
+        
+     <View className="mb-4">
+                <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-1">
+                    Status
+                </Text>
+                <Text className="text-sm font-black text-black dark:text-white uppercase">
+                    {appointments.status    } 
+                </Text>
             </View>
 
+
+
             {/* ─── BOTTOM METADATA ROW ─── */}
-            <View className="flex-row justify-between items-end pt-3 border-t border-zinc-200 dark:border-white">
+            {/* <View className="flex-row justify-between items-end pt-3 border-t border-zinc-200 dark:border-white">
                 <View>
                     <Text className="text-[8px] font-black tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 mb-0.5">
                         Booked on
@@ -70,7 +70,7 @@ export default function AppointmentCard({ appointments }: AppointmentCardProps) 
                         {formatBookingCode(appointments.bookingCode)}
                     </Text>
                 </View>
-            </View>
+            </View> */}
 
             {/* ─── STARK HINT ARROW ─── */}
             <View className="absolute right-5 top-6">

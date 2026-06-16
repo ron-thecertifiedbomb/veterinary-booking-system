@@ -1,47 +1,50 @@
+import React from "react";
 import { Text, View } from "react-native";
 import AppPetCard from "../AppPetCard/AppPetCard";
 
+interface PetItem {
+  id: string;
+  petName: string;
+  species: string;
+  breed?: string;
+  weight?: number;
+}
 
-export default function PetCard({ item, onPress }: any) {
-    return (
-        <AppPetCard onPress={onPress}>
-            <View className="flex-row items-center">
-                
-                {/* ✅ AVATAR */}
-                <View className="w-16 h-16 rounded-full bg-gray-100 items-center justify-center mr-4">
-                    <Text className="text-4xl">
-                        {item.species === "Dog" ? "🐶" : "🐱"}
-                    </Text>
-                </View>
+interface PetCardProps {
+  item: PetItem;
+  onPress: () => void;
+}
 
-                {/* ✅ INFO */}
-                <View className="flex-1">
-                    <Text className="text-base font-semibold text-gray-900">
-                        {item.petName}
-                    </Text>
+export default function PetCard({ item, onPress }: PetCardProps) {
+  return (
+    <AppPetCard onPress={onPress}>
+      {/* 
+        Parent Card Framework Shell is configured as a high-contrast container 
+        with rounded-3xl geometry matching your Appointment cards.
+      */}
+      <View className="bg-white dark:bg-black p-4 rounded-3xl flex-row items-center justify-between">
+        
+        {/* ─── LEFT: PRIMARY CORE DATA ─── */}
+        <View className="flex-1 mr-4">
+          <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-1">
+           Name
+          </Text>
+          <Text className="text-2xl font-black tracking-tighter text-black dark:text-white uppercase">
+            {item.petName}
+          </Text>
+          <Text className="text-xs font-bold text-zinc-500 dark:text-zinc-400 mt-1 uppercase tracking-wide">
+            {item.species} / {item.breed || "UNKNOWN"}
+          </Text>
+        </View>
 
-                    <Text className="text-sm text-gray-500 mt-[2px]">
-                        {item.species} • {item.breed || "Unknown"}
-                    </Text>
+        {/* Dynamic Structural Partition Line */}
+        <View className="w-[1px] h-10 bg-zinc-200 dark:bg-zinc-800 mx-4" />
 
-                    <Text className="text-xs text-gray-400 mt-1">
-                        {item.weight} kg
-                    </Text>
-                </View>
+        <View className="ml-4 pl-2">
+          <Text className="text-black dark:text-white text-xl font-black">›</Text>
+        </View>
 
-                {/* ✅ RIGHT SIDE */}
-                <View className="items-end">
-                    <View className="px-2 py-[2px] rounded-full bg-green-50 mb-2">
-                        <Text className="text-[10px] text-green-600 font-medium">
-                            Active
-                        </Text>
-                    </View>
-
-                    <Text className="text-gray-300 text-lg">
-                        ›
-                    </Text>
-                </View>
-            </View>
-        </AppPetCard>
-    );
+      </View>
+    </AppPetCard>
+  );
 }

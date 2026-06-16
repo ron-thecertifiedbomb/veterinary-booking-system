@@ -34,7 +34,6 @@ export default function Pets() {
             {/* ✅ HEADER */}
             <HeaderSection
                 title="My Pets"
-                description="Manage your pets and book appointments easily."
             />
 
             {/* ✅ EMPTY */}
@@ -61,7 +60,7 @@ export default function Pets() {
                         renderItem={({ item }) => (
                             <PetCard
                                 item={item}
-                                onPress={() => router.push(`/pet/${item.id}`)}
+                                onPress={() => router.push(`/pets/profile/${item.id}`)}
                             />
                         )}
                     />
