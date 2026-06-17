@@ -33,15 +33,7 @@ useEffect(() => {
                         }}
                         onRefresh={fetchStaffAppointments}
                         refreshing={loading}
-                        ListFooterComponent={
-                            loading ? (
-                                <View className="py-4">
-                                    <Loader />
-                                </View>
-                            ) : (
-                                <View style={{ height: 40 }} />
-                            )
-                        }
+    
                         renderItem={({ item }) => (
                             <AppointmentCard appointments={item} />
                         )}

@@ -2,8 +2,8 @@
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
-import { userProfile } from "../types/types";
 import { fetchProfileApi } from "../services/fetchProfileApi.api";
+import { userProfile } from "../types/types";
 
 
 export function useGetUserProfile() {
@@ -24,7 +24,6 @@ export function useGetUserProfile() {
       if (!token) {
         throw new Error("Not authenticated");
       }
-
       const response = await fetchProfileApi(token);
       setProfile(response.data)
       setMessage(response.message);

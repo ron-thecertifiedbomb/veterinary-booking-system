@@ -1,7 +1,6 @@
 import React from 'react';
-import { Platform, Pressable, Text, PressableProps, useWindowDimensions } from 'react-native';
+import { Platform, Pressable, PressableProps, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
-// Import Feather for a hyper-clean, ultra-thin line weight icon profile
 import { Feather } from '@expo/vector-icons'; 
 
 interface BackButtonProps extends PressableProps {
@@ -22,32 +21,26 @@ export const BackButton: React.FC<BackButtonProps> = ({
     router.replace(targetRoute as any);
   };
 
-  const containerPadding = isMobileViewport ? "px-5 py-3" : "px-4 py-2";
-  const containerMargin = isMobileViewport ? "mb-8 mt-2" : "mb-5 mt-0";
-  const activeScale = isMobileViewport ? 0.96 : 0.99;
+  // Minimal spacing layout optimized for pure icon taps
+  const containerMargin = isMobileViewport ? "mb-6 mt-2 ml-1" : "mb-4 mt-0 ml-0";
+  const activeScale = isMobileViewport ? 0.90 : 0.95; // More expressive click scale for the icon
 
   return (
     <Pressable
       onPress={handlePress}
       style={({ pressed }) => ({
-        opacity: pressed ? 0.8 : 1,
+        opacity: pressed ? 0.5 : 1, // High contrast opacity dip on press
         transform: [{ scale: pressed ? activeScale : 1 }],
       })}
-      className={`self-start flex-row items-center bg-white dark:bg-black border border-black dark:border-white rounded-full ${containerPadding} ${containerMargin}`}
+      className={`self-start p-2 rounded-full justify-center items-center ${containerMargin}`}
+      hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }} // Expands tap target size for easier use
       {...props}
     >
-      {/* ─── COOL VECTOR LINE ICON ─── */}
       <Feather 
         name="arrow-left" 
-        size={14} 
-        // Directly references your strict high-contrast dark/light layout context parameters
-        className="text-black dark:text-white mr-1.5" 
+        size={22} // Bumped size up slightly to maintain presence without label text
+        className="text-zinc-900 dark:text-zinc-50" 
       />
-
-      {/* ─── PREMIUM MICRO-LABEL ─── */}
-      <Text className="text-black dark:text-white text-[9px] font-black tracking-[0.2em] uppercase">
-        Back
-      </Text>
     </Pressable>
   );
 };

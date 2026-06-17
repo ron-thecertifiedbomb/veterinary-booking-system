@@ -2,22 +2,24 @@ import Container from "@/components/common/Container/Container";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Loader from "@/components/common/Loader/Loader";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { useGetCustomerProfile } from "@/features/customer/hooks/useGetCustomerProfile";
+import { useGetUserProfile } from "@/features/users/hook/useGetUserProfile";
 import { showAlert } from "@/hooks/crossPlatformAlert";
+import { Feather } from "@expo/vector-icons"; // 1. Added clean icon family library
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
+import { ProfileCard } from "./ProfileCard";
 
 export default function Profile() {
   const router = useRouter();
   const { logout, isAuthenticated } = useAuth();
-  const { loading, profile, fetchCustomerProfile } = useGetCustomerProfile();
-
-  if (!isAuthenticated) return null;
+  const { loading, profile, fetchUserProfile } = useGetUserProfile();
 
   useEffect(() => {
-    fetchCustomerProfile();
-  }, []);
+    if (isAuthenticated) {
+      fetchUserProfile();
+    }
+  }, [isAuthenticated]);
 
   const handleLogout = async () => {
     try {
@@ -35,9 +37,9 @@ export default function Profile() {
     );
   };
 
-  if (loading) return <Loader fullScreen />;
+  if (loading) return <Loader />;
+  if (!isAuthenticated) return null;
 
-  // 1. Explicit platform check for mobile environments
   const isMobile = Platform.OS === "android" || Platform.OS === "ios";
 
   return (
@@ -45,92 +47,28 @@ export default function Profile() {
       {/* ─── TITLE HEADLINE ─── */}
       <HeaderSection title="My Profile" />
 
-      {/* ─── HERO CARD SECTION ─── */}
-      <View className="bg-white dark:bg-black p-6 rounded-3xl space-y-6 mb-4 border border-zinc-200 dark:border-zinc-800">
-        
-        {/* Core Identity row block */}
-        <View className="flex-row justify-between items-start pb-4 border-b border-zinc-200 dark:border-zinc-800">
-          <View className="flex-1 mr-4">
-            <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-1">
-              Account Holder
-            </Text>
-            <Text className="text-2xl font-black tracking-tighter text-black dark:text-white uppercase">
-              {profile?.name || "User"}
-            </Text>
-            <Text className="text-xs font-mono font-bold tracking-tight text-zinc-500 dark:text-zinc-400 mt-1">
-              {profile?.email || "—"}
-            </Text>
-          </View>
+      {/* ─── FLEXIBLE PROFILE HERO CARD ─── */}
+      <ProfileCard profile={profile} onEditPress={handleEditRedirect} />
 
-          {/* Stark monochrome role pillar badge */}
-          <View className="bg-transparent px-3 py-1 border border-black dark:border-white rounded-full">
-            <Text className="text-[9px] font-black tracking-widest uppercase text-black dark:text-white">
-              {profile?.role === "ADMIN" ? "ADMIN" : "OWNER"}
-            </Text>
-          </View>
-        </View>
-
-        {/* ─── ACCOUNT DATA LABELS ─── */}
-        <View className="space-y-4">
-          <View className="flex-row justify-between items-center py-1">
-            <View className="flex-1">
-              <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-1">
-                Contact Phone
-              </Text>
-              <Text className="text-sm font-bold text-black dark:text-white uppercase">
-                {profile?.phone || "NOT PROVIDED"}
-              </Text>
-            </View>
-            
-            <View className="w-[1px] h-8 bg-zinc-200 dark:bg-zinc-800 mx-6" />
-            
-            <View className="flex-1">
-              <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-1">
-                System Status
-              </Text>
-              <Text className="text-sm font-bold text-black dark:text-white uppercase">
-                VERIFIED
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* ─── INNER INTERACTIVE CONTROL ROW ─── */}
-        <View className="bg-zinc-100 dark:bg-zinc-900 rounded-2xl p-4 flex-row justify-between items-center">
-          <View className="flex-1 mr-4">
-            <Text className="text-[8px] font-black tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-1">
-              Profile Configurations
-            </Text>
-            <Text className="text-xs font-bold tracking-tight text-zinc-800 dark:text-zinc-200 uppercase">
-              Modify account info or phone credentials
-            </Text>
-          </View>
+      {/* ─── PREMIUM MINIMALIST LOGOUT TRIGGER ─── */}
+      {isMobile && (
+        <View className="w-full pt-4 items-center">
           <TouchableOpacity 
-            onPress={handleEditRedirect} 
-            activeOpacity={0.85}
-            className="bg-black dark:bg-white px-4 py-2 rounded-full"
+            onPress={handleLogout}
+            activeOpacity={0.7}
+            className="flex-row items-center  gap-2 justify-center space-x-2 py-3 px-6 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 active:bg-zinc-50 shadow-sm"
           >
-            <Text className="text-white dark:text-black text-[10px] font-black tracking-widest uppercase">
-              Edit
+            <Feather 
+              name="log-out" 
+              size={14} 
+              className="text-red-500 dark:text-red-400" 
+            />
+            <Text className="text-zinc-700 dark:text-zinc-300 text-xs font-bold tracking-[0.1em] uppercase">
+              Log Out 
             </Text>
           </TouchableOpacity>
         </View>
-
-      </View>
-
-      {/* ─── 2. MOBILE ONLY LOGOUT TRIGGER ─── */}
-      {isMobile && (
-        <TouchableOpacity 
-          onPress={handleLogout}
-          activeOpacity={0.9}
-          className="w-full bg-black dark:bg-white py-4 rounded-full items-center mt-2 border border-black dark:border-white"
-        >
-          <Text className="text-white dark:text-black text-xs font-black tracking-[0.2em] uppercase">
-            Log Out Account
-          </Text>
-        </TouchableOpacity>
       )}
-
     </Container>
   );
 }

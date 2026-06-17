@@ -1,9 +1,9 @@
 import { Text, View } from "react-native";
 
-export default function Users() {
+export default function PatientsScreen() {
     return (
         <View className="flex-1 items-center justify-center">
-            <Text>Users</Text>
+            <Text>Patients</Text>
         </View>
     );
 }

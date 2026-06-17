@@ -3,7 +3,8 @@ import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
 import { fetchProfileApi } from "../services/fetchCustomerProfile.api";
-import { userProfile } from "../types/customer.types";
+import { userProfile } from "@/features/users/types/types";
+
 
 export function useGetCustomerProfile() {
   

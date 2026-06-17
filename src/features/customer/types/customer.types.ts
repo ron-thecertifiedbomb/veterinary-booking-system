@@ -49,6 +49,7 @@ export type fetchCustomerProfileResponse = {
     updatedAt: string;
     customerProfile?: CustomerProfile;
     staffProfile?: StaffProfile;
+    adminProfile?: AdminProfile
   };
 };
 
