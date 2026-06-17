@@ -47,12 +47,19 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ profile, onEditPress }
           <Text className="text-[10px] font-black tracking-[0.15em] uppercase text-zinc-400 dark:text-zinc-500 mb-1.5">
             Account Holder
           </Text>
-          <Text className="text-xl font-black tracking-tighter text-zinc-900 dark:text-zinc-50 uppercase leading-6" numberOfLines={2}>
+          <Text className="text-lg lg:text-xl font-black tracking-tighter text-zinc-900 dark:text-zinc-50 uppercase leading-6" numberOfLines={2}>
             {name}
+            </Text>
+            <>
+            <Text className="text-[10px] font-black tracking-[0.15em] uppercase text-zinc-400 dark:text-zinc-500 mb-1">
+            Contact Phone
           </Text>
           <Text className="text-xs font-mono font-bold tracking-tight text-zinc-500 dark:text-zinc-400 mt-1.5" numberOfLines={1}>
             {email}
           </Text>
+          </>
+   
+       
         </View>
 
         {/* Stark monochrome role pillar badge */}

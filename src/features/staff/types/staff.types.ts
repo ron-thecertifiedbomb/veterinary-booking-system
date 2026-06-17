@@ -1,3 +1,4 @@
+import { Customer, User } from "@/features/admin/types/admin.types";
 import { AuthenticatedUser } from "@/features/auth/types/auth.types";
 
 export type StaffPosition = "VETERINARIAN" | "VET_TECHNICIAN" | "GROOMER";
@@ -41,27 +42,23 @@ export type DashboardStatsResponse = {
   };
 };
 
+export type AssignedPatient = {
+  id: string;
+  petName: string;
+  species: string;
+  breed: string;
+  weight: number;
+  createdAt: string;
+  updatedAt: string;
+  customerId: string;
+  customer: Customer;
+  appointmentIds: string[];
+};
 
-type ISODateString = string;
+
+export type ISODateString = string;
 
 export type AssignedPatientsResponse = {
     message: string;
-    data: {
-        id: string;
-        petName: string;
-        species: string;
-        breed: string;
-        weight: number;
-        createdAt: ISODateString;
-        updatedAt: ISODateString;
-        customerId: string;
-        customer: {
-            user: {
-                id: string;
-                name: string;
-                email: string;
-                phone: string;
-            };
-        };
-    }[];
+    data:AssignedPatient[];
 };

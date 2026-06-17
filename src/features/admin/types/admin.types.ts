@@ -109,7 +109,6 @@ export interface Pet {
 }
 
 export interface Customer {
-  id: string;
   user: User;
 }
 
@@ -117,6 +116,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  phone: string;
 }
 
 export interface StaffDoctor {

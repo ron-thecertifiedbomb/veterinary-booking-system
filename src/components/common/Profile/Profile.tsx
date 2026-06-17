@@ -43,7 +43,7 @@ export default function Profile() {
   const isMobile = Platform.OS === "android" || Platform.OS === "ios";
 
   return (
-    <Container>
+    <Container className="max-w-3xl w-full m-auto">
       {/* ─── TITLE HEADLINE ─── */}
       <HeaderSection title="My Profile" />
 

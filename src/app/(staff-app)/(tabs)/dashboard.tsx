@@ -71,7 +71,7 @@ export default function Home() {
           Clinical Dashboard
         </Text>
         <Text className="text-2xl font-black tracking-tighter text-zinc-950 dark:text-zinc-50 uppercase">
-          Welcome!
+          Welcome !
         </Text>
       </View>
 
@@ -89,7 +89,7 @@ export default function Home() {
           return (
             <View
               key={index}
-              className="w-[48%] p-4 bg-white dark:bg-zinc-900/30 border border-zinc-100 dark:border-zinc-900 rounded-3xl mb-4 shadow-sm justify-between min-h-[120px]"
+              className="w-[48%] p-4 bg-white dark:bg-zinc-900/30 border border-zinc-100 dark:border-zinc-900 rounded-3xl mb-4 shadow-sm justify-between min-h-[80px]"
             >
               {/* Top Row: Label and Contextual Icon Container */}
               <View className="flex-row justify-between items-start">
@@ -105,7 +105,7 @@ export default function Home() {
 
               {/* Bottom Row: Large Data Metric Display */}
               <View className="pt-4 flex-row items-baseline justify-between">
-                <Text className="text-3xl font-black tracking-tight text-zinc-950 dark:text-zinc-50">
+                <Text className="text-2xl font-black tracking-tight text-zinc-950 dark:text-zinc-50">
                   {card.value}
                 </Text>
                 <Text className="text-[9px] font-bold text-zinc-400 tracking-widest uppercase">
