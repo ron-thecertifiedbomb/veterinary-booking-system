@@ -171,7 +171,7 @@ export default function AdminDashboardScreen() {
           </View>
           <View className="flex-1">
             <Text className="text-zinc-900 dark:text-zinc-50 text-lg font-black tracking-tight uppercase leading-5">
-              {data.totalPets} Registered Patients
+              {data.totalPets} Registered Pets
             </Text>
             <Text className="text-zinc-400 dark:text-zinc-500 text-xs font-medium mt-0.5" numberOfLines={1}>
               Complete ecosystem medical dataset profiles
