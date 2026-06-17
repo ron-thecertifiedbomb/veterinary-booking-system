@@ -1,6 +1,4 @@
-import {
-  GetPetsResponse,
-} from "@/features/pet/pet.types";
+
 import { GetAllStaffResponse } from "@/features/staff/types/staff.types";
 import { api } from "@/utils/api/api.client";
 

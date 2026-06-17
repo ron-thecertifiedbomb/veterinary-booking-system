@@ -17,7 +17,7 @@ export default function HeaderSection({
     return (
         
 
-        <View className="w-full mb:0 lg:mb-8">
+        <View className="w-full mb:0 lg:mb-2">
                 <View>
                     <Text className="text-2xl lg:text-3xl font-bold tracking-tight text-text-primary">
                         {title}
