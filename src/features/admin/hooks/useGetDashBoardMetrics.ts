@@ -3,13 +3,14 @@ import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { logger } from "@/utils/logger/logger";
 import { useState, useCallback } from "react";
 import { getGetDashBoardMetricsApi } from "../services/getDashBoardMetrics.api";
-import { DashboardMetrics } from "../types/admin.types";
+import { DashboardMetricsData } from "../types/admin.types";
+
 
 
 export function useGetDashBoardMetrics() {
 
   const { token } = useAuth();
-  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+  const [metrics, setMetrics] = useState<DashboardMetricsData | null>(null);
   const [serverTime, setServerTime] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   

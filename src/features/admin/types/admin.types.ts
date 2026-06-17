@@ -43,13 +43,17 @@ export type Admin = {
 
 
 
-export type DashboardMetricsResponse = {
-  message: string;
-  data: DashboardMetrics;
-  serverTime: ServerTime;
+type UnbookedSlot = {
+  time: string;
+  display: string;
 };
 
-export type DashboardMetrics = {
+type ServerTime = {
+  iso: string;
+  local: string;
+};
+
+export type DashboardMetricsData = {
   todayAppointments: number;
   totalCustomers: number;
   totalStaff: number;
@@ -57,13 +61,15 @@ export type DashboardMetrics = {
   activeCustomers: number;
   activeStaff: number;
   totalPets: number;
+  todayUnbookedCount: number;
+  unbookedSlots: UnbookedSlot[];
 };
 
-export type ServerTime = {
-  iso: string;
-  local: string;
+export type DashboardMetricsResponse = {
+  message: string;
+  data: DashboardMetricsData;
+  serverTime: ServerTime;
 };
-
 
 
 export interface GetAllAppointmentsResponse {

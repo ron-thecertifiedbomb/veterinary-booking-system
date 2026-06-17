@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, RefreshControl, useWindowDimensions } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
 import Loader from '@/components/common/Loader/Loader';
-import { ServerTimeBanner } from '@/components/common/ServerTimeBanner/ServerTimeBanner'; 
-import { useAuth } from '@/features/auth/providers/AuthProvider';
+import { ServerTimeBanner } from '@/components/common/ServerTimeBanner/ServerTimeBanner';
 import { useGetDashBoardMetrics } from '@/features/admin/hooks/useGetDashBoardMetrics';
+import { useAuth } from '@/features/auth/providers/AuthProvider';
+import React, { useEffect } from 'react';
+import { RefreshControl, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
 const ICONS = {
   calendar: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
@@ -19,20 +19,12 @@ export default function AdminDashboardScreen() {
   const { width } = useWindowDimensions();
 
   useEffect(() => {
-    if (token) {
-      fetchMetrics();
-    }
-  }, [token]);
 
-  const data = metrics || {
-    todayAppointments: 0,
-    totalCustomers: 0,
-    totalStaff: 0,
-    activeUsers: 0,
-    activeCustomers: 0,
-    activeStaff: 0,
-    totalPets: 0,
-  };
+      fetchMetrics();
+
+  }, []);
+
+
 
   const onCardPress = (target: string) => {
     console.log(`Navigating directly to database entity segment: ${target}`);
@@ -66,7 +58,7 @@ export default function AdminDashboardScreen() {
               Today's Operations
             </Text>
             <Text className="text-3xl font-black tracking-tighter ">
-              {data.todayAppointments} SCHEDULES
+              {metrics?.todayAppointments} SCHEDULES
             </Text>
           </View>
           
@@ -79,23 +71,40 @@ export default function AdminDashboardScreen() {
       </TouchableOpacity>
 
       {/* ─── GRID TITLE LINE ─── */}
-      <View className="mb-3 px-1 flex-row justify-between items-center">
-        <Text className="text-[11px] font-black tracking-[0.15em] uppercase text-zinc-400 dark:text-zinc-500">
-          Metrics
-        </Text>
-        <View className="flex-row items-center bg-zinc-200/60 dark:bg-zinc-900 px-2.5 py-1 rounded-full">
-          <View className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-1.5" />
-          <Text className="text-[9px] font-extrabold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-            {data.activeUsers} / {data.totalCustomers + data.totalStaff} Live
-          </Text>
-        </View>
-      </View>
+      <View className="flex-row items-center space-x-2">
+  {/* Live User Count Indicator Pill */}
+  <View className="flex-row items-center bg-zinc-200/60 dark:bg-zinc-900 px-2.5 py-1 rounded-full">
+    <View className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-1" />
+    <Text className="text-[9px] font-extrabold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+      {metrics?.activeUsers ?? 0} / {(metrics?.totalCustomers ?? 0) + (metrics?.totalStaff ?? 0)} Live
+    </Text>
+  </View>
+
+  {/* New: Unbooked Remaining Slot Pill */}
+  <View className="flex-row items-center bg-zinc-200/60 dark:bg-zinc-900 px-2.5 py-1 rounded-full">
+    <View className={`h-1.5 w-1.5 rounded-full mr-1 ${metrics?.todayUnbookedCount ? 'bg-amber-500' : 'bg-zinc-400'}`} />
+    <Text className="text-[9px] font-extrabold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+      {metrics?.todayUnbookedCount ?? 0} Vacant
+    </Text>
+  </View>
+</View>
+
 
       {/* ─── FIXED DENSITY METRIC GRID ─── */}
       {/* Changed to flex-wrap with a explicit layout gap percentage alignment */}
       <View className="flex-row flex-wrap justify-between items-start mb-5">
         
         {/* Card 1: Customers */}
+
+
+    
+    
+   
+      </View>
+      {/* ─── FIXED DENSITY METRIC GRID ─── */}
+      <View className="flex-row flex-wrap justify-between items-start mb-5">
+        
+        {/* Card 1: Total Customers */}
         <TouchableOpacity 
           activeOpacity={0.85}
           onPress={() => onCardPress('customers')}
@@ -111,14 +120,13 @@ export default function AdminDashboardScreen() {
               </Svg>
             </View>
           </View>
-
           <View className="mt-4">
             <Text className="text-3xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
-              {data.totalCustomers}
+              {metrics?.totalCustomers ?? 0}
             </Text>
             <View className="flex-row items-center mt-1">
               <Text className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-tight">
-                {data.activeCustomers} Active Profiles
+                {metrics?.activeCustomers ?? 0} Active Profiles
               </Text>
             </View>
           </View>
@@ -140,44 +148,71 @@ export default function AdminDashboardScreen() {
               </Svg>
             </View>
           </View>
-
           <View className="mt-4">
             <Text className="text-3xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
-              {data.totalStaff}
+              {metrics?.totalStaff ?? 0}
             </Text>
             <View className="flex-row items-center mt-1">
               <Text className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-tight">
-                {data.activeStaff} On Duty Today
+                {metrics?.activeStaff ?? 0} On Duty Today
+              </Text>
+            </View>
+          </View> 
+        </TouchableOpacity>
+
+        {/* Card 3: Unbooked Open Slots */}
+        <TouchableOpacity 
+          activeOpacity={0.85}
+          onPress={() => onCardPress('appointments')}
+          className="w-[48.5%] bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/80 shadow-xs justify-between min-h-[140px] mb-4"
+        >
+          <View className="flex-row justify-between items-start">
+            <Text className="text-[10px] font-black tracking-wider uppercase text-zinc-400 dark:text-zinc-500 flex-1 mr-1" numberOfLines={2}>
+              Vacant Hours
+            </Text>
+            <View className="p-1.5 rounded-xl bg-zinc-50 dark:bg-zinc-800">
+              <Svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-zinc-500 dark:text-zinc-400">
+                <Path d={ICONS.calendar} />
+              </Svg>
+            </View>
+          </View>
+          <View className="mt-4">
+            <Text className="text-3xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
+              {metrics?.todayUnbookedCount ?? 0}
+            </Text>
+            <View className="flex-row items-center mt-1">
+              <Text className="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-tight">
+                Slots Available Today
               </Text>
             </View>
           </View>
         </TouchableOpacity>
-
-        {/* Card 3: Registered Pets */}
+        {/* Card 4: Registered Pets */}
         <TouchableOpacity 
           activeOpacity={0.85}
           onPress={() => onCardPress('pets')}
           className="w-[48.5%] bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/80 shadow-xs justify-between min-h-[140px] mb-4"
         >
+          {/* Header Row: Title & Vector Graphic Icon Box */}
           <View className="flex-row justify-between items-start">
             <Text className="text-[10px] font-black tracking-wider uppercase text-zinc-400 dark:text-zinc-500 flex-1 mr-1" numberOfLines={2}>
-              Pets
+              Registered Pets
             </Text>
             <View className="p-1.5 rounded-xl bg-zinc-50 dark:bg-zinc-800">
               <Svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-zinc-500 dark:text-zinc-400">
-                {/* Fixed internal icon reference map pointer to paw asset logo */}
                 <Path d={ICONS.paw} />
               </Svg>
             </View>
           </View>
 
+          {/* Metric Counter & Sub-Label Status Indicator */}
           <View className="mt-4">
             <Text className="text-3xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
-              {data.totalPets}
+              {metrics?.totalPets ?? 0}
             </Text>
             <View className="flex-row items-center mt-1">
               <Text className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-tight">
-                Registered Pets
+               Total Pets
               </Text>
             </View>
           </View>
@@ -186,6 +221,8 @@ export default function AdminDashboardScreen() {
         {/* Spacer layout element to balance out odd grids nicely if needed */}
         <View className="w-[48.5%] h-0" />
       </View>
+      
     </ScrollView>
   );
 }
+
