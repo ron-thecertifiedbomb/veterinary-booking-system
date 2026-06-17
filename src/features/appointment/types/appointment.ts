@@ -87,5 +87,5 @@ export interface ServerTime {
 export interface GetMyAppointmentHistoryResponse {
   message: string;
   data: Appointment[];
-  serverTime: ServerTime;
+
 }

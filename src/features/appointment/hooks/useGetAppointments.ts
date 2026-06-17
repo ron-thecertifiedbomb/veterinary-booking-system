@@ -1,11 +1,13 @@
 // ..\src\features\users\hook\useGetUserAppointemts.ts
 
+import { Appointment } from "@/features/admin/types/admin.types";
 import { getAppointmentsApi, GetAppointmentsFilters } from "@/features/appointment/services/getAppointments.api";
-import { Appointment, GetMyAppointmentHistoryResponse } from "@/features/appointment/types/appointment";
+
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { todayStr } from "@/utils/appointments/formatter";
 import { logger } from "@/utils/logger/logger";
 import { useState, useCallback } from "react";
+
 
 export function useGetAppointments() {
   const { token } = useAuth();

@@ -3,6 +3,7 @@ import { adminSchema } from "@/features/admin/schemas/adminSchema";
 import { z } from "zod";
 
 import { staffSchema } from "@/features/admin/schemas/staffSchema";
+import { AppointmentStatus, ServiceType } from "@/features/appointment/types/appointment";
 
 
 
@@ -62,3 +63,70 @@ export type ServerTime = {
   iso: string;
   local: string;
 };
+
+
+
+export interface GetAllAppointmentsResponse {
+  message: string;
+  data: {
+    appointments: Appointment[];
+    staffDoctors: StaffDoctor[];
+  };
+}
+
+export interface Appointment {
+  id: string;
+  bookingCode: string;
+  serviceType: ServiceType;
+  appointmentDate: string;
+  status: AppointmentStatus;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+  customerId: string;
+  petId: string;
+  staffId: string | null;
+  pet: Pet;
+  customer: Customer;
+  staff: Staff | null;
+}
+
+export interface Pet {
+  id: string;
+  petName: string;
+  species: string;
+  breed: string;
+  weight: number;
+  createdAt: string;
+  updatedAt: string;
+  customerId: string;
+}
+
+export interface Customer {
+  id: string;
+  user: User;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface StaffDoctor {
+  id: string;
+  name: string;
+  staffProfile: StaffProfile;
+}
+
+export interface StaffProfile {
+  id: string;
+  position: 'VETERINARIAN' | string;
+  specialization: string;
+}
+
+export interface Staff {
+  id: string;
+  name: string;
+  staffProfile?: StaffProfile;
+}

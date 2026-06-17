@@ -1,4 +1,5 @@
-import { Appointment } from "@/features/appointment/types/appointment";
+
+import { Appointment } from "@/features/admin/types/admin.types";
 import { formatAppointmentSchedule, formatBookingCode } from "@/utils/appointments/formatter";
 import { router } from "expo-router";
 import React from "react";

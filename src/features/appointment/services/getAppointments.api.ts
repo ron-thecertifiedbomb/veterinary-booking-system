@@ -1,5 +1,6 @@
 // ..\src\features\appointment\services\slots.ts
 
+import { GetAllAppointmentsResponse } from "@/features/admin/types/admin.types";
 import { Appointment, GetMyAppointmentHistoryResponse } from "@/features/appointment/types/appointment";
 import { UserRole } from "@/features/auth/types/auth.user";
 import { api } from "@/utils/api/api.client";
@@ -16,7 +17,7 @@ export async function getAppointmentsApi(
   token: string, 
   filters?: GetAppointmentsFilters,
   appointmentId?: string,
-  role?: UserRole
+  activeRole?: string
 ) {
   // 1. If an ID is passed, target the specific item endpoint directly
   if (appointmentId) {
@@ -25,8 +26,20 @@ export async function getAppointmentsApi(
       token,
     });
   }
+  let roleType;
 
-  const roleType = role === "STAFF" ? "staff" : "customer" 
+  switch (activeRole) {
+    case "ADMIN":
+      roleType = "admin";
+      break;
+    case "STAFF":
+      roleType = "staff";
+      break;
+    case "CUSTOMER":
+    default:
+      roleType = "customer";
+      break;
+  }
   
 
   const cleanFilters: Record<string, string> = {};
@@ -40,7 +53,7 @@ export async function getAppointmentsApi(
     ? "?" + new URLSearchParams(cleanFilters).toString()
     : "";
 
-  return await api<GetMyAppointmentHistoryResponse>(`/api/vet/${roleType}/appointments${queryParams}`, {
+  return await api<GetMyAppointmentHistoryResponse | GetAllAppointmentsResponse>(`/api/vet/${roleType}/appointments${queryParams}`, {
     method: "GET",
     token,
   });

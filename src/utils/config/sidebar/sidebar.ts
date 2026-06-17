@@ -1,18 +1,18 @@
 // ..\src\utils\config\sidebar\sidebar.ts
 
 export const adminNav = [
-  { label: "Dashboard", href: "/(admin-web)/dashboard" },
+  { label: "Dashboard", href: "/admin/dashboard" },
 
-  { label: "Staff Management", href: "/(admin-web)/staff" },
-  { label: "Customer Management", href: "/(admin-web)/customers" },
+  { label: "Staff Management", href: "/admin/staff" },
+  { label: "Customer Management", href: "/admin/customers" },
 
-  { label: "Appointments", href: "/(admin-web)/appointments" },
+  { label: "Appointments", href: "/admin/appointments" },
   { label: "Patients", href: "/(admin-web)/patients" },
 
   { label: "Reports", href: "/(admin-web)/reports" },
   { label: "Analytics", href: "/(admin-web)/analytics" },
 
-  { label: "Settings", href: "/(admin-web)/profile" },
+  { label: "Settings", href: "/admin/profile" },
 ];
 
 export const customerNav = [

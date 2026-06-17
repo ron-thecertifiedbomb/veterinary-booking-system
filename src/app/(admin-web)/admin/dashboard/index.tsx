@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl, useWindowDimensions } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import Loader from '@/components/common/Loader/Loader';
-import { ServerTimeBanner } from '@/components/common/ServerTimeBanner/ServerTimeBanner'; // Imported here
+import { ServerTimeBanner } from '@/components/common/ServerTimeBanner/ServerTimeBanner'; 
 import { useAuth } from '@/features/auth/providers/AuthProvider';
 import { useGetDashBoardMetrics } from '@/features/admin/hooks/useGetDashBoardMetrics';
 
@@ -44,7 +44,7 @@ export default function AdminDashboardScreen() {
 
   return (
     <ScrollView 
-      className="flex-1 max-w-3xl mx-auto w-full" 
+      className="flex-1 max-w-3xl mx-auto w-full " 
       contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 20, paddingBottom: 40 }}
       showsVerticalScrollIndicator={false}
       refreshControl={
@@ -62,13 +62,12 @@ export default function AdminDashboardScreen() {
       >
         <View className="flex-row justify-between items-start z-10">
           <View className="flex-1 mr-4">
-            <Text className="text-[10px] font-black tracking-[0.2em] uppercase  mb-1">
+            <Text className="text-[10px] font-black tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-1">
               Today's Operations
             </Text>
-            <Text className="text-3xl font-black tracking-tighter">
+            <Text className="text-3xl font-black tracking-tighter ">
               {data.todayAppointments} SCHEDULES
             </Text>
-      
           </View>
           
           <View className="p-3 rounded-2xl bg-zinc-800 dark:bg-zinc-200">
@@ -82,22 +81,25 @@ export default function AdminDashboardScreen() {
       {/* ─── GRID TITLE LINE ─── */}
       <View className="mb-3 px-1 flex-row justify-between items-center">
         <Text className="text-[11px] font-black tracking-[0.15em] uppercase text-zinc-400 dark:text-zinc-500">
-     Metrics
+          Metrics
         </Text>
-        <View className="flex-row items-center space-x-1.5 bg-zinc-200/60 dark:bg-zinc-900 px-2.5 py-1 rounded-full">
-          <View className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+        <View className="flex-row items-center bg-zinc-200/60 dark:bg-zinc-900 px-2.5 py-1 rounded-full">
+          <View className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-1.5" />
           <Text className="text-[9px] font-extrabold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
             {data.activeUsers} / {data.totalCustomers + data.totalStaff} Live
           </Text>
         </View>
       </View>
 
-      {/* ─── HIGH DENSITY USER ACCOUNTS METRIC GRID ─── */}
-      <View className="flex-row justify-between mb-5">
+      {/* ─── FIXED DENSITY METRIC GRID ─── */}
+      {/* Changed to flex-wrap with a explicit layout gap percentage alignment */}
+      <View className="flex-row flex-wrap justify-between items-start mb-5">
+        
+        {/* Card 1: Customers */}
         <TouchableOpacity 
           activeOpacity={0.85}
           onPress={() => onCardPress('customers')}
-          className="w-[48.5%] bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/80 shadow-xs justify-between min-h-[140px]"
+          className="w-[48.5%] bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/80 shadow-xs justify-between min-h-[140px] mb-4"
         >
           <View className="flex-row justify-between items-start">
             <Text className="text-[10px] font-black tracking-wider uppercase text-zinc-400 dark:text-zinc-500 flex-1 mr-1" numberOfLines={2}>
@@ -122,10 +124,11 @@ export default function AdminDashboardScreen() {
           </View>
         </TouchableOpacity>
 
+        {/* Card 2: Clinical Staff */}
         <TouchableOpacity 
           activeOpacity={0.85}
           onPress={() => onCardPress('staff')}
-          className="w-[48.5%] bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/80 shadow-xs justify-between min-h-[140px]"
+          className="w-[48.5%] bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/80 shadow-xs justify-between min-h-[140px] mb-4"
         >
           <View className="flex-row justify-between items-start">
             <Text className="text-[10px] font-black tracking-wider uppercase text-zinc-400 dark:text-zinc-500 flex-1 mr-1" numberOfLines={2}>
@@ -149,40 +152,40 @@ export default function AdminDashboardScreen() {
             </View>
           </View>
         </TouchableOpacity>
-      </View>
 
-      {/* ─── FOOTPRINT LAYER: CLINIC RECORD HIGHLIGHT ─── */}
-      <View className="mb-2 px-1">
-        <Text className="text-[11px] font-black tracking-[0.15em] uppercase text-zinc-400 dark:text-zinc-500 mb-3">
-          Clinic Capacity
-        </Text>
-      </View>
-
-      <TouchableOpacity
-        activeOpacity={0.85}
-        onPress={() => onCardPress('pets')}
-        className="w-full bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/80 p-5 rounded-3xl shadow-xs flex-row items-center justify-between"
-      >
-        <View className="flex-row items-center flex-1 mr-4">
-          <View className="p-3 rounded-2xl bg-zinc-100 dark:bg-zinc-800 mr-4">
-            <Svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-zinc-900 dark:text-zinc-100">
-              <Path d={ICONS.paw} />
-            </Svg>
-          </View>
-          <View className="flex-1">
-            <Text className="text-zinc-900 dark:text-zinc-50 text-lg font-black tracking-tight uppercase leading-5">
-              {data.totalPets} Registered Pets
+        {/* Card 3: Registered Pets */}
+        <TouchableOpacity 
+          activeOpacity={0.85}
+          onPress={() => onCardPress('pets')}
+          className="w-[48.5%] bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/80 shadow-xs justify-between min-h-[140px] mb-4"
+        >
+          <View className="flex-row justify-between items-start">
+            <Text className="text-[10px] font-black tracking-wider uppercase text-zinc-400 dark:text-zinc-500 flex-1 mr-1" numberOfLines={2}>
+              Pets
             </Text>
-            <Text className="text-zinc-400 dark:text-zinc-500 text-xs font-medium mt-0.5" numberOfLines={1}>
-              Complete ecosystem medical dataset profiles
-            </Text>
+            <View className="p-1.5 rounded-xl bg-zinc-50 dark:bg-zinc-800">
+              <Svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-zinc-500 dark:text-zinc-400">
+                {/* Fixed internal icon reference map pointer to paw asset logo */}
+                <Path d={ICONS.paw} />
+              </Svg>
+            </View>
           </View>
-        </View>
 
-        <Svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-300 dark:text-zinc-700">
-          <Path d="M9 5l7 7-7 7" />
-        </Svg>
-      </TouchableOpacity>
+          <View className="mt-4">
+            <Text className="text-3xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
+              {data.totalPets}
+            </Text>
+            <View className="flex-row items-center mt-1">
+              <Text className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-tight">
+                Registered Pets
+              </Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+
+        {/* Spacer layout element to balance out odd grids nicely if needed */}
+        <View className="w-[48.5%] h-0" />
+      </View>
     </ScrollView>
   );
 }

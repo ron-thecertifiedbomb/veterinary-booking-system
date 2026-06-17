@@ -19,8 +19,8 @@ type PlatformRoutes = {
 // ==========================
 export const routes = {
   admin: {
-    web: "/(admin-web)/dashboard/",
-    app: "/(admin-web)/dashboard/",
+    web: "/admin/dashboard/",
+    app: "/admin/dashboard/",
   },
   staff: {
     web: "/(staff-app)/(tabs)/dashboard/",
