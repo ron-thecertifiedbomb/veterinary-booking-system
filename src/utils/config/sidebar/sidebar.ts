@@ -12,7 +12,7 @@ export const adminNav = [
   { label: "Reports", href: "/(admin-web)/reports" },
   { label: "Analytics", href: "/(admin-web)/analytics" },
 
-  { label: "Settings", href: "/(admin-web)/settings" },
+  { label: "Settings", href: "/(admin-web)/profile" },
 ];
 
 export const customerNav = [

@@ -17,6 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 type ModalType = "staff" | "admin" | null;
 
 export default function AdminWebLayout() {
+    
     const { user, loading, isAuthenticated } = useAuth();
     
         const { addAdmin, loading: adminLoading } = useAddAdmin();

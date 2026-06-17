@@ -19,12 +19,12 @@ type PlatformRoutes = {
 // ==========================
 export const routes = {
   admin: {
-    web: "/(admin-web)/dashboard",
-    app: "/(admin-app)/dashboard",
+    web: "/(admin-web)/dashboard/",
+    app: "/(admin-web)/dashboard/",
   },
   staff: {
-    web: "/(staff-web)/(tabs)/dashboard",
-    app: "/(staff-app)/(tabs)/dashboard",
+    web: "/(staff-app)/(tabs)/dashboard/",
+    app: "/(staff-app)/(tabs)/dashboard/",
   },
   customer: {
     web: "/(web)/home",

@@ -39,3 +39,26 @@ export type Admin = {
   updatedAt: string;
   adminProfile: AdminProfile;
 };
+
+
+
+export type DashboardMetricsResponse = {
+  message: string;
+  data: DashboardMetrics;
+  serverTime: ServerTime;
+};
+
+export type DashboardMetrics = {
+  todayAppointments: number;
+  totalCustomers: number;
+  totalStaff: number;
+  activeUsers: number;
+  activeCustomers: number;
+  activeStaff: number;
+  totalPets: number;
+};
+
+export type ServerTime = {
+  iso: string;
+  local: string;
+};
