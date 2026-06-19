@@ -33,7 +33,7 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
   };
 
   return (
-    <View className="bg-white p-2 rounded-3xl space-y-6 border border-zinc-200">
+    <View className="bg-white p-6 rounded-3xl space-y-6 border border-zinc-200">
       
       <View className="flex-row justify-between items-center pb-4 border-b border-zinc-200">
         <View>
