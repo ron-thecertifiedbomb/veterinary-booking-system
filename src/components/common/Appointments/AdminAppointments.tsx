@@ -22,8 +22,6 @@ export default function AdminAppointments() {
 
     const [activePicker, setActivePicker] = useState<"from" | "to" | null>(null);
   
-    // 2. REMOVED: Redundant local useEffect hook that triggered infinite/duplicate API refetches.
-    // The internal useGetAllAppointments hook already handles automatic executions on filter changes.
 
     if (loading && appointments.length === 0) {
         return <Loader fullScreen />;
