@@ -9,16 +9,20 @@ import { useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
 import { View } from "react-native";
 
-export default function AppointmentScreen() {
+export default function AdminAppointmentDetailedScreen() {
     const { token } = useAuth(); 
     const { loading, singleAppointment, fetchAppointments } = useGetAppointments();
-    const { appointmentId } = useLocalSearchParams<{ appointmentId?: string }>();
-console.log('id', appointmentId)
+    const { bookingCode } = useLocalSearchParams<{ bookingCode?: string }>();
+    
+    console.log('booking', bookingCode);
+
     useEffect(() => {
-        if (token) {
-            fetchAppointments({ appointmentId }); 
-        }
-    }, [token, appointmentId]); 
+        // Guard clause: stop execution if either required value is missing
+        if (!bookingCode || !token) return;
+
+        // FIX: Pass undefined for appointmentId so bookingCode hits the 2nd parameter slot
+        fetchAppointments({ bookingCode }); 
+    }, [token, bookingCode, fetchAppointments]); // Added fetchAppointments to dependency array
 
     if (loading && !singleAppointment) {
         return <Loader fullScreen />;
@@ -26,13 +30,11 @@ console.log('id', appointmentId)
 
     return (
         <Container>
-                    <BackButton 
-                        webRoute="/(web)/appointments" 
-                        appRoute="(app)/(tabs)/appointments" 
-                        className="mb-4 p-1" // Strip extra margins to align cleanly with text
-                    />
-                <AppointmentDetailCard appointment={singleAppointment} />
-       
+            <BackButton 
+                webRoute="/admin/appointments" 
+                className="mb-4 p-1" 
+            />
+            <AppointmentDetailCard appointment={singleAppointment} />
         </Container>
     );
 }
