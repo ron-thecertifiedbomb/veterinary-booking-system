@@ -80,3 +80,13 @@ export interface GetMyAppointmentHistoryResponse {
   data: Appointment[];
 
 }
+
+// Add these declarations into your slots type folder definitions block
+export interface StaffDropdownItem {
+  value: string;         // Maps directly to the target User ID
+  label: string;         // Pre-formatted as: "Dr. Name (Specialization)"
+  profileId: string | null;
+  position: string | null;
+  specialization: string | null;
+  isAvailable: boolean;  // Always true because busy records are filtered out on the backend
+}
