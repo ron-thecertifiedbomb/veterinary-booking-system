@@ -104,7 +104,10 @@ export default function AdminAppointments() {
                             )
                         }
                         renderItem={({ item }) => (
-                            <AppointmentCard appointments={item} />
+                            <AppointmentCard 
+                            appointments={item} 
+                            routerPath={`/admin/appointment/${item.bookingCode}`} 
+                          />
                         )}
                     />
                 </View>

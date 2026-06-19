@@ -84,7 +84,7 @@ export default function Appointments() {
                 <View className="flex-1">
                     <FlatList
                         data={appointments}
-                        keyExtractor={(item) => item.bookingCode}
+                        keyExtractor={(item) => item.id}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{
                             paddingBottom: 32,
@@ -102,7 +102,10 @@ export default function Appointments() {
                             )
                         }
                         renderItem={({ item }) => (
-                            <AppointmentCard appointments={item} />
+                            <AppointmentCard 
+                            appointments={item} 
+                            routerPath={`/admin/appointment/${item.id}`} 
+                          />
                         )}
                     />
                 </View>

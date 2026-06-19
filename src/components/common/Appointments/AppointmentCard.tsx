@@ -1,22 +1,21 @@
-
-
 import { Appointment } from "@/features/admin/types/admin.types";
-import { formatAppointmentSchedule, formatBookingCode } from "@/utils/appointments/formatter";
-import { router } from "expo-router";
+import { formatAppointmentSchedule } from "@/utils/appointments/formatter";
+import { Href, router } from "expo-router";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 
 type AppointmentCardProps = {
     appointments: Appointment;
+    routerPath: Href<string>; // Allows dynamic paths while keeping Expo Router type safety
 };
 
-export default function AppointmentCard({ appointments }: AppointmentCardProps) {
+export default function AppointmentCard({ appointments, routerPath }: AppointmentCardProps) {
 
     const hasStatus = appointments.status === "BOOKED" || appointments.status === "COMPLETED";
 
     return (
         <Pressable
-            onPress={() => router.push(`/appointments/${appointments.id}`)}
+            onPress={() => router.push(routerPath)}
             style={({ pressed }) => ({
                 opacity: pressed ? 0.85 : 1,
                 transform: [{ scale: pressed ? 0.99 : 1 }],
