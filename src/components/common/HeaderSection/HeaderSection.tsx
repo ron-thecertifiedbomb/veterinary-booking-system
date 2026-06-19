@@ -15,9 +15,8 @@ export default function HeaderSection({
 
 }: Props) {
     return (
-        
-
-        <View className="w-full mb-0 lg:mb-4">
+    
+        <View className="w-full mb-4">
                 <View>
                     <Text className="text-xl lg:text-3xl font-bold tracking-tight text-text-primary">
                         {title}
