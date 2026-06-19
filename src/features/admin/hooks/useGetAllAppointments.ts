@@ -1,16 +1,17 @@
-import { getAppointmentsApi, GetAppointmentsFilters } from "@/features/appointment/services/getAppointments.api";
+// ..\src\features\admin\hooks\useGetAllAppointments.ts
 
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { todayStr } from "@/utils/appointments/formatter";
 import { logger } from "@/utils/logger/logger";
 import { useState, useCallback, useEffect } from "react";
-import { GetAllAppointmentsResponse } from "../types/admin.types";
 import { Appointment } from "@/features/appointment/types/appointment";
+import { getAppointmentsApi, GetAppointmentsFilters } from "@/features/appointment/services/getAppointments.api";
 
 export interface UseGetAllAppointmentsProps {
   initialFilters?: Partial<GetAppointmentsFilters>;
   role?: string; 
 }
+
 export function useGetAllAppointments({ initialFilters, role: customRole }: UseGetAllAppointmentsProps = {}) {
   const { token, user } = useAuth();
 
@@ -36,7 +37,7 @@ export function useGetAllAppointments({ initialFilters, role: customRole }: UseG
 
   const fetchAllAppointments = useCallback(async () => {
     if (!token) {
-      logger.warn("fetchAppointments called without an authentication token");
+      logger.warn("fetchAllAppointments called without an authentication token");
       return;
     }
 
@@ -44,17 +45,28 @@ export function useGetAllAppointments({ initialFilters, role: customRole }: UseG
       setLoading(true);
       setError(null);
       
-      // Explicit parameters mapping filters, undefined placeholder, and the resolved active role context
-      const response = await getAppointmentsApi(token, filters, undefined, activeRole);
+      // FIX: Cleaned out single resource tracking parameters
+      const response = await getAppointmentsApi({
+        token,
+        filters,
+        role: activeRole,
+      });
       
-      // Type assertion mapping based on GetAllAppointmentsResponse payload structure
-      const resData = (response as GetAllAppointmentsResponse)?.data?.appointments;
-      
-      if (Array.isArray(resData)) {
-        setAppointments(resData);
-      } else {
-        setAppointments([]); 
+      const resData = (response as any).data;
+      let fetchedList: Appointment[] = [];
+
+      // FIX: Safe array extraction handlers matching your updated backend mapping models
+      if (Array.isArray(response)) {
+        fetchedList = response;
+      } else if (Array.isArray(resData)) {
+        fetchedList = resData;
+      } else if (resData?.data && Array.isArray(resData.data)) {
+        fetchedList = resData.data;
+      } else if (resData?.appointments && Array.isArray(resData.appointments)) {
+        fetchedList = resData.appointments;
       }
+      
+      setAppointments(fetchedList);
     } catch (err: any) {
       logger.error("Fetching appointments failed", err);
       setError(err instanceof Error ? err : new Error("Failed to fetch appointments"));

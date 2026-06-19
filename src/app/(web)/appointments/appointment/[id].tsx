@@ -1,24 +1,27 @@
 import { AppointmentDetailCard } from "@/components/common/Appointments/AppointmentDetailedCard";
 import { BackButton } from "@/components/common/BackButton/BackButton";
 import Container from "@/components/common/Container/Container";
-import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Loader from "@/components/common/Loader/Loader";
 import { useGetAppointments } from "@/features/appointment/hooks/useGetAppointments";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { useLocalSearchParams } from "expo-router"; 
 import { useEffect } from "react";
-import { View } from "react-native";
 
-export default function AppointmentScreen() {
+export default function AppointmentDetailedScreen() {
     const { token } = useAuth(); 
     const { loading, singleAppointment, fetchAppointments } = useGetAppointments();
-    const { appointmentId } = useLocalSearchParams<{ appointmentId?: string }>();
-console.log('id', appointmentId)
+    
+    // FIX: Read 'id' from the URL parameters and alias it to 'appointmentId'
+    const { id: appointmentId } = useLocalSearchParams<{ id?: string }>();
+
+    console.log('Resolved appointmentId:', appointmentId);
+
     useEffect(() => {
-        if (token) {
-            fetchAppointments({ appointmentId }); 
-        }
-    }, [token, appointmentId]); 
+        // Guard check: Exit early if the token or parameter is missing from the router state
+        if (!token || !appointmentId) return;
+
+        fetchAppointments({ appointmentId }); 
+    }, [token, appointmentId, fetchAppointments]); 
 
     if (loading && !singleAppointment) {
         return <Loader fullScreen />;
@@ -26,13 +29,12 @@ console.log('id', appointmentId)
 
     return (
         <Container>
-                    <BackButton 
-                        webRoute="/(web)/appointments" 
-                        appRoute="(app)/(tabs)/appointments" 
-                        className="mb-4 p-1" // Strip extra margins to align cleanly with text
-                    />
-                <AppointmentDetailCard appointment={singleAppointment} />
-       
+            <BackButton 
+                webRoute="(web)/appointments" 
+                appRoute="(app)/(tabs)/appointments" 
+                className="mb-4 p-1" 
+            />
+            <AppointmentDetailCard appointment={singleAppointment} />
         </Container>
     );
 }

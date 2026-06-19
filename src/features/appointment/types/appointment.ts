@@ -1,8 +1,9 @@
 // ..\src\features\appointment\types\appointment.ts
+import { AdminProfile } from "@/features/admin/types/admin.types";
 import { AuthenticatedUserResponse } from "@/features/auth/types/auth.types";
 import { CustomerProfile } from "@/features/customer/types/customer.types";
 import { Pet } from "@/features/pet/pet.types";
-import { Staff, StaffProfile } from "@/features/staff/types/staff.types";
+import { StaffProfile } from "@/features/staff/types/staff.types";
 
 export type AppointmentDependencies = {
   setLoading: (value: boolean) => void;
@@ -57,12 +58,10 @@ export interface Appointment {
   notes: string;
   createdAt: string;
   updatedAt: string;
-  customerId: string;
-  petId: string;
-  staffId: string | null;
   pet: Pet;
-  customer: CustomerProfile;
-  staff: StaffProfile | null;
+  customer?: CustomerProfile;
+  staff?: StaffProfile;
+  admin?: AdminProfile 
 }
 
 
@@ -83,7 +82,6 @@ export type AppointmentApiResponse = {
     bookedAt: string;
   };
 };
-
 
 export interface ServerTime {
   iso: string;

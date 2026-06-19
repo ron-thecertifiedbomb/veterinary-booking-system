@@ -1,5 +1,6 @@
 
-import { Appointment } from "@/features/admin/types/admin.types";
+
+import { Appointment } from "@/features/appointment/types/appointment";
 import { 
   formatAppointmentDateOnly, 
   formatAppointmentTimeOnly, 

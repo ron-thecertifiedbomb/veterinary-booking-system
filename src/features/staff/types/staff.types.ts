@@ -10,24 +10,13 @@ export interface GetAllStaffResponse {
 }
 
 export interface StaffProfile {
-  specialization: string;
+  id: string;
+  name: string;
   position: StaffPosition;
-  licenseNumber: string;
+  specialization: string;
+  licenseNumber?: string;
 }
 
-
-
-export type Staff = {
-  id: string;
-  email: string;
-  name: string;
-  phone: string;
-  role: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  staffProfile: StaffProfile;
-};
 
 export type DashboardStatsResponse = {
   message: string;

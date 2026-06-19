@@ -10,26 +10,27 @@ import { useEffect } from "react";
 import { View } from "react-native";
 
 export default function AdminAppointmentDetailedScreen() {
-    const { token } = useAuth(); 
+    const { token, user } = useAuth(); 
     const { loading, singleAppointment, fetchAppointments } = useGetAppointments();
     const { bookingCode } = useLocalSearchParams<{ bookingCode?: string }>();
+    const role = user?.role;
     
-    console.log('booking', bookingCode);
+console.log('role', role)
 
     useEffect(() => {
-        // Guard clause: stop execution if either required value is missing
-        if (!bookingCode || !token) return;
+        // Guard clause: stop execution if vital values or parameters are absent
+        if (!token || !role) return;
 
-        // FIX: Pass undefined for appointmentId so bookingCode hits the 2nd parameter slot
+        // FIX: Pass bookingCode directly inside the structured payload configuration object
         fetchAppointments({ bookingCode }); 
-    }, [token, bookingCode, fetchAppointments]); // Added fetchAppointments to dependency array
+    }, [token, bookingCode, role, fetchAppointments]); // FIX: Added missing role to the dependency array
 
     if (loading && !singleAppointment) {
         return <Loader fullScreen />;
     }
 
     return (
-        <Container>
+        <Container className="flex-1 max-w-3xl mx-auto w-full">
             <BackButton 
                 webRoute="/admin/appointments" 
                 className="mb-4 p-1" 

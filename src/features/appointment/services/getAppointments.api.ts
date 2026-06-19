@@ -10,44 +10,51 @@ export interface GetAppointmentsFilters {
   sortOrder?: "asc" | "desc";
 }
 
-// Maps uppercase activeRole strings to runtime endpoint route segments
+// Consolidated configuration payload with safe null and undefined bindings
+export interface GetAppointmentsPayload {
+  token: string;
+  filters?: GetAppointmentsFilters | null;
+  appointmentId?: string | null;
+  role?: string | null;
+  bookingCode?: string | null;
+}
+
 const ROLE_ROUTE_MAP: Record<string, string> = {
   ADMIN: "admin",
   STAFF: "staff",
   CUSTOMER: "customer",
 };
 
-export async function getAppointmentsApi(
-  token: string, 
-  filters?: GetAppointmentsFilters,
-  appointmentId?: string,
-  role?: string | null,
-  bookingCode?: string,
-) {
-  // 1. Resolve roleType early since multiple endpoints require it
+export async function getAppointmentsApi({
+  token,
+  filters,
+  appointmentId,
+  role,
+  bookingCode,
+}: GetAppointmentsPayload) {
+  
   const roleType = ROLE_ROUTE_MAP[role || ""] || "customer";
 
-  // 2. Specific resource lookups
-  if (appointmentId) {
-    return await api<Appointment>(`/api/vet/appointment/${appointmentId}`, {
+  // 1. Single resource lookups with absolute string validation guards
+  if (appointmentId && appointmentId !== "null" && appointmentId !== "undefined") {
+    return await api<Appointment>(`/api/vet/appointments/${appointmentId}`, {
       method: "GET",
       token,
     });
   }
 
-  if (bookingCode) {
-    // Dynamic roleType used here instead of hardcoded 'admin'
+  if (bookingCode && bookingCode !== "null" && bookingCode !== "undefined") {
     return await api<Appointment>(`/api/vet/admin/appointment/${bookingCode}`, {
       method: "GET",
       token,
     });
   }
   
-  // 3. Process query parameter filters
+  // 2. Process query parameter collection filters safely
   const cleanFilters: Record<string, string> = {};
   if (filters) {
     Object.entries(filters).forEach(([key, val]) => {
-      if (val !== undefined && val !== null) {
+      if (val !== undefined && val !== null && val !== "null" && val !== "undefined") {
         cleanFilters[key] = String(val);
       }
     });
@@ -57,7 +64,7 @@ export async function getAppointmentsApi(
     ? "?" + new URLSearchParams(cleanFilters).toString()
     : "";
 
-  // 4. Fetch full appointment collection
+  // 3. Fetch full collection array fallback path
   return await api<GetMyAppointmentHistoryResponse | GetAllAppointmentsResponse>(
     `/api/vet/${roleType}/appointments${queryParams}`, 
     {

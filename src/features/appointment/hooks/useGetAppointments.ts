@@ -1,10 +1,11 @@
-// ..\src\features\users\hook\useGetUserAppointemts.ts
+// ..\src\features\appointment\hooks\useGetAppointments.ts
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { todayStr } from "@/utils/appointments/formatter";
 import { logger } from "@/utils/logger/logger";
 import { useState, useCallback } from "react";
 import { Appointment } from "../types/appointment";
 import { getAppointmentsApi, GetAppointmentsFilters } from "../services/getAppointments.api";
+
 
 export interface FetchAppointmentsOptions {
   appointmentId?: string;
@@ -38,35 +39,37 @@ export function useGetAppointments() {
       setLoading(true);
       const isSingleLookup = !!appointmentId || !!bookingCode;
 
-      // FIX: Map options down into your exact positional function arguments
-      const response = await getAppointmentsApi(
+      // 1. Forward parameters inside a clean structured options object configuration payload
+      const response = await getAppointmentsApi({
         token,
-        filters,
+        // Bypass global list filter params during single lookups
+        filters: isSingleLookup ? undefined : filters,
         appointmentId,
         role,
-        bookingCode
-      );
+        bookingCode,
+      });
   
       if (response) {
         const resData = (response as any).data;
   
         if (isSingleLookup) {
+          // If response is already the wrapped format { message, data }, use data. Else fallback to response
           const detailedItem = resData !== undefined ? resData : response;
           setSingleAppointment(detailedItem as Appointment);
         } else {
           let fetchedList: Appointment[] = [];
-          if (Array.isArray(resData)) {
-            fetchedList = resData;
-          } else if (Array.isArray(response)) {
+          
+          // Fallback handlers to securely extract arrays from direct or wrapped data packets
+          if (Array.isArray(response)) {
             fetchedList = response;
+          } else if (Array.isArray(resData)) {
+            fetchedList = resData;
           } else if (resData?.data && Array.isArray(resData.data)) {
             fetchedList = resData.data;
-          } else if ((response as any).appointments && Array.isArray((response as any).appointments)) {
-            fetchedList = (response as any).appointments;
           }
   
           setAppointments(fetchedList);
-          setSingleAppointment(null);
+          setSingleAppointment(null); // Clear singular trackers upon list changes
         }
       }
     } catch (err: any) {

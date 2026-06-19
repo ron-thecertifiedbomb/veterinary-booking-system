@@ -104,7 +104,7 @@ export default function Appointments() {
                         renderItem={({ item }) => (
                             <AppointmentCard 
                             appointments={item} 
-                            routerPath={`/appointments/${item.id}`} 
+                            routerPath={`/appointments/appointment/${item.id}`} 
                           />
                         )}
                     />
