@@ -67,20 +67,7 @@ export interface Appointment {
 
 export type AppointmentApiResponse = {
   message: string;
-  data: {
-    id: string;
-    bookingCode: string;
-    customer: string;
-    pet: string;
-    serviceType: ServiceType;
-    notes: string;
-    status: AppointmentStatus;
-    appointmentDisplay: {
-      date: string;
-      time: string;
-    };
-    bookedAt: string;
-  };
+  data: Appointment[]
 };
 
 export interface ServerTime {

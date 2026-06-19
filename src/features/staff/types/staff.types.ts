@@ -11,6 +11,7 @@ export interface GetAllStaffResponse {
 
 export interface StaffProfile {
   id: string;
+  userId: string;
   name: string;
   position: StaffPosition;
   specialization: string;

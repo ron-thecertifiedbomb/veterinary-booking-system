@@ -26,7 +26,7 @@ export default function AppointmentCard({ appointments, routerPath }: Appointmen
             <View className="flex-row justify-between items-start mb-4 pr-6">
                 <View>
                     <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
-                   Schedule
+                   Appointment Schedule
                     </Text>
                     <Text className="text-sm font-black text-black uppercase">
                         {formatAppointmentSchedule(appointments.appointmentDate)} 
@@ -42,11 +42,14 @@ export default function AppointmentCard({ appointments, routerPath }: Appointmen
                 <Text className="text-base font-black tracking-tight text-black uppercase">
                     {appointments.pet?.petName || "Unknown Patient"}
                 </Text>
-                {appointments.pet?.species && (
-                    <Text className="text-xs text-zinc-500 font-medium mt-0.5">
-                        {appointments.pet.species} {appointments.pet.breed ? `/ ${appointments.pet.breed}` : ''}
-                    </Text>
-                )}
+           
+
+<Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1 mt-4">
+          Clinical Assignment
+        </Text>
+                    <Text className="text-sm font-bold text-zinc-800 uppercase">
+          {appointments.staff?.name ? appointments.staff?.name : "Awaiting Assignment"}
+        </Text>
             </View>
             <View className="absolute right-5 top-[26px]">
                 <Text className="text-zinc-300 text-xl font-black">›</Text>

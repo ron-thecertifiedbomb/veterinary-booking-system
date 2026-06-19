@@ -3,8 +3,10 @@ import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { todayStr } from "@/utils/appointments/formatter";
 import { logger } from "@/utils/logger/logger";
 import { useState, useCallback } from "react";
-import { Appointment } from "../types/appointment";
+
 import { getAppointmentsApi, GetAppointmentsFilters } from "../services/getAppointments.api";
+import { Appointment } from "../types/appointment";
+
 
 
 export interface FetchAppointmentsOptions {

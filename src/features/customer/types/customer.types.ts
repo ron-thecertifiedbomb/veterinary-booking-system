@@ -8,6 +8,7 @@ import { UserProfile, UserRole } from "@/features/users/types/types";
 
 export interface CustomerProfile {
   id: string;
+  userId: string;
   name: string;
   email: string;
   phone: string;
