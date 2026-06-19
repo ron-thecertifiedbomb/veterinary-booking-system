@@ -1,11 +1,9 @@
 // ..\src\features\appointment\services\slots.ts
-
 import { GetAllAppointmentsResponse } from "@/features/admin/types/admin.types";
 import { Appointment, GetMyAppointmentHistoryResponse } from "@/features/appointment/types/appointment";
-import { UserRole } from "@/features/auth/types/auth.user";
 import { api } from "@/utils/api/api.client";
 
-// Define a type for the query parameters
+
 export interface GetAppointmentsFilters {
   from?: string;
   to?: string;
@@ -17,15 +15,24 @@ export async function getAppointmentsApi(
   token: string, 
   filters?: GetAppointmentsFilters,
   appointmentId?: string,
-  activeRole?: string
+  activeRole?: string,
+  bookingCode?: string,
 ) {
-  // 1. If an ID is passed, target the specific item endpoint directly
+
   if (appointmentId) {
-    return await api<Appointment>(`/api/vet/appointments/${appointmentId}`, {
+    return await api<Appointment>(`/api/vet/appointment/${appointmentId}`, {
       method: "GET",
       token,
     });
   }
+
+  else if (bookingCode) {
+    return await api<Appointment>(`/api/vet/appointments/${bookingCode}`, {
+      method: "GET",
+      token,
+    });
+  }
+
   let roleType;
 
   switch (activeRole) {
@@ -41,7 +48,6 @@ export async function getAppointmentsApi(
       break;
   }
   
-
   const cleanFilters: Record<string, string> = {};
   if (filters) {
     Object.entries(filters).forEach(([key, val]) => {
