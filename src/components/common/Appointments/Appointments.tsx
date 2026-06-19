@@ -19,15 +19,16 @@ export default function Appointments() {
         if (token) {
             fetchAppointments();
         }
-    }, [token,filters]);
-
+    }, [token, filters]);
 
     if (loading && appointments.length === 0) {
         return <Loader fullScreen />;
     }
+
     const handleAddAppointment = () => {
         const isWeb = Platform.OS === "web";
-        router.push(isWeb ? "/(web)/web-home" : "/(app)/(tabs)/home");
+        // REMOVED Route Groups: Changed `/(web)/web-home` to `/web-home` and `/(app)/(tabs)/home` to `/home`
+        router.push(isWeb ? "/web-home" : "/home");
     };
 
     const handleDateSelection = (selectedDate: string) => {
@@ -38,41 +39,10 @@ export default function Appointments() {
         }
         setActivePicker(null); 
     };
+
     return (
         <Container>
-            <HeaderSection
-                title="My Appointments"
-             
-            />
-            {/* <DateRangePicker
-        fromValue={filters.from}
-        toValue={filters.to}
-        onPress={(type) => setActivePicker(type)}
-      />
-            <Modal
-                visible={activePicker !== null}
-                transparent={true}
-                animationType="slide"
-                onRequestClose={() => setActivePicker(null)}
-            >
-                <View className="flex-1 justify-end bg-black/40">
-                    <TouchableOpacity className="flex-1" onPress={() => setActivePicker(null)} />
-                    <View className="bg-white dark:bg-zinc-900 rounded-t-3xl p-5 pb-8">
-                        <View className="flex-row justify-between items-center mb-4">
-                            <Text className="text-lg font-bold text-gray-900 dark:text-white">
-                                Select {activePicker === "from" ? "Start" : "End"} Date
-                            </Text>
-                            <TouchableOpacity onPress={() => setActivePicker(null)}>
-                                <Text className="text-blue-500 font-semibold">Cancel</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <DateSelector
-                            date={(activePicker === "from" ? filters.from : filters.to) || ""}
-                            onDateChange={handleDateSelection}
-                        />
-                    </View>
-                </View>
-            </Modal> */}
+            <HeaderSection title="My Appointments" />
             
             {isEmpty && !loading ? (
                 <EmptyState
@@ -101,12 +71,22 @@ export default function Appointments() {
                                 <View style={{ height: 40 }} />
                             )
                         }
-                        renderItem={({ item }) => (
-                            <AppointmentCard 
-                            appointments={item} 
-                            routerPath={`/appointments/appointment/${item.id}`} 
-                          />
-                        )}
+                        renderItem={({ item }) => {
+                            // Explicit Web layout URL string
+                            const webPath = `/appointments/appointment/${item.id}`;
+  
+                            // Correct Mobile path: strips out '(app)' and '(tabs)' 
+                            // Matches your structural file layout: app/(app)/(tabs)/appointment/[id].tsx
+                            const mobilePath = `
+                            /(app)/appointment/${item.id}`; 
+
+                            return (
+                                <AppointmentCard 
+                                    appointments={item} 
+                                    routerPath={Platform.OS === 'web' ? webPath : mobilePath} 
+                                />
+                            );
+                        }}
                     />
                 </View>
             )}

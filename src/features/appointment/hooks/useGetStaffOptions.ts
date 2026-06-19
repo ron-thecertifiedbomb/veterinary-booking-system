@@ -29,6 +29,7 @@ export const useStaffOptions = () => {
       
       setMessage(response.message);
       setOptions(response.data);
+      logger.info('response', response)
       return response.data;
     } catch (err: any) {
       // Clean fallback text for NestJS Exception payloads

@@ -9,55 +9,63 @@ import { useStaffOptions } from "@/features/appointment/hooks/useGetStaffOptions
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { useLocalSearchParams } from "expo-router"; 
 import { useEffect, useState } from "react"; 
-import { View, Alert } from "react-native"; // Imported Alert
+import { View, Alert } from "react-native"; 
 
 export default function AdminAppointmentDetailedScreen() {
+    const { bookingCode } = useLocalSearchParams<{ bookingCode?: string }>();
     const { token, user } = useAuth(); 
     const { loading: loadingApt, singleAppointment, fetchAppointments } = useGetAppointments();
     const { fetchStaffOptions, options, loading: loadingStaff, error: staffError } = useStaffOptions();
-    
-    // Inject mutation hooks engine layer
     const { assignStaff, loading: loadingAssign, error: assignError } = useAssignStaff();
     
-    const { bookingCode } = useLocalSearchParams<{ bookingCode?: string }>();
     const role = user?.role;
+    console.log('booking code', bookingCode)
     const [selectedStaffId, setSelectedStaffId] = useState<string>("");
 
-    const hasStaff = !!singleAppointment?.staff;
-    const isUnassigned = singleAppointment !== null && !hasStaff;
-
+    // Sync local selection state immediately whenever the data changes from the network background thread
     useEffect(() => {
-        if (!token || !role || !bookingCode) return;
+        if (singleAppointment?.staff?.id) {
+            setSelectedStaffId(singleAppointment.staff.id);
+        } else if (singleAppointment && !singleAppointment.staff) {
+            setSelectedStaffId("");
+        }
+    }, [singleAppointment]);
+
+    // FIX 1: Restored conditional guards to prevent calling the API with uninitialized route parameters
+    useEffect(() => {
+        if (!token || !bookingCode || !role) return;
         fetchAppointments({ bookingCode }); 
     }, [token, bookingCode, role]);
 
+    // FIX 2: Re-inserted the missing effect hook to fetch staff option lists when the screen mounts
     useEffect(() => {
-        if (!token || !bookingCode || !isUnassigned) return;
+        if (!token || !bookingCode) return;
         fetchStaffOptions(bookingCode);
-    }, [token, bookingCode, isUnassigned]);
+    }, [token, bookingCode]);
 
-    // Handle background errors and project them to the user via Alert notifications
     useEffect(() => {
         if (assignError) {
             Alert.alert("Assignment Error", assignError);
-            setSelectedStaffId(""); // Reset the selected state on failure so the selector text drops back
+            setSelectedStaffId(singleAppointment?.staff?.id || ""); 
         }
-    }, [assignError]);
+    }, [assignError, singleAppointment]);
 
     const handleStaffAssignmentSubmit = async (staffId: string) => {
-        if (!bookingCode || !staffId) return;
+        // Allowing empty string or null values to enable unassignment operations
+        if (!bookingCode) return;
+        
+        const payloadValue = staffId === "" ? null : staffId;
         setSelectedStaffId(staffId);
-
-        // Execute network mutation block call
-        const success = await assignStaff(bookingCode, staffId);
+        
+        const success = await assignStaff(bookingCode, payloadValue as any);
         
         if (success) {
             Alert.alert("Success", "Staff member assigned successfully.");
-            fetchAppointments({ bookingCode });
+            await fetchAppointments({ bookingCode });
+            await fetchStaffOptions(bookingCode);
         }
     };
 
-    // Show Fullscreen Loader if app is pulling appointment metadata OR actively mutation saving a doctor
     if ((loadingApt && !singleAppointment) || loadingAssign) {
         return <Loader fullScreen />;
     }

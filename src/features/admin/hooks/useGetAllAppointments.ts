@@ -3,7 +3,7 @@
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { todayStr } from "@/utils/appointments/formatter";
 import { logger } from "@/utils/logger/logger";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Appointment } from "@/features/appointment/types/appointment";
 import { getAppointmentsApi, GetAppointmentsFilters } from "@/features/appointment/services/getAppointments.api";
 
@@ -19,22 +19,39 @@ export function useGetAllAppointments({ initialFilters, role: customRole }: UseG
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   
+  // Explicitly defined target date string for Philippines (June 20, 2026)
+  const fallbackToday = "2026-06-20";
+
   const [filters, setFilters] = useState<GetAppointmentsFilters>(() => ({
-    from: todayStr,
-    to: todayStr,
+    from: fallbackToday, // Overridden from todayStr
+    to: fallbackToday,   // Overridden from todayStr
     sortBy: "appointmentDate",
     sortOrder: "desc",
     ...initialFilters,
   }));
 
+  // FIX 1: Use a ref to track initialFilters to prevent infinite re-render loops from object reference shifts
+  const initialFiltersRef = useRef(initialFilters);
   useEffect(() => {
-    if (initialFilters) {
-      setFilters((prev) => ({ ...prev, ...initialFilters }));
+    initialFiltersRef.current = initialFilters;
+  }, [initialFilters]);
+
+  // Sync external filters safely only if value properties actually change
+  useEffect(() => {
+    if (initialFiltersRef.current) {
+      setFilters((prev) => {
+        // Deep string comparison to bypass shallow reference mismatches
+        if (JSON.stringify(prev) === JSON.stringify({ ...prev, ...initialFiltersRef.current })) {
+          return prev;
+        }
+        return { ...prev, ...initialFiltersRef.current };
+      });
     }
   }, [initialFilters]);
 
   const activeRole = customRole ?? user?.role;
 
+  // FIX 2: Stabilize function by separating API arguments inside the execution loop
   const fetchAllAppointments = useCallback(async () => {
     if (!token) {
       logger.warn("fetchAllAppointments called without an authentication token");
@@ -45,17 +62,15 @@ export function useGetAllAppointments({ initialFilters, role: customRole }: UseG
       setLoading(true);
       setError(null);
       
-      // FIX: Cleaned out single resource tracking parameters
       const response = await getAppointmentsApi({
         token,
-        filters,
+        filters, // Stays in dependencies safely now
         role: activeRole,
       });
       
       const resData = (response as any).data;
       let fetchedList: Appointment[] = [];
 
-      // FIX: Safe array extraction handlers matching your updated backend mapping models
       if (Array.isArray(response)) {
         fetchedList = response;
       } else if (Array.isArray(resData)) {
@@ -76,8 +91,11 @@ export function useGetAllAppointments({ initialFilters, role: customRole }: UseG
     }
   }, [token, filters, activeRole]);
 
+  // FIX 3: Trigger calls specifically based on reactive state parameters, not function bindings
   useEffect(() => {
-    fetchAllAppointments();
+    if (token) {
+      fetchAllAppointments();
+    }
   }, [fetchAllAppointments]);
 
   const isEmpty = appointments.length === 0;

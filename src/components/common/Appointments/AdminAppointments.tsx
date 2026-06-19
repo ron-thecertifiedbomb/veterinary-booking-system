@@ -1,11 +1,10 @@
 import { DateRangePicker } from "@/components/booking/DateRangePicker";
+import DateSelector from "@/components/booking/DateSelector";
 import AppointmentCard from "@/components/common/Appointments/AppointmentCard";
 import Container from "@/components/common/Container/Container";
 import EmptyState from "@/components/common/EmptyState/EmptyState";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Loader from "@/components/common/Loader/Loader";
-// 1. Fixed missing structural imports for UI layout stability
-import DateSelector from "@/components/booking/DateSelector"; // Adjust path as per project directory structure
 import { useGetAllAppointments } from "@/features/admin/hooks/useGetAllAppointments";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { router } from "expo-router";
@@ -15,13 +14,11 @@ import { FlatList, Modal, Platform, Text, TouchableOpacity, View } from "react-n
 export default function AdminAppointments() {
     const { user } = useAuth(); 
 
-    // Explicitly passes current role context directly down to custom core logic wrapper hook
     const { loading, isEmpty, appointments, fetchAllAppointments, filters, setFilters } = useGetAllAppointments({ 
         role: user?.role 
     });
 
     const [activePicker, setActivePicker] = useState<"from" | "to" | null>(null);
-  
 
     if (loading && appointments.length === 0) {
         return <Loader fullScreen />;
@@ -42,7 +39,7 @@ export default function AdminAppointments() {
     };
 
     return (
-        <Container  className="flex-1 max-w-3xl mx-auto w-full" >
+        <Container className="flex-1 max-w-3xl mx-auto w-full">
             <HeaderSection title="All Appointments" />
             
             <DateRangePicker
@@ -105,9 +102,9 @@ export default function AdminAppointments() {
                         }
                         renderItem={({ item }) => (
                             <AppointmentCard 
-                            appointments={item} 
-                            routerPath={`/admin/appointments/appointment/${item.bookingCode}`} 
-                          />
+                                appointments={item} // Reverted back to match your hook's prop type
+                                routerPath={`/admin/appointments/appointment/${item.bookingCode}`} 
+                            />
                         )}
                     />
                 </View>
