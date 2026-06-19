@@ -1,6 +1,6 @@
 // ..\src\features\auth\types\auth.login.ts
 
-import { UserRole } from "@/features/auth/types/auth.user";
+import { UserRole } from "@/features/users/types/types";
 
 export type LoginResponse = {
   message: string;

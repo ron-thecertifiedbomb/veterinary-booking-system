@@ -1,7 +1,8 @@
 // ..\src\features\appointment\types\appointment.ts
 import { AuthenticatedUserResponse } from "@/features/auth/types/auth.types";
+import { CustomerProfile } from "@/features/customer/types/customer.types";
 import { Pet } from "@/features/pet/pet.types";
-import { Staff } from "@/features/staff/types/staff.types";
+import { Staff, StaffProfile } from "@/features/staff/types/staff.types";
 
 export type AppointmentDependencies = {
   setLoading: (value: boolean) => void;
@@ -53,10 +54,15 @@ export interface Appointment {
   serviceType: ServiceType;
   appointmentDate: string;
   status: AppointmentStatus;
-  notes: string | null;
+  notes: string;
   createdAt: string;
+  updatedAt: string;
+  customerId: string;
+  petId: string;
+  staffId: string | null;
   pet: Pet;
-  staff: Staff | null;
+  customer: CustomerProfile;
+  staff: StaffProfile | null;
 }
 
 

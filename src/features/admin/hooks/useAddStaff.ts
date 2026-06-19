@@ -1,9 +1,9 @@
 import { addStaffApi } from "@/features/admin/services/addStaffApi";
 import {
+  CreateStaffResponse,
   StaffFormData
 } from "@/features/admin/types/admin.types";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { CreateStaffResponse } from "@/features/staff/types/staff.types";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
 

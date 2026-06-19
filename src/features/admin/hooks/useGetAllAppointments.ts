@@ -4,13 +4,13 @@ import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { todayStr } from "@/utils/appointments/formatter";
 import { logger } from "@/utils/logger/logger";
 import { useState, useCallback, useEffect } from "react";
-import { Appointment, GetAllAppointmentsResponse } from "../types/admin.types";
+import { GetAllAppointmentsResponse } from "../types/admin.types";
+import { Appointment } from "@/features/appointment/types/appointment";
 
 export interface UseGetAllAppointmentsProps {
   initialFilters?: Partial<GetAppointmentsFilters>;
   role?: string; 
 }
-
 export function useGetAllAppointments({ initialFilters, role: customRole }: UseGetAllAppointmentsProps = {}) {
   const { token, user } = useAuth();
 

@@ -1,5 +1,4 @@
 import { AdminProfile } from "@/features/admin/types/admin.types";
-import { UserRole } from "@/features/auth/types/auth.user";
 import { CustomerProfile } from "@/features/customer/types/customer.types";
 import { StaffProfile } from "@/features/staff/types/staff.types";
 
@@ -16,3 +15,6 @@ export type userProfile = {
     staffProfile?: StaffProfile;
     adminProfile?: AdminProfile
   };
+
+
+  export type UserRole = "CUSTOMER" | "ADMIN" | "STAFF";

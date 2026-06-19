@@ -1,4 +1,5 @@
-import { UserRole } from "@/features/auth/types/auth.user";
+import { UserRole } from "@/features/users/types/types";
+
 
 export type RegisterPayload = {
   email: string;

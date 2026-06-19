@@ -1,10 +1,10 @@
 // src/features/auth/auth.types.ts
 
 
-import { UserRole } from "@/features/auth/types/auth.user";
+import { AdminProfile } from "@/features/admin/types/admin.types";
 import { CustomerProfile } from "@/features/customer/types/customer.types";
-import { Pet } from "@/features/pet/pet.types";
 import { StaffProfile } from "@/features/staff/types/staff.types";
+import { UserRole } from "@/features/users/types/types";
 
 export type AuthenticatedUser = {
   id: string;
@@ -15,10 +15,10 @@ export type AuthenticatedUser = {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  customerProfile?: CustomerProfile; // only if CUSTOMER
+  customerProfile?: CustomerProfile; 
   staffProfile?: StaffProfile;
+  adminProfile: AdminProfile;
 };
-
 
 
 
@@ -33,7 +33,8 @@ export type AuthenticatedUserResponse = {
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
-    customerProfile?: CustomerProfile; // only if CUSTOMER
+    customerProfile?: CustomerProfile; 
     staffProfile?: StaffProfile;
+    adminProfile: AdminProfile;
   };
 };

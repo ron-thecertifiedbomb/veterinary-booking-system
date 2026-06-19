@@ -1,4 +1,4 @@
-import { Appointment } from "@/features/appointment/types/appointment";
+
 import { LoginPayload } from "@/features/auth/types/auth.login";
 import {
   RegisterPayload,
@@ -10,18 +10,12 @@ import { LogOutResponse } from "./auth.logout";
 export type AuthContextType = {
   token: string | null;
   loading: boolean;
-
-  // ✅ session state
   user: AuthenticatedUser | null;
   isAuthenticated: boolean;
-
-  // ✅ role helpers
   role: string | null;
   isAdmin: boolean;
   isStaff: boolean;
   isCustomer: boolean;
-
-  // ✅ auth actions
   login: (payload: LoginPayload) => Promise<{
     user: AuthenticatedUser;
     message: string;

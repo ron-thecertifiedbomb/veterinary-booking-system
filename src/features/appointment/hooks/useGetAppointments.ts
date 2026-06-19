@@ -1,12 +1,12 @@
 // ..\src\features\users\hook\useGetUserAppointemts.ts
 
-import { Appointment } from "@/features/admin/types/admin.types";
-import { getAppointmentsApi, GetAppointmentsFilters } from "@/features/appointment/services/getAppointments.api";
 
+import { getAppointmentsApi, GetAppointmentsFilters } from "@/features/appointment/services/getAppointments.api";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { todayStr } from "@/utils/appointments/formatter";
 import { logger } from "@/utils/logger/logger";
 import { useState, useCallback } from "react";
+import { Appointment } from "../types/appointment";
 
 
 export function useGetAppointments() {
@@ -23,22 +23,18 @@ export function useGetAppointments() {
     sortOrder: "desc",
   });
 
-  /**
-   * Fetches either a specific appointment by ID or a list of appointments based on current filters.
-   */
   const fetchAppointments = useCallback(async (appointmentId?: string) => {
     if (!token) {
       logger.warn("fetchAppointments called without an authentication token");
       return;
     }
-    
     try {
       setLoading(true);
       
       const response = await getAppointmentsApi(token, filters, appointmentId);
-      
+  
       if (response) {
-        // Cast response to any safely to extract nestjs envelope fields
+  
         const resData = (response as any).data;
   
         if (appointmentId) {

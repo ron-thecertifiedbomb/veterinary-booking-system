@@ -1,5 +1,6 @@
-import { Customer, User } from "@/features/admin/types/admin.types";
+
 import { AuthenticatedUser } from "@/features/auth/types/auth.types";
+import { CustomerProfile } from "@/features/customer/types/customer.types";
 
 export type StaffPosition = "VETERINARIAN" | "VET_TECHNICIAN" | "GROOMER";
 
@@ -14,10 +15,7 @@ export interface StaffProfile {
   licenseNumber: string;
 }
 
-export type CreateStaffResponse = {
-  message: string;
-  data: Staff;
-};
+
 
 export type Staff = {
   id: string;
@@ -30,7 +28,6 @@ export type Staff = {
   updatedAt: string;
   staffProfile: StaffProfile;
 };
-
 
 export type DashboardStatsResponse = {
   message: string;
@@ -51,7 +48,7 @@ export type AssignedPatient = {
   createdAt: string;
   updatedAt: string;
   customerId: string;
-  customer: Customer;
+  customer: CustomerProfile;
   appointmentIds: string[];
 };
 

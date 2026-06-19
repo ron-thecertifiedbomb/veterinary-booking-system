@@ -1,20 +1,14 @@
-
 import { adminSchema } from "@/features/admin/schemas/adminSchema";
 import { z } from "zod";
-
 import { staffSchema } from "@/features/admin/schemas/staffSchema";
-import { AppointmentStatus, ServiceType } from "@/features/appointment/types/appointment";
-
+import { Appointment} from "@/features/appointment/types/appointment";
+import { StaffProfile } from "@/features/staff/types/staff.types";
 
 
 
 export type StaffFormData = z.infer<typeof staffSchema>;
-
 export type AdminFormData = z.infer<typeof adminSchema>;
-
 export type AdminPosition = "MANAGER" | "ACCOUNTANT" | "RECEPTIONIST";
-
-
 
 
 export interface AdminProfile {
@@ -22,7 +16,6 @@ export interface AdminProfile {
   position: AdminPosition;
   licenseNumber: string;
 }
-
 
 export type CreateAdminResponse = {
   message: string;
@@ -40,8 +33,6 @@ export type Admin = {
   updatedAt: string;
   adminProfile: AdminProfile;
 };
-
-
 
 type UnbookedSlot = {
   time: string;
@@ -71,7 +62,6 @@ export type DashboardMetricsResponse = {
   serverTime: ServerTime;
 };
 
-
 export interface GetAllAppointmentsResponse {
   message: string;
   data: {
@@ -80,22 +70,10 @@ export interface GetAllAppointmentsResponse {
   };
 }
 
-export interface Appointment {
-  id: string;
-  bookingCode: string;
-  serviceType: ServiceType;
-  appointmentDate: string;
-  status: AppointmentStatus;
-  notes: string;
-  createdAt: string;
-  updatedAt: string;
-  customerId: string;
-  petId: string;
-  staffId: string | null;
-  pet: Pet;
-  customer: Customer;
-  staff: Staff | null;
-}
+export type CreateStaffResponse = {
+  message: string;
+  data: Staff;
+};
 
 export interface Pet {
   id: string;
@@ -108,16 +86,7 @@ export interface Pet {
   customerId: string;
 }
 
-export interface Customer {
-  user: User;
-}
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-}
 
 export interface StaffDoctor {
   id: string;
@@ -125,11 +94,7 @@ export interface StaffDoctor {
   staffProfile: StaffProfile;
 }
 
-export interface StaffProfile {
-  id: string;
-  position: 'VETERINARIAN' | string;
-  specialization: string;
-}
+
 
 export interface Staff {
   id: string;

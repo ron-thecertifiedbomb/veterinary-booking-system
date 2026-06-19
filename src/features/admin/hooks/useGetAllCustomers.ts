@@ -1,12 +1,12 @@
 // ..\src\features\pet\hooks\useGetPet.ts
 
-import { getAllStaffApi } from "@/features/admin/services/getAllStaff.api";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { AuthenticatedUser } from "@/features/auth/types/auth.types";
 import { useState } from "react";
 import { getAllCustomerApi } from "../services/getAllCustomers.apit";
 
 export function useGetAllCustomers() {
+  
   const { token } = useAuth();
   const [allCustomers, setAllCustomers] = useState<AuthenticatedUser[] | null>(null);
   const [loading, setLoading] = useState(false);

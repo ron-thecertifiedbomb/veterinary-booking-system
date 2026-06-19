@@ -1,8 +1,6 @@
 import { addAdminApi } from "@/features/admin/services/addAdmin.api";
 import { AdminFormData, CreateAdminResponse } from "@/features/admin/types/admin.types";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { CreatePetPayload, CreatePetResponse } from "@/features/pet/pet.types";
-import { createPetApi } from "@/features/pet/services/createPetApi";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
 
