@@ -11,6 +11,7 @@ import {
     CreateAppointmentResponse,
 } from "@/features/appointment/types/appointment";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { useGetPets } from "@/features/pet/hooks/useGetPet";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { getTodayDate } from "@/utils/appointments/formatter";
 import { router } from "expo-router";
@@ -32,6 +33,8 @@ export default function Home() {
         loading: creating,
     } = useCreateAppointment();
 
+    // 1. Rename loading to petsLoading
+    const { fetchPets, loading: petsLoading, pets } = useGetPets();
 
     const [date, setDate] = useState(getTodayDate());
     const [showModal, setShowModal] = useState(false);
@@ -41,12 +44,27 @@ export default function Home() {
     const [successModalVisible, setSuccessModalVisible] =
         useState(false);
 
-    const pets = user?.customerProfile?.pets ?? [];
+    // 2. Add state to track if the initial fetch is completely finished
+    const [initialFetchDone, setInitialFetchDone] = useState(false);
+
     const redirected = useRef(false);
 
+    // 3. Update initial fetch to set initialFetchDone when complete
     useEffect(() => {
-        if (!user || redirected.current) return;
+        const loadPets = async () => {
+            await fetchPets(); 
+            setInitialFetchDone(true); 
+        };
+        
+        loadPets();
+    }, []);
 
+    // 4. Update the redirect logic to respect initialFetchDone and petsLoading
+    useEffect(() => {
+        // Wait until we have a user, OR the pets are actively fetching, OR the initial fetch hasn't finished yet!
+        if (!user || petsLoading || !initialFetchDone || redirected.current) return;
+
+        // Once initialFetchDone is TRUE, it's finally safe to check the length
         if (user.role === "CUSTOMER" && pets.length === 0) {
             redirected.current = true;
 
@@ -56,7 +74,7 @@ export default function Home() {
                 router.replace("/(app)/add-pet");
             }
         }
-    }, [user, pets.length]);
+    }, [user, pets, petsLoading, initialFetchDone]); 
 
   
     const handleSelectDate = async (newDate: string) => {
@@ -71,19 +89,21 @@ export default function Home() {
 
     const handleSubmit = async (formData: CreateAppointmentPayload) => {
         try {
-          
             if (creating) return;
 
             const response = await createAppointment(formData);
             setBookingSummary(response);
             setShowModal(false);
+            
+            // Note: setTimeout used to prevent iOS modal transition overlaps
             setTimeout(() => {
-            setSuccessModalVisible(true);
+                setSuccessModalVisible(true);
             }, 500); 
             refreshSession();
 
-        } catch (err: any) {
-            showAlert("Error", err?.message);
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+            showAlert("Error", errorMessage);
         }
     };
 
@@ -93,8 +113,8 @@ export default function Home() {
                 title="Book an Appointment"
             />
 
-            {/* ✅ EMPTY STATE */}
-            {pets.length === 0 ? (
+            {/* 5. Hide the EmptyState (or show a loader) until the initial fetch is actually done */}
+            {petsLoading || !initialFetchDone ? null : pets.length === 0 ? (
                 <EmptyState
                     title="No Registered Pet"
                     buttonLabel="Register your Pet"
@@ -112,9 +132,10 @@ export default function Home() {
                     onDateChange={handleSelectDate}
                 />
             )}
+
             {pets.length > 0 && (
                 <AppBookingModal
-                    loading={slotsLoading || creating} // ✅ handled INSIDE modal
+                    loading={slotsLoading || creating}
                     pets={pets}
                     slots={slots}
                     date={date}
@@ -123,6 +144,7 @@ export default function Home() {
                     onSubmit={handleSubmit}
                 />
             )}
+            
             <BookingSuccessModal
                 visible={successModalVisible}
                 items={bookingSummary}

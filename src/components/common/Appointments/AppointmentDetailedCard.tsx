@@ -16,7 +16,7 @@ interface AppointmentDetailCardProps {
   staffOptions?: StaffDropdownItem[];
   loadingStaff?: boolean;
   staffError?: string | null;
-  selectedStaffId: string;
+  selectedStaffId?: string;
   onAssignStaff?: (staffId: string) => void;
 }
 

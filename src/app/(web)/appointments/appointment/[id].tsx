@@ -34,7 +34,7 @@ export default function AppointmentDetailedScreen() {
                 appRoute="(app)/(tabs)/appointments" 
                 className="mb-4 p-1" 
             />
-            <AppointmentDetailCard appointment={singleAppointment} />
+            <AppointmentDetailCard appointment={singleAppointment}  />
         </Container>
     );
 }

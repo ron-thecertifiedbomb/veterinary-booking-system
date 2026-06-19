@@ -3,6 +3,7 @@
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { Pet } from "@/features/pet/pet.types";
 import { getPetApi } from "@/features/pet/services/getPetsApi";
+import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
 
 export function useGetPets() {
@@ -22,6 +23,7 @@ export function useGetPets() {
       const response = await getPetApi(token);
 
       const pets = Array.isArray(response.data) ? response.data : [];
+      logger.info('pets',pets)
       setPets(pets);
       setMessage(response.message);
 
