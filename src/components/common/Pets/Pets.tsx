@@ -57,6 +57,7 @@ export default function Pets() {
                             paddingTop: 8,
                             paddingBottom: 140,
                         }}
+                        
                         renderItem={({ item }) => (
                             <PetCard
                                 item={item}

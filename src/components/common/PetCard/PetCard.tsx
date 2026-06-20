@@ -1,3 +1,4 @@
+import { Href } from "expo-router";
 import React from "react";
 import { Text, View, Pressable } from "react-native";
 
@@ -11,6 +12,7 @@ interface PetItem {
 
 interface PetCardProps {
   item: PetItem;
+
   onPress: () => void;
 }
 
