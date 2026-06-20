@@ -12,17 +12,20 @@ import { useEffect, useState } from "react";
 import { View, Alert } from "react-native"; 
 
 export default function AdminAppointmentDetailedScreen() {
-    const { bookingCode } = useLocalSearchParams<{ bookingCode?: string }>();
-    const { token, user } = useAuth(); 
+    // 1. Grab all parameters. If the folder uses [id].tsx, Expo Router stores the booking code inside the 'id' key.
+    const params = useLocalSearchParams<Record<string, string>>();
+    const bookingCode = params.bookingCode || params.id; 
+    
+    const { token } = useAuth(); 
     const { loading: loadingApt, singleAppointment, fetchAppointments } = useGetAppointments();
     const { fetchStaffOptions, options, loading: loadingStaff, error: staffError } = useStaffOptions();
     const { assignStaff, loading: loadingAssign, error: assignError } = useAssignStaff();
     
-    const role = user?.role;
-    console.log('booking code', bookingCode)
     const [selectedStaffId, setSelectedStaffId] = useState<string>("");
 
-    // Sync local selection state immediately whenever the data changes from the network background thread
+    console.log("Resolved dynamic screen route parameter:", bookingCode);
+
+    // Sync dropdown selection layout with backend state changes
     useEffect(() => {
         if (singleAppointment?.staff?.id) {
             setSelectedStaffId(singleAppointment.staff.id);
@@ -31,15 +34,11 @@ export default function AdminAppointmentDetailedScreen() {
         }
     }, [singleAppointment]);
 
-    // FIX 1: Restored conditional guards to prevent calling the API with uninitialized route parameters
-    useEffect(() => {
-        if (!token || !bookingCode || !role) return;
-        fetchAppointments({ bookingCode }); 
-    }, [token, bookingCode, role]);
-
-    // FIX 2: Re-inserted the missing effect hook to fetch staff option lists when the screen mounts
+    // Simple Hook Trigger: Bypasses filters and loads using whichever key held your parameter value
     useEffect(() => {
         if (!token || !bookingCode) return;
+        
+        fetchAppointments({ bookingCode, filters: undefined }); 
         fetchStaffOptions(bookingCode);
     }, [token, bookingCode]);
 
@@ -51,7 +50,6 @@ export default function AdminAppointmentDetailedScreen() {
     }, [assignError, singleAppointment]);
 
     const handleStaffAssignmentSubmit = async (staffId: string) => {
-        // Allowing empty string or null values to enable unassignment operations
         if (!bookingCode) return;
         
         const payloadValue = staffId === "" ? null : staffId;
@@ -61,12 +59,12 @@ export default function AdminAppointmentDetailedScreen() {
         
         if (success) {
             Alert.alert("Success", "Staff member assigned successfully.");
-            await fetchAppointments({ bookingCode });
+            await fetchAppointments({ bookingCode, filters: undefined });
             await fetchStaffOptions(bookingCode);
         }
     };
 
-    if ((loadingApt && !singleAppointment) || loadingAssign) {
+    if (loadingApt && !singleAppointment) {
         return <Loader fullScreen />;
     }
 

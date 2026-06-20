@@ -1,32 +1,48 @@
-// ..\src\features\appointment\hooks\useGetAppointments.ts
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { todayStr } from "@/utils/appointments/formatter";
 import { logger } from "@/utils/logger/logger";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
 import { getAppointmentsApi, GetAppointmentsFilters } from "../services/getAppointments.api";
 import { Appointment } from "../types/appointment";
 
-
-
 export interface FetchAppointmentsOptions {
   appointmentId?: string;
   bookingCode?: string;
+  filters?: GetAppointmentsFilters;
+  role?: string; // Explicit support for screen-level roles
 }
 
+const formatDateString = (dateInput: Date | number) => {
+  const date = new Date(dateInput);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export function useGetAppointments() {
-  const { token, role } = useAuth(); 
+  const { token, role: authRole } = useAuth(); 
 
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [singleAppointment, setSingleAppointment] = useState<Appointment | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
   
-  const [filters, setFilters] = useState<GetAppointmentsFilters>({
-    from: todayStr,
-    to: todayStr,
-    sortBy: "appointmentDate",
-    sortOrder: "desc",
+  const [filters, setFilters] = useState<GetAppointmentsFilters>(() => {
+    const todayStr = formatDateString(Date.now());
+    return {
+      from: todayStr,
+      to: todayStr,
+      sortBy: "appointmentDate",
+      sortOrder: "desc",
+    };
   });
+
+  // 1. CRITICAL CRUSH: Keep a mutable ref that ALWAYS points to the absolute latest filters state
+  const filtersRef = useRef(filters);
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
 
   const fetchAppointments = useCallback(async (options?: FetchAppointmentsOptions) => {
     if (!token) {
@@ -36,64 +52,51 @@ export function useGetAppointments() {
 
     const appointmentId = options?.appointmentId;
     const bookingCode = options?.bookingCode;
+    
+    // 2. DYNAMIC LOOKUP: Prioritize arguments passing, fallback to the freshly updated ref object
+    const activeFilters = options?.filters !== undefined ? options.filters : filtersRef.current;
+    const activeRole = options?.role !== undefined ? options.role : authRole;
 
     try {
       setLoading(true);
+      setError(null);
       const isSingleLookup = !!appointmentId || !!bookingCode;
 
-      // 1. Forward parameters inside a clean structured options object configuration payload
       const response = await getAppointmentsApi({
         token,
-        // Bypass global list filter params during single lookups
-        filters: isSingleLookup ? undefined : filters,
+        filters: isSingleLookup ? undefined : activeFilters,
         appointmentId,
-        role,
+        role: activeRole, // Binds dynamic caller role permissions
         bookingCode,
       });
   
       if (response) {
         const resData = (response as any).data;
+        const detailedItem = resData !== undefined ? resData : response;
   
         if (isSingleLookup) {
-          // If response is already the wrapped format { message, data }, use data. Else fallback to response
-          const detailedItem = resData !== undefined ? resData : response;
           setSingleAppointment(detailedItem as Appointment);
         } else {
-          let fetchedList: Appointment[] = [];
-          
-          // Fallback handlers to securely extract arrays from direct or wrapped data packets
-          if (Array.isArray(response)) {
-            fetchedList = response;
-          } else if (Array.isArray(resData)) {
-            fetchedList = resData;
-          } else if (resData?.data && Array.isArray(resData.data)) {
-            fetchedList = resData.data;
-          }
-  
-          setAppointments(fetchedList);
-          setSingleAppointment(null); // Clear singular trackers upon list changes
+          const appointmentList = Array.isArray(detailedItem) ? detailedItem : [];
+          setAppointments(appointmentList as Appointment[]);
         }
       }
-    } catch (err: any) {
-      logger.error("Fetching appointments failed", err);
-      if (!appointmentId && !bookingCode) {
-        setAppointments([]);
-      }
+    } catch (err) {
+      const parsedError = err instanceof Error ? err : new Error("Failed to fetch appointments");
+      logger.error("Error fetching appointments:", parsedError);
+      setError(parsedError);
     } finally {
       setLoading(false);
     }
-  }, [token, role, filters]); 
-
-  const isEmpty = appointments.length === 0;
+  }, [token, authRole]); // Keeps callback signature stable, avoids infinite rendering chains
 
   return {
-    fetchAppointments,
     appointments,
     singleAppointment,
-    setSingleAppointment,
     loading,
-    isEmpty,
+    error,
     filters,
     setFilters,
+    fetchAppointments,
   };
 }

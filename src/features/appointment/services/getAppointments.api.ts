@@ -10,7 +10,6 @@ export interface GetAppointmentsFilters {
   sortOrder?: "asc" | "desc";
 }
 
-// Consolidated configuration payload with safe null and undefined bindings
 export interface GetAppointmentsPayload {
   token: string;
   filters?: GetAppointmentsFilters | null;
@@ -33,24 +32,35 @@ export async function getAppointmentsApi({
   bookingCode,
 }: GetAppointmentsPayload) {
   
-  const roleType = ROLE_ROUTE_MAP[role || ""] || "customer";
+  // 1. ISOLATED SINGLE-LOOKUP LAYER: Absolute priority matching
+  const hasAppointmentId = appointmentId && appointmentId !== "null" && appointmentId !== "undefined";
+  const hasBookingCode = bookingCode && bookingCode !== "null" && bookingCode !== "undefined";
 
-  // 1. Single resource lookups with absolute string validation guards
-  if (appointmentId && appointmentId !== "null" && appointmentId !== "undefined") {
+  if (hasAppointmentId) {
     return await api<Appointment>(`/api/vet/appointments/${appointmentId}`, {
       method: "GET",
       token,
     });
   }
 
-  if (bookingCode && bookingCode !== "null" && bookingCode !== "undefined") {
+  if (hasBookingCode) {
     return await api<Appointment>(`/api/vet/admin/appointment/${bookingCode}`, {
       method: "GET",
       token,
     });
   }
+
+  // 2. STRICT COLLECTION LAYER: Triggers only for broad list queries
+  // Guard Clause: Stops execution immediately if the role hasn't loaded yet, preventing shared lists
+  if (!role || role === "null" || role === "undefined") {
+    throw new Error("Cannot fetch appointments collection: User role context is still initializing.");
+  }
   
-  // 2. Process query parameter collection filters safely
+  // Normalize string cases for route dictionary mapping securely
+  const normalizedRole = String(role).toUpperCase();
+  const roleType = ROLE_ROUTE_MAP[normalizedRole] || "customer";
+
+  // 3. Process query parameter collection filters safely
   const cleanFilters: Record<string, string> = {};
   if (filters) {
     Object.entries(filters).forEach(([key, val]) => {
@@ -64,7 +74,7 @@ export async function getAppointmentsApi({
     ? "?" + new URLSearchParams(cleanFilters).toString()
     : "";
 
-  // 3. Fetch full collection array fallback path
+  // 4. Fetch segregated collection array path routed via active user role slug
   return await api<GetMyAppointmentHistoryResponse | GetAllAppointmentsResponse>(
     `/api/vet/${roleType}/appointments${queryParams}`, 
     {
