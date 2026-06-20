@@ -2,24 +2,26 @@
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { todayStr } from "@/utils/appointments/formatter";
 import { logger } from "@/utils/logger/logger";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
-import { getAppointmentsApi, GetAppointmentsFilters } from "../services/getAppointments.api";
+// Points directly to your separated service file
 import { Appointment } from "../types/appointment";
-
-
+import { getAppointmentByBookingCodeApi, getAppointmentByIdApi, getAppointmentsApi, GetAppointmentsFilters } from "../services/getAppointments.api";
 
 export interface FetchAppointmentsOptions {
   appointmentId?: string;
   bookingCode?: string;
+  filters?: GetAppointmentsFilters; // Added explicit support for screen overrides
+  role?: string;                     // Added explicit support for screen roles
 }
 
 export function useGetAppointments() {
-  const { token, role } = useAuth(); 
+  const { token, role: authRole } = useAuth(); 
 
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [singleAppointment, setSingleAppointment] = useState<Appointment | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
   
   const [filters, setFilters] = useState<GetAppointmentsFilters>({
     from: todayStr,
@@ -27,6 +29,12 @@ export function useGetAppointments() {
     sortBy: "appointmentDate",
     sortOrder: "desc",
   });
+
+  // Keep an active mutable reference of the filters to prevent infinite re-render loop cycles
+  const filtersRef = useRef(filters);
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
 
   const fetchAppointments = useCallback(async (options?: FetchAppointmentsOptions) => {
     if (!token) {
@@ -36,32 +44,41 @@ export function useGetAppointments() {
 
     const appointmentId = options?.appointmentId;
     const bookingCode = options?.bookingCode;
+    
+    // Fallback prioritizations: explicit screen parameter -> latest hook ref state closure
+    const activeFilters = options?.filters !== undefined ? options.filters : filtersRef.current;
+    const activeRole = options?.role !== undefined ? options.role : authRole;
 
     try {
       setLoading(true);
-      const isSingleLookup = !!appointmentId || !!bookingCode;
+      setError(null);
+      let response: any = null;
 
-      // 1. Forward parameters inside a clean structured options object configuration payload
-      const response = await getAppointmentsApi({
-        token,
-        // Bypass global list filter params during single lookups
-        filters: isSingleLookup ? undefined : filters,
-        appointmentId,
-        role,
-        bookingCode,
-      });
+      // 1. Route directly to your distinct separated individual endpoints
+      if (appointmentId && appointmentId !== "null" && appointmentId !== "undefined") {
+        response = await getAppointmentByIdApi({ token, appointmentId });
+      } else if (bookingCode && bookingCode !== "null" && bookingCode !== "undefined") {
+        response = await getAppointmentByBookingCodeApi({ token, bookingCode });
+      } else {
+        // Broad lists collection fetches require validation checks on the role payload strings
+        if (!activeRole || activeRole === "null" || activeRole === "undefined") {
+          logger.warn("fetchAppointments listing called before user role metadata has mounted");
+          return;
+        }
+        response = await getAppointmentsApi({ token, role: activeRole, filters: activeFilters });
+      }
   
       if (response) {
-        const resData = (response as any).data;
+        const resData = response?.data;
+        const isSingleLookup = !!appointmentId || !!bookingCode;
   
         if (isSingleLookup) {
-          // If response is already the wrapped format { message, data }, use data. Else fallback to response
           const detailedItem = resData !== undefined ? resData : response;
           setSingleAppointment(detailedItem as Appointment);
         } else {
           let fetchedList: Appointment[] = [];
           
-          // Fallback handlers to securely extract arrays from direct or wrapped data packets
+          // Unpack array data variations safely
           if (Array.isArray(response)) {
             fetchedList = response;
           } else if (Array.isArray(resData)) {
@@ -71,18 +88,22 @@ export function useGetAppointments() {
           }
   
           setAppointments(fetchedList);
-          setSingleAppointment(null); // Clear singular trackers upon list changes
+          setSingleAppointment(null); // Clear lookup trackers safely upon navigating to lists
         }
       }
     } catch (err: any) {
-      logger.error("Fetching appointments failed", err);
+      const parsedError = err instanceof Error ? err : new Error("Failed to fetch appointments data");
+      logger.error("Fetching appointments failed", parsedError);
+      setError(parsedError);
+      
+      // Wipe broad collections arrays securely upon execution failures
       if (!appointmentId && !bookingCode) {
         setAppointments([]);
       }
     } finally {
       setLoading(false);
     }
-  }, [token, role, filters]); 
+  }, [token, authRole]); // Keeps function identity stable to break infinite effect loops
 
   const isEmpty = appointments.length === 0;
 
@@ -92,6 +113,7 @@ export function useGetAppointments() {
     singleAppointment,
     setSingleAppointment,
     loading,
+    error,
     isEmpty,
     filters,
     setFilters,

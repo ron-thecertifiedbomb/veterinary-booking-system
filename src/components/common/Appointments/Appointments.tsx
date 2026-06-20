@@ -10,16 +10,19 @@ import { useEffect, useState } from "react";
 import { FlatList, Platform, View } from "react-native";
 
 export default function Appointments() {
-
-    const { token } = useAuth(); 
+    // FIX 1: Extract 'user' context so the frontend can pull down dynamic user roles
+    const { token, user } = useAuth(); 
     const { loading, isEmpty, appointments, fetchAppointments, filters, setFilters } = useGetAppointments();
     const [activePicker, setActivePicker] = useState<"from" | "to" | null>(null);
   
+    const role = user?.role;
+
+    // FIX 2: Added 'role' to dependency array and wrapped options to match FetchAppointmentsOptions schema
     useEffect(() => {
-        if (token) {
-            fetchAppointments();
+        if (token && role) {
+            fetchAppointments({ filters, role });
         }
-    }, [token, filters]);
+    }, [token, filters, role, fetchAppointments]); // Stable and safe from infinite re-render cycles
 
     if (loading && appointments.length === 0) {
         return <Loader fullScreen />;
@@ -27,7 +30,6 @@ export default function Appointments() {
 
     const handleAddAppointment = () => {
         const isWeb = Platform.OS === "web";
-        // REMOVED Route Groups: Changed `/(web)/web-home` to `/web-home` and `/(app)/(tabs)/home` to `/home`
         router.push(isWeb ? "/web-home" : "/home");
     };
 
@@ -60,7 +62,8 @@ export default function Appointments() {
                             paddingBottom: 32,
                             paddingTop: 8,
                         }}
-                        onRefresh={fetchAppointments}
+                        // FIX 3: Ensure pull-to-refresh correctly maintains active parameters
+                        onRefresh={() => fetchAppointments({ filters, role })}
                         refreshing={loading}
                         ListFooterComponent={
                             loading ? (
@@ -72,13 +75,9 @@ export default function Appointments() {
                             )
                         }
                         renderItem={({ item }) => {
-                            // Explicit Web layout URL string
                             const webPath = `/appointments/appointment/${item.id}`;
-  
-                            // Correct Mobile path: strips out '(app)' and '(tabs)' 
-                            // Matches your structural file layout: app/(app)/(tabs)/appointment/[id].tsx
-                            const mobilePath = `
-                            /(app)/appointment/${item.id}`; 
+                            // Cleaned up line-break string whitespace mismatch formatting 
+                            const mobilePath = `/(app)/appointment/${item.id}`; 
 
                             return (
                                 <AppointmentCard 
