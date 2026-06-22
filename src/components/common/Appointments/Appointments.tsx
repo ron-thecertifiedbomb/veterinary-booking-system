@@ -7,22 +7,67 @@ import { useGetAppointments } from "@/features/appointment/hooks/useGetAppointme
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, Platform, View } from "react-native";
+import { FlatList, Platform, View, TouchableOpacity, Text } from "react-native";
+
+// Helper to reliably format dates as YYYY-MM-DD in local time (avoids UTC drift issues)
+const getLocalDateString = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+};
+
+type TabState = "Previous" | "Today" | "Upcoming";
 
 export default function Appointments() {
-    // FIX 1: Extract 'user' context so the frontend can pull down dynamic user roles
+    
     const { token, user } = useAuth(); 
     const { loading, isEmpty, appointments, fetchAppointments, filters, setFilters } = useGetAppointments();
+    
+    const [activeTab, setActiveTab] = useState<TabState>("Today");
     const [activePicker, setActivePicker] = useState<"from" | "to" | null>(null);
   
     const role = user?.role;
 
-    // FIX 2: Added 'role' to dependency array and wrapped options to match FetchAppointmentsOptions schema
     useEffect(() => {
         if (token && role) {
             fetchAppointments({ filters, role });
         }
-    }, [token, filters, role, fetchAppointments]); // Stable and safe from infinite re-render cycles
+    }, [token, filters, role, fetchAppointments]); 
+
+    // Handle Tab Switching and Date Logic
+    const handleTabChange = (tab: TabState) => {
+        setActiveTab(tab);
+        const today = new Date();
+        let fromStr = "";
+        let toStr = "";
+
+        if (tab === "Today") {
+            fromStr = getLocalDateString(today);
+            toStr = getLocalDateString(today);
+        } else if (tab === "Upcoming") {
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            fromStr = getLocalDateString(tomorrow);
+
+            // Set end date to a few years in the future to capture all upcoming
+            const farFuture = new Date(today);
+            farFuture.setFullYear(farFuture.getFullYear() + 5);
+            toStr = getLocalDateString(farFuture);
+        } else if (tab === "Previous") {
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            toStr = getLocalDateString(yesterday);
+
+            // Set start date to a few years in the past
+            const farPast = new Date(today);
+            farPast.setFullYear(farPast.getFullYear() - 5);
+            fromStr = getLocalDateString(farPast);
+        }
+
+        // Updating the filters will automatically trigger the useEffect to fetch data
+        setFilters(prev => ({ ...prev, from: fromStr, to: toStr }));
+    };
 
     if (loading && appointments.length === 0) {
         return <Loader fullScreen />;
@@ -30,9 +75,10 @@ export default function Appointments() {
 
     const handleAddAppointment = () => {
         const isWeb = Platform.OS === "web";
-        router.push(isWeb ? "/web-home" : "/home");
+        router.push(isWeb ? "/(web)/home" : "(app)(tabs)/home");
     };
 
+    // Kept your existing custom picker logic intact just in case you trigger it elsewhere
     const handleDateSelection = (selectedDate: string) => {
         if (activePicker === "from") {
             setFilters(prev => ({ ...prev, from: selectedDate }));
@@ -45,10 +91,32 @@ export default function Appointments() {
     return (
         <Container>
             <HeaderSection title="My Appointments" />
+
+            {/* NEW: Tab Navigation Row */}
+            <View className="flex-row items-center justify-between px-4 mb-4 mt-2">
+                {(["Previous", "Today", "Upcoming"] as TabState[]).map((tab) => {
+                    const isActive = activeTab === tab;
+                    return (
+                        <TouchableOpacity
+                            key={tab}
+                            onPress={() => handleTabChange(tab)}
+                            className={`flex-1 py-2 mx-1 items-center rounded-full border ${
+                                isActive 
+                                    ? "bg-black border-black-600" 
+                                    : "bg-transparent border-gray-300"
+                            }`}
+                        >
+                            <Text className={`font-medium ${isActive ? "text-white" : "text-gray-600"}`}>
+                                {tab}
+                            </Text>
+                        </TouchableOpacity>
+                    );
+                })}
+            </View>
             
             {isEmpty && !loading ? (
                 <EmptyState
-                    title="No Appointments found"
+                    title={`No ${activeTab !== "Today" ? activeTab.toLowerCase() : ""} appointments found`}
                     buttonLabel="Book an Appointment"
                     onPress={handleAddAppointment}
                 />
@@ -62,7 +130,6 @@ export default function Appointments() {
                             paddingBottom: 32,
                             paddingTop: 8,
                         }}
-                        // FIX 3: Ensure pull-to-refresh correctly maintains active parameters
                         onRefresh={() => fetchAppointments({ filters, role })}
                         refreshing={loading}
                         ListFooterComponent={
@@ -76,7 +143,6 @@ export default function Appointments() {
                         }
                         renderItem={({ item }) => {
                             const webPath = `/appointments/appointment/${item.id}`;
-                            // Cleaned up line-break string whitespace mismatch formatting 
                             const mobilePath = `/(app)/appointment/${item.id}`; 
 
                             return (
