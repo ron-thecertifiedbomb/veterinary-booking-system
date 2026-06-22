@@ -68,18 +68,13 @@ export default function EditProfileForm() {
 
     // ✅ ZOD VALIDATION
     const handleSubmit = async () => {
-
         const payload = {name:form.name, phone: form.phone}
-
         const res = await updateProfile(payload);
-
         if (!res) {
             showAlert("Error", "Failed to update profile");
             return;
         }
-
         showAlert("Success", res.message, () => {
-
             router.replace(
                 Platform.OS === "web"
                     ? "/(web)/web-profile"
@@ -93,8 +88,9 @@ export default function EditProfileForm() {
 
     return (
         <View className="flex-1 max-w-md bg-white px-6 pt-6">
-     <BackButton webRoute="/(web)/profile" appRoute="(app)/(tabs)/profile" /> 
-            {/* HEADER */}
+<BackButton 
+    onPress={() => {router.replace("/(staff-app)/(tabs)/profile");}} className="mb-4 p-1" />
+    
             <View className="mb-10 items-center">
                 <Text className="text-3xl font-bold text-gray-900">
                     Edit Profile
@@ -116,9 +112,6 @@ export default function EditProfileForm() {
                         error={errors.name}
                     />
                 </View>
-
-              
-
                 <View className="mb-6">
                     <AppTextInput
                         label="Phone (Optional)"
@@ -130,7 +123,6 @@ export default function EditProfileForm() {
                         error={errors.phone}
                     />
                 </View>
-
                 <Pressable
                     onPress={handleSubmit}
                     disabled={isDisabled}

@@ -125,7 +125,7 @@ export default function AddPetForm() {
             <View className="mb-6">
                 {/* ✅ BACK BUTTON */}
 
-                <BackButton webRoute="/(web)/web-pets" appRoute="(app)/(tabs)/pets" /> 
+                <BackButton webRoute="/(web)/pets" appRoute="(app)/(tabs)/pets" /> 
       
                 {/* ✅ TITLE */}
                 <View className="items-center">

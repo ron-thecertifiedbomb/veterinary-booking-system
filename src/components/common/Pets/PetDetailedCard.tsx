@@ -30,7 +30,7 @@ export default function PetDetailedCard({ item, onPress }: PetDetailedCardProps)
       <View className="flex-row items-center">
         
         {/* Left: Avatar Block */}
-        <View className="w-16 h-16 bg-zinc-950 rounded-2xl items-center justify-center mr-4 border border-zinc-800 shadow-sm">
+        <View className="w-20 h-20 bg-zinc-950 rounded-2xl items-center justify-center mr-4 border border-zinc-800 shadow-sm">
           <Text className="text-white text-3xl font-black tracking-tighter">
             {initial}
           </Text>
@@ -46,7 +46,7 @@ export default function PetDetailedCard({ item, onPress }: PetDetailedCardProps)
           {/* Name Block with Label */}
           <View className="mb-2">
             <Text className="text-[8px] font-black tracking-widest text-zinc-400 uppercase mb-0.5">
-              Subject Name
+             Name
             </Text>
             <Text 
               className="text-2xl font-black tracking-tighter text-zinc-900 uppercase leading-none"
@@ -75,7 +75,7 @@ export default function PetDetailedCard({ item, onPress }: PetDetailedCardProps)
         {/* Right: Metrics & Chevron */}
         <View className="flex-row items-center pl-3">
           {item.weight && (
-            <View className="items-end mr-4">
+            <View className="items-end">
               <Text className="text-[8px] font-black tracking-widest text-zinc-400 uppercase mb-0.5">
                 Weight
               </Text>

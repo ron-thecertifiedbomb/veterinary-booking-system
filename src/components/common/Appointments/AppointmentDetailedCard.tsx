@@ -70,11 +70,11 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
             {appointment.serviceType}
           </Text>
         </View>
-        <View className={`px-3 py-1.5 rounded-full shadow-sm mt-1 ${getStatusColor(appointment.status)}`}>
+        {/* <View className={`px-3 py-1.5 rounded-full shadow-sm mt-1 ${getStatusColor(appointment.status)}`}>
           <Text className="text-[9px] font-black tracking-widest uppercase text-current">
             {appointment.status}
           </Text>
-        </View>
+        </View> */}
       </View>
 
       {/* ─── TICKET BLOCK: DATE & TIME ─── */}

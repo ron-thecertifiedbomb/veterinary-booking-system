@@ -2,16 +2,15 @@ import Container from "@/components/common/Container/Container";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Loader from "@/components/common/Loader/Loader";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { Feather } from "@expo/vector-icons"; // 1. Added clean icon family library
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
-import { ProfileCard } from "./ProfileCard";
 import { useGetProfile } from "@/features/users/hook/useGetProfile";
+import { ProfileCard } from "../ProfileCard";
 
-export default function Profile() {
+export default function StaffProfile() {
   
   const router = useRouter();
   const { logout, isAuthenticated } = useAuth();
@@ -36,7 +35,7 @@ export default function Profile() {
 
   const handleEditRedirect = () => {
     router.push(
-      Platform.OS === "web" ? "/(web)/profile/edit" : "(app)/profile/edit"
+ "/(staff-app)/profile/edit/"
     );
   };
 

@@ -59,7 +59,7 @@ export default function Pets() {
                         renderItem={({ item }) => {
                             // Changed to { } to allow variable declarations
                             const webPath = `/pets/profile/${item.id}`;
-                            const mobilePath = `/(app)/pets/profile/${item.id}`; 
+                            const mobilePath = `/(app)/pet/profile/${item.id}`; 
                             
                             return (
                                 <PetCard
