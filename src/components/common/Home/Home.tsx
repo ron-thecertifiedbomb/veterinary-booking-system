@@ -18,12 +18,13 @@ import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
 import Loader from "../Loader/Loader";
-import { logger } from "@/utils/logger/logger";
+
 
 export default function Home() {
     const [date, setDate] = useState(getTodayDate());
+
     const [showModal, setShowModal] = useState(false);
-    const { loading, user, token, refreshSession } = useAuth();
+    const { user, token, refreshSession} = useAuth();
 
     const [bookingSummary, setBookingSummary] = useState<CreateAppointmentResponse | null>(null);
     const [successModalVisible, setSuccessModalVisible] = useState(false);
@@ -36,7 +37,6 @@ export default function Home() {
     const { fetchPets, loading: petsLoading, pets } = useGetAllPets();
 
 
-// 1. Run once on mount: Try to refresh the user's session
 useEffect(() => {
     refreshSession();
 }, []); // Empty array = strictly runs once
@@ -101,8 +101,7 @@ useEffect(() => {
         }
     };
 
-    // ✅ FIX 1: We use OR (||) and only check initial load states, ignoring slotsLoading here
-    if (loading || (petsLoading && !initialFetchDone)) {
+    if ( (petsLoading && !initialFetchDone)) {
         return <Loader fullScreen />;
     }
 

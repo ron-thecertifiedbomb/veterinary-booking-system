@@ -22,5 +22,5 @@ export type AuthContextType = {
   }>;
   register: (payload: RegisterPayload) => Promise<RegistrationResponse>;
   refreshSession: () => Promise<void>;
-  logout: () => Promise<LogOutResponse>,
+  logout: () => Promise<LogOutResponse | null>,
 };

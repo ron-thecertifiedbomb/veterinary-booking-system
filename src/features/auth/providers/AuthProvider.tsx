@@ -185,35 +185,42 @@ async function register(payload: RegisterPayload) {
         }
     }
 
-    // ----------------------------------
+ 
+// ----------------------------------
     // LOGOUT
     // ----------------------------------
+    
     async function logout() {
         try {
             setLoading(true);
-            const storedToken = await getStorageItem("access_token");  
-            const response = await logoutApi(storedToken);
+            
+            // 1. Declare the variable outside the block so it can be returned later
+            let response = null; 
+            
+            if (token) {
+                // 2. Assign the value without using 'const'
+                response = await logoutApi(token); 
+            }
+            
             await clearSession();
-            return response
+            
+            // 3. Now this is perfectly valid!
+            return response; 
         } 
         finally {
             setLoading(false);
         }
     }
-
-    // ----------------------------------
+ // ----------------------------------
     // Refresh Session
     // ----------------------------------
-
     async function refreshSession() {
-        await loadSession();
-        await validateSession(); // <-- this calls fetchMe ✅
+      
+        if (!user || !token) {
+            await loadSession();
+        }
+        await validateSession(); 
     }
-
-
-    // ----------------------------------
-    // UPDATE APPOINTMENTS (NO DUPLICATION)
-    // ----------------------------------
 
 
 
