@@ -28,7 +28,7 @@ export default function AdminWebLayout() {
 
     /* ---------------- GUARDS ---------------- */
 
-    if (loading) return <Loader fullScreen />;
+    if (loading) return null;
 
     if (!isAuthenticated) {
         return <Redirect href="/(auth)/login" />;
