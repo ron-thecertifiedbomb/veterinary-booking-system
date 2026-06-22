@@ -17,13 +17,15 @@ import { getTodayDate } from "@/utils/appointments/formatter";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
+import Loader from "../Loader/Loader";
+import { logger } from "@/utils/logger/logger";
 
 
 export default function Home() {
 
     const [date, setDate] = useState(getTodayDate());
     const [showModal, setShowModal] = useState(false);
-    const { user, refreshSession } = useAuth();
+    const { loading, user, refreshSession } = useAuth();
     const [bookingSummary, setBookingSummary] =
         useState<CreateAppointmentResponse | null>(null);
     const [successModalVisible, setSuccessModalVisible] =
@@ -31,7 +33,6 @@ export default function Home() {
     const {
         fetchSlots,
         slots,
-        currentDate,
         loading: slotsLoading,
     } = useGetSlots();
 
@@ -48,6 +49,9 @@ export default function Home() {
     const { fetchPets, loading: petsLoading, pets } = useGetAllPets();
 
  
+    if (loading && petsLoading && slotsLoading) {
+        return <Loader fullScreen />;
+    }
     // 3. Update initial fetch to set initialFetchDone when complete
     useEffect(() => {
         const loadPets = async () => {
@@ -58,19 +62,18 @@ export default function Home() {
         loadPets();
     }, []);
 
-    // 4. Update the redirect logic to respect initialFetchDone and petsLoading
+ 
     useEffect(() => {
-        // Wait until we have a user, OR the pets are actively fetching, OR the initial fetch hasn't finished yet!
+      
         if (!user || petsLoading || !initialFetchDone || redirected.current) return;
 
-        // Once initialFetchDone is TRUE, it's finally safe to check the length
         if (user.role === "CUSTOMER" && pets.length === 0) {
             redirected.current = true;
 
             if (Platform.OS === "web") {
                 router.replace("/(web)/pets/add");
             } else {
-                router.replace("/(app)/add-pet");
+                router.replace("/(app)/pets/add");
             }
         }
     }, [user, pets, petsLoading, initialFetchDone]); 

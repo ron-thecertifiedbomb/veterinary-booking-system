@@ -35,21 +35,22 @@ export default function AppointmentCard({ appointments, routerPath }: Appointmen
             </View>
 
             {/* ─── PATIENT BODY INFORMATION ─── */}
+         
             <View className="mb-4">
+                <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-0.5">
+                    Service Type:
+                </Text>
+                <Text className="text-base font-black tracking-tight text-black uppercase">
+                    {appointments.serviceType}
+                </Text>
+            </View>
+            <View >
                 <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-0.5">
                     Pet Name
                 </Text>
                 <Text className="text-base font-black tracking-tight text-black uppercase">
                     {appointments.pet?.petName || "Unknown Patient"}
                 </Text>
-           
-
-<Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1 mt-4">
-          Clinical Assignment
-        </Text>
-                    <Text className="text-sm font-bold text-zinc-800 uppercase">
-          {appointments.staff?.name ? appointments.staff?.name : "Awaiting Assignment"}
-        </Text>
             </View>
             <View className="absolute right-5 top-[26px]">
                 <Text className="text-zinc-300 text-xl font-black">›</Text>

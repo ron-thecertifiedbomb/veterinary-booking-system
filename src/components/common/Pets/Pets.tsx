@@ -73,33 +73,10 @@ export default function Pets() {
                         }}
                     />
 
-                    {/* ✅ FLOATING BUTTON */}
+           
                     <Pressable
                         onPress={handleAddPet}
-                        style={({ pressed }) => ({
-                            position: "absolute",
-                            bottom: 50,
-                            right: 50,
-                            flexDirection: "row",
-                            alignItems: "center",
-                            borderRadius: 999,
-                            paddingVertical: 14,
-                            paddingHorizontal: 18,
-                            backgroundColor: "#000",
-                            transform: [
-                                {
-                                    scale: pressed ? 0.93 : 1,
-                                },
-                            ],
-                            shadowColor: "#000",
-                            shadowOpacity: 0.2,
-                            shadowRadius: 12,
-                            shadowOffset: {
-                                width: 0,
-                                height: 8,
-                            },
-                            elevation: 8,
-                        })}
+                        
                     >
                         <Text className="text-white text-lg mr-1">
                             +

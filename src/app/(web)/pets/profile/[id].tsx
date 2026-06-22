@@ -27,14 +27,12 @@ const {loading, fetchPet, pet} = useGetPetProfile()
 
     return (
         <Container>
-            <View className="w-full flex flex-row justify-center px-10">
+            <View className="w-full flex flex-row justify-start px-4">
             <BackButton 
                 onPress={() => router.back()} 
                 className="mb-4 p-1" 
             />
-            <HeaderSection
-                title={"Pet Details"}
-            />
+    
              </View>
               <PetDetailedCard item={pet} /> 
            

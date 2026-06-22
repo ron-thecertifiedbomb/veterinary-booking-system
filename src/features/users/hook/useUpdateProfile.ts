@@ -4,60 +4,40 @@ import {
   getStorageItem,
   setStorageItem,
 } from "@/features/auth/storage/auth.storage";
-import { updateCustomerProfile, UpdateProfileResponse } from "@/features/customer/types/customer.types";
+
 import { api } from "@/utils/api/api.client";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
+import { UpdateUserProfilePayload, UpdateUserProfileResponse } from "../types/types";
+import { updateProfileApi } from "../services/updateProfile.api";
+import { useAuth } from "@/features/auth/providers/AuthProvider";
 
 // ✅ types
-
-
 
 export function useUpdateProfile() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
-  const updateProfile = async (
+  const updateProfile = async ( payload: UpdateUserProfilePayload,
+  ): Promise<UpdateUserProfileResponse | null> => {
+
+    const { token } = useAuth(); 
+    if (!token ) throw new Error("Not authenticated");
     
-    payload: updateCustomerProfile,
-  ): Promise<UpdateProfileResponse | null> => {
     try {
+      if (!payload ) throw new Error("empty payload");
       setLoading(true);
       setError(null);
       setMessage(null);
-
-      logger.info("Updating user profile");
-
-      // ✅ get token
-      const token = await getStorageItem("access_token");
-      if (!token) throw new Error("Not authenticated");
-
-      // ✅ API call
-      const response = await api<UpdateProfileResponse>("/api/vet/users/me", {
-        method: "PATCH",
-        body: JSON.stringify(payload),
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      const response = await updateProfileApi(token, payload)
       setMessage(response.message);
-
-      logger.info("Profile updated", {
-        id: response.data?.id,
-      });
-
-      // ✅ update stored user (important)
-      await setStorageItem("user", JSON.stringify(response.data));
-
       return response;
     } catch (err: any) {
       logger.error("Update profile failed", err);
 
       const errorMessage = err?.message || "Failed to update profile";
       setError(errorMessage);
-
       return null;
     } finally {
       setLoading(false);

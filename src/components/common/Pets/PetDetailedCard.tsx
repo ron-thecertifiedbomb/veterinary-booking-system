@@ -93,10 +93,6 @@ export default function PetDetailedCard({ item, onPress }: PetDetailedCardProps)
           {/* Structural Divider */}
           <View className="w-[1px] h-12 bg-zinc-100 mr-4" />
 
-          {/* Action Area */}
-          <View className="items-center justify-center">
-             <Text className="text-zinc-300 text-3xl font-light">›</Text>
-          </View>
         </View>
       </View>
 
@@ -105,12 +101,12 @@ export default function PetDetailedCard({ item, onPress }: PetDetailedCardProps)
         <View className="mt-5 pt-4 border-t border-zinc-100">
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center">
-              <View className="w-1.5 h-1.5 rounded-full bg-indigo-500 mr-2 shadow-sm" />
-              <Text className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">
+          
+              <Text className="text-[9px] font-black text-black uppercase tracking-widest">
                 Appointment History
               </Text>
             </View>
-            <Text className="text-[9px] font-black text-indigo-500 uppercase tracking-widest">
+            <Text className="text-[9px] font-black text-black uppercase tracking-widest">
               Total: {apptCount}
             </Text>
           </View>

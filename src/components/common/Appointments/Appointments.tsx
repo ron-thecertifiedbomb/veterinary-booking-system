@@ -6,10 +6,10 @@ import Loader from "@/components/common/Loader/Loader";
 import { useGetAppointments } from "@/features/appointment/hooks/useGetAppointments";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react"; // Added useRef
 import { FlatList, Platform, View, TouchableOpacity, Text } from "react-native";
 
-// Helper to reliably format dates as YYYY-MM-DD in local time (avoids UTC drift issues)
+// Helper to reliably format dates as YYYY-MM-DD in local time
 const getLocalDateString = (date: Date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -20,22 +20,29 @@ const getLocalDateString = (date: Date) => {
 type TabState = "Previous" | "Today" | "Upcoming";
 
 export default function Appointments() {
-    
     const { token, user } = useAuth(); 
     const { loading, isEmpty, appointments, fetchAppointments, filters, setFilters } = useGetAppointments();
-    
     const [activeTab, setActiveTab] = useState<TabState>("Today");
     const [activePicker, setActivePicker] = useState<"from" | "to" | null>(null);
   
     const role = user?.role;
 
+    // ✅ NEW: Store the last fetched parameters to prevent duplicate network calls
+    const lastFetchedParams = useRef<string | null>(null);
+
     useEffect(() => {
         if (token && role) {
-            fetchAppointments({ filters, role });
+            // Stringify the dependencies we care about for a deep-equality check
+            const currentParams = JSON.stringify({ filters, role, token });
+
+            // Only trigger the API call if the parameters are actually different
+            if (lastFetchedParams.current !== currentParams) {
+                fetchAppointments({ filters, role });
+                lastFetchedParams.current = currentParams; // Update our memory bank
+            }
         }
     }, [token, filters, role, fetchAppointments]); 
 
-    // Handle Tab Switching and Date Logic
     const handleTabChange = (tab: TabState) => {
         setActiveTab(tab);
         const today = new Date();
@@ -50,7 +57,6 @@ export default function Appointments() {
             tomorrow.setDate(tomorrow.getDate() + 1);
             fromStr = getLocalDateString(tomorrow);
 
-            // Set end date to a few years in the future to capture all upcoming
             const farFuture = new Date(today);
             farFuture.setFullYear(farFuture.getFullYear() + 5);
             toStr = getLocalDateString(farFuture);
@@ -59,13 +65,12 @@ export default function Appointments() {
             yesterday.setDate(yesterday.getDate() - 1);
             toStr = getLocalDateString(yesterday);
 
-            // Set start date to a few years in the past
             const farPast = new Date(today);
             farPast.setFullYear(farPast.getFullYear() - 5);
             fromStr = getLocalDateString(farPast);
         }
 
-        // Updating the filters will automatically trigger the useEffect to fetch data
+        // Updating filters triggers the useEffect. If the resulting string is new, it fetches.
         setFilters(prev => ({ ...prev, from: fromStr, to: toStr }));
     };
 
@@ -78,7 +83,6 @@ export default function Appointments() {
         router.push(isWeb ? "/(web)/home" : "(app)(tabs)/home");
     };
 
-    // Kept your existing custom picker logic intact just in case you trigger it elsewhere
     const handleDateSelection = (selectedDate: string) => {
         if (activePicker === "from") {
             setFilters(prev => ({ ...prev, from: selectedDate }));
@@ -92,7 +96,6 @@ export default function Appointments() {
         <Container>
             <HeaderSection title="My Appointments" />
 
-            {/* NEW: Tab Navigation Row */}
             <View className="flex-row items-center justify-between px-4 mb-4 mt-2">
                 {(["Previous", "Today", "Upcoming"] as TabState[]).map((tab) => {
                     const isActive = activeTab === tab;
@@ -130,6 +133,8 @@ export default function Appointments() {
                             paddingBottom: 32,
                             paddingTop: 8,
                         }}
+                        // Note: User-initiated pull-to-refresh will still bypass the ref check 
+                        // because we are explicitly calling the function here. This is exactly what we want.
                         onRefresh={() => fetchAppointments({ filters, role })}
                         refreshing={loading}
                         ListFooterComponent={

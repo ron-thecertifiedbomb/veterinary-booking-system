@@ -3,15 +3,16 @@ import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
 import { fetchProfileApi } from "../services/fetchProfileApi.api";
-import { userProfile } from "../types/types";
+import { UserProfile } from "../types/types";
 
 
-export function useGetUserProfile() {
+
+export function useGetProfile() {
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const [profile, setProfile] = useState<userProfile | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const { token } = useAuth(); 
 
   const fetchUserProfile = async (

@@ -1,5 +1,4 @@
 import { Appointment, StaffDropdownItem } from "@/features/appointment/types/appointment";
-
 import { 
   formatAppointmentDateOnly, 
   formatAppointmentTimeOnly, 
@@ -8,7 +7,6 @@ import {
 } from "@/utils/appointments/formatter";
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Share } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 
 interface AppointmentDetailCardProps {
   appointment: Appointment | null;
@@ -29,10 +27,13 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
   selectedStaffId,
   onAssignStaff,
 }) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   if (!appointment) return null;
 
   const isBooked = appointment.status === "BOOKED";
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const petInitial = appointment.pet?.petName ? appointment.pet.petName.charAt(0).toUpperCase() : "?";
+
   const handleShareBooking = async () => {
     try {
       await Share.share({
@@ -43,128 +44,168 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
     }
   };
 
+  // Helper for dynamic status pill styling
+  const getStatusColor = (status: string) => {
+    switch(status.toUpperCase()) {
+      case 'BOOKED': return 'bg-black text-white';
+      case 'CANCELLED': return 'bg-red-500 text-white';
+      case 'COMPLETED': return 'bg-emerald-500 text-white';
+      default: return 'bg-zinc-800 text-white';
+    }
+  };
+
   return (
-    <View className="bg-white p-6 rounded-3xl space-y-6 border border-zinc-200">
+    <View className="bg-white p-5 rounded-[32px] border border-zinc-200/80 shadow-sm mb-4">
       
-      {/* Service Type Header */}
-      <View className="flex-row justify-between items-center pb-4 border-b border-zinc-200">
-        <View>
-          <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
+      {/* ─── HEADER: SERVICE & STATUS ─── */}
+      <View className="flex-row justify-between items-start mb-5">
+        <View className="flex-1 mr-4">
+          <Text className="text-[9px] font-black tracking-widest uppercase text-zinc-400 mb-1">
             Service Type
           </Text>
-          <Text className="text-2xl font-black tracking-tighter text-black uppercase">
+          <Text 
+            className="text-3xl font-black tracking-tighter text-zinc-950 uppercase leading-none"
+            numberOfLines={2}
+          >
             {appointment.serviceType}
           </Text>
         </View>
-        <View className="bg-transparent px-3 py-1 border border-black rounded-full">
-          <Text className="text-[9px] font-black tracking-widest uppercase text-black">
+        <View className={`px-3 py-1.5 rounded-full shadow-sm mt-1 ${getStatusColor(appointment.status)}`}>
+          <Text className="text-[9px] font-black tracking-widest uppercase text-current">
             {appointment.status}
           </Text>
         </View>
       </View>
 
-      {/* Date & Time */}
-      <View className="flex-row justify-between items-center py-1">
+      {/* ─── TICKET BLOCK: DATE & TIME ─── */}
+      <View className="flex-row bg-zinc-50 rounded-[20px] p-4 border border-zinc-100 mb-5">
         <View className="flex-1">
-          <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
+          <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-0.5">
             Date
           </Text>
-          <Text className="text-sm font-bold text-black uppercase">
+          <Text className="text-sm font-black text-zinc-900 uppercase">
             {formatAppointmentDateOnly(appointment.appointmentDate)}
           </Text>
         </View>
-        <View className="w-[1px] h-8 bg-zinc-200 mx-6" />
-        <View className="flex-1">
-          <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
+        
+        <View className="w-[1px] bg-zinc-200 mx-4" />
+        
+        <View className="flex-1 items-end">
+          <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-0.5">
             Time
           </Text>
-          <Text className="text-sm font-bold text-black uppercase">
+          <Text className="text-sm font-black text-zinc-900 uppercase">
             {formatAppointmentTimeOnly(appointment.appointmentDate)}
           </Text>
         </View>
       </View>
 
-      {/* Reference ID & Share */}
-      <View className="bg-zinc-100 rounded-2xl p-4 flex-row justify-between items-center">
+      {/* ─── REFERENCE ID & SHARE ─── */}
+      <View className="flex-row justify-between items-end mb-6 px-1">
         <View className="flex-1 mr-4">
-          <Text className="text-[8px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
+          <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1.5">
             Reference ID
           </Text>
-          <Text className="text-xs font-mono font-bold tracking-tight text-zinc-800 select-all" numberOfLines={1}>
-            {formatBookingCode(appointment.bookingCode)}
-          </Text>
+          <View className="bg-zinc-100 self-start px-2.5 py-1 rounded-md border border-zinc-200">
+            <Text className="text-xs font-mono font-bold tracking-widest text-zinc-700 select-all">
+              {formatBookingCode(appointment.bookingCode)}
+            </Text>
+          </View>
         </View>
         <TouchableOpacity 
           onPress={handleShareBooking} 
           activeOpacity={0.8}
-          className="bg-black px-4 py-2 rounded-full"
+          className="bg-zinc-100 px-4 py-2 rounded-full border border-zinc-200"
         >
-          <Text className="text-white text-[10px] font-black tracking-widest uppercase">Share</Text>
+          <Text className="text-zinc-700 text-[10px] font-black tracking-widest uppercase">Share</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Patient Profile */}
-      <View className="pt-1">
-        <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-3">
+      {/* ─── PATIENT DOSSIER ─── */}
+      <View className="mb-6">
+        <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-2 px-1">
           Patient Profile
         </Text>
-        <View className="border border-zinc-200 rounded-2xl p-4 flex-row justify-between items-center">
-          <View>
-            <Text className="text-base font-black tracking-tight text-black uppercase">
-              {appointment.pet?.petName}
-            </Text>
-            <Text className="text-xs text-zinc-500 mt-0.5 font-medium">
-              {appointment.pet?.species} / {appointment.pet?.breed}
+        <View className="flex-row items-center border border-zinc-200 rounded-[24px] p-3">
+          {/* Avatar */}
+          <View className="w-12 h-12 bg-zinc-950 rounded-[16px] items-center justify-center mr-3 shadow-sm">
+            <Text className="text-white text-xl font-black tracking-tighter">
+              {petInitial}
             </Text>
           </View>
-          <View className="border-l border-zinc-200 pl-4 py-1">
-            <Text className="text-xs font-black text-black">
-              {appointment.pet?.weight ? `${appointment.pet.weight / 100} KG` : "—"}
+          {/* Info */}
+          <View className="flex-1">
+            <Text className="text-lg font-black tracking-tight text-zinc-900 uppercase leading-none mb-1">
+              {appointment.pet?.petName}
+            </Text>
+            <View className="flex-row items-center gap-1.5">
+              <Text className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">
+                {appointment.pet?.species}
+              </Text>
+              {appointment.pet?.breed && (
+                <>
+                  <Text className="text-[9px] text-zinc-300">•</Text>
+                  <Text className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">
+                    {appointment.pet.breed}
+                  </Text>
+                </>
+              )}
+            </View>
+          </View>
+          {/* Weight */}
+          <View className="items-end pl-3 border-l border-zinc-100 pr-2">
+            <Text className="text-base font-black text-zinc-900 leading-none">
+              {appointment.pet?.weight ? `${appointment.pet.weight / 100}` : "—"}
+            </Text>
+            <Text className="text-[8px] font-black tracking-[0.1em] text-zinc-400 uppercase mt-0.5">
+              KG
             </Text>
           </View>
         </View>
       </View>
 
-      {/* Clinical Assignment Section */}
-        <View className="pt-1 relative z-30 bg-white">
-        <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
+      {/* ─── CLINICAL ASSIGNMENT (Inline Accordion) ─── */}
+      <View className="mb-6 px-1">
+        <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-2">
           Clinical Assignment
         </Text>
+        
         {appointment.staff ? (
-          <Text className="text-sm font-bold text-zinc-800 uppercase">
-            {appointment.staff.name}
+          <Text className="text-base font-black text-zinc-900 uppercase tracking-tight">
+          {appointment.staff.name}
           </Text>
         ) : loadingStaff ? (
-          <Text className="text-xs italic text-zinc-400 uppercase">
-            Checking available schedules...
+          <Text className="text-xs font-bold italic text-zinc-400 uppercase tracking-wider">
+            Checking schedules...
           </Text>
         ) : staffError ? (
-          <Text className="text-xs font-bold text-red-500 uppercase">
+          <Text className="text-xs font-bold text-red-500 uppercase tracking-wider">
             {staffError}
           </Text>
         ) : staffOptions.length > 0 ? (
-          <View className="relative w-full z-40 bg-white">
-            
-            {/* Main Trigger Box */}
+          <View>
             <TouchableOpacity
-              activeOpacity={1}
+              activeOpacity={0.7}
               onPress={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-full h-[50px] flex-row items-center justify-between bg-white px-1 -ml-1"
-              style={{ outlineStyle: 'none' } as any}
+              className="flex-row items-center justify-between bg-zinc-50 border border-zinc-200 px-4 py-3.5 rounded-xl"
             >
-              <Text className={`text-[13px] font-black tracking-wide uppercase ${selectedStaffId ? 'text-black' : 'text-zinc-400'}`}>
+              <Text className={`text-xs font-black tracking-widest uppercase ${selectedStaffId ? 'text-zinc-900' : 'text-zinc-400'}`}>
                 {selectedStaffId 
-                  ? staffOptions.find(d => d.value === selectedStaffId)?.label.toUpperCase() 
-                  : "CHOOSE AN AVAILABLE DOCTOR..."}
+                  ? staffOptions.find(d => d.value === selectedStaffId)?.label
+                  : "Assign a Doctor..."}
               </Text>
-              <Text className="text-[10px] font-bold text-black ml-2">▼</Text>
+              <Text className="text-[10px] font-black text-zinc-400">
+                {isDropdownOpen ? '▲' : '▼'}
+              </Text>
             </TouchableOpacity>
 
-            {/* Float Option List Popover — Explicitly cast on top layer shadow */}
+            {/* Inline Expanding List (Prevents mobile clipping) */}
             {isDropdownOpen && (
-              <View className="absolute top-[45px] left-0 w-full bg-white rounded-2xl shadow-xl py-2 mt-1 z-50 border-0">
-                {staffOptions.map((doctor) => {
+              <View className="mt-2 bg-white border border-zinc-200 rounded-xl overflow-hidden shadow-sm">
+                {staffOptions.map((doctor, index) => {
                   const isSelected = doctor.value === selectedStaffId;
+                  const isLast = index === staffOptions.length - 1;
+                  
                   return (
                     <TouchableOpacity
                       key={doctor.value}
@@ -173,14 +214,12 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
                         if (onAssignStaff) onAssignStaff(doctor.value);
                         setIsDropdownOpen(false);
                       }}
-                      className={`px-4 py-3 flex-row justify-between items-center bg-white ${
-                        isSelected ? 'bg-zinc-100' : 'hover:bg-zinc-50'
-                      }`}
+                      className={`px-4 py-3.5 flex-row justify-between items-center bg-white ${!isLast ? 'border-b border-zinc-100' : ''}`}
                     >
-                      <Text className={`text-[13px] font-black tracking-wide uppercase ${isSelected ? 'text-black' : 'text-zinc-800'}`}>
-                        {doctor.label.toUpperCase()}
+                      <Text className={`text-xs font-black tracking-widest uppercase ${isSelected ? 'text-indigo-600' : 'text-zinc-700'}`}>
+                        {doctor.label}
                       </Text>
-                      {isSelected && <Text className="text-xs font-black text-black">✓</Text>}
+                      {isSelected && <Text className="text-xs font-black text-indigo-600">✓</Text>}
                     </TouchableOpacity>
                   );
                 })}
@@ -188,49 +227,39 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
             )}
           </View>
         ) : (
-          <Text className="text-sm font-bold text-zinc-400 uppercase">
-            No doctors available for this slot
+          <Text className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+            No doctors available
           </Text>
         )}
       </View>
 
-      {/* Cancel Button Block — Explicitly set below the selector stack */}
-      {isBooked && onCancelPress && (
-        <TouchableOpacity 
-          onPress={onCancelPress}
-          activeOpacity={0.9}
-          className="w-full bg-black py-4 rounded-full items-center mt-2 relative z-10"
-        >
-          <Text className="text-white text-xs font-black tracking-[0.2em] uppercase">
-            Cancel Appointment
-          </Text>
-        </TouchableOpacity>
-      )}
-
-
-      {/* Remarks */}
+      {/* ─── REMARKS ─── */}
       {appointment.notes && (
-        <View className="pt-1">
-          <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1.5">
-            Remarks
+        <View className="mb-6 px-1">
+          <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-2">
+            Remarks:
           </Text>
-          <Text className="text-xs font-medium leading-relaxed text-zinc-600 border-l-2 border-zinc-200 pl-3">
-            {appointment.notes}
-          </Text>
+          <View>
+            <Text className="text-xs font-medium leading-relaxed text-black">
+              {appointment.notes}
+            </Text>
+          </View>
         </View>
       )}
 
-      {/* Cancel Button */}
+      {/* ─── DESTRUCTIVE ACTION ─── */}
       {isBooked && onCancelPress && (
-        <TouchableOpacity 
-          onPress={onCancelPress}
-          activeOpacity={0.9}
-          className="w-full bg-black py-4 rounded-full items-center mt-2"
-        >
-          <Text className="text-white text-xs font-black tracking-[0.2em] uppercase">
-            Cancel Appointment
-          </Text>
-        </TouchableOpacity>
+        <View className="pt-2 border-t border-zinc-100">
+          <TouchableOpacity 
+            onPress={onCancelPress}
+            activeOpacity={0.8}
+            className="w-full bg-zinc-50 border border-zinc-200 py-4 rounded-[16px] items-center"
+          >
+            <Text className="text-red-500 text-[10px] font-black tracking-widest uppercase">
+              Cancel Appointment
+            </Text>
+          </TouchableOpacity>
+        </View>
       )}
     </View>
   );

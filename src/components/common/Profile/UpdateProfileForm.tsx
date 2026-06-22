@@ -1,16 +1,13 @@
-import { useEffect, useState } from "react";
-import { ActivityIndicator, Platform, Pressable, Text, View } from "react-native";
-import { useRouter } from "expo-router";
 import AppTextInput from "@/components/common/AppTextInput/AppTextInput";
 import Loader from "@/components/common/Loader/Loader";
-import { useUpdateProfile } from "@/features/users/hook/UpdateProfile";
-import { useGetUserProfile } from "@/features/users/hook/useGetUserProfile";
-import { showAlert } from "@/hooks/crossPlatformAlert";
-import { z } from "zod";
-import { BackButton } from "../BackButton/BackButton";
 import { useGetCustomerProfile } from "@/features/customer/hooks/useGetCustomerProfile";
 import { useUpdateCustomerProfile } from "@/features/customer/hooks/useUpdateCustomerProfile";
-import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { showAlert } from "@/hooks/crossPlatformAlert";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Platform, Pressable, Text, View } from "react-native";
+import { z } from "zod";
+import { BackButton } from "../BackButton/BackButton";
 
 // ✅ ZOD SCHEMA
 const editProfileSchema = z.object({

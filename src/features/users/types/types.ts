@@ -11,3 +11,14 @@ export type UserRole = "CUSTOMER" | "ADMIN" | "STAFF";
 
 
 
+  export type UpdateUserProfileResponse = {
+    message: string;
+    data: UserProfile;
+  };
+  
+  
+  export type UpdateUserProfilePayload = {
+    name: string;
+    phone: string;
+  };
+  
