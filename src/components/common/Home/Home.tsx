@@ -39,11 +39,10 @@ export default function Home() {
 
 useEffect(() => {
     refreshSession();
-}, []); // Empty array = strictly runs once
+}, []); 
 
-// 2. Listen for Auth: Fetch pets ONLY when the user is ready
+
 useEffect(() => {
-    // If no user/token, OR if we already fetched the pets, stop here.
     if (!user || !token || initialFetchDone) {
         return;
     }
@@ -57,16 +56,15 @@ useEffect(() => {
 
 }, [user, token, initialFetchDone]);
 
-    // Redirect if no pets
     useEffect(() => {
         if (!user || petsLoading || !initialFetchDone || redirected.current) return;
 
         if (user.role === "CUSTOMER" && pets.length === 0) {
             redirected.current = true;
             if (Platform.OS === "web") {
-                router.replace("/(web)/pets/add");
+                router.replace("/(web)/pets/add/");
             } else {
-                router.replace("/(app)/pets/add");
+                router.replace("/(app)/pets/add/");
             }
         }
     }, [user, pets, petsLoading, initialFetchDone]); 

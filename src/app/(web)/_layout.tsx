@@ -2,7 +2,6 @@
 
 import Container from "@/components/common/Container/Container";
 import DashboardShell from "@/components/common/Layouts/DashBoardShell/DashBoardShell";
-import Loader from "@/components/common/Loader/Loader"; // Ensure you import this!
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { customerNav } from "@/utils/config/sidebar/sidebar";
 import { Redirect, Slot } from "expo-router";
@@ -12,9 +11,9 @@ export default function WebLayout() {
   const { user, isAuthenticated, loading } = useAuth();
 
 
-  // if (loading) {
-  //   return <Loader fullScreen />; // or return null;
-  // }
+  if (loading) {
+    return null; 
+  }
 
   
   if (!isAuthenticated) {

@@ -70,11 +70,10 @@ export default function Appointments() {
             fromStr = getLocalDateString(farPast);
         }
 
-        // Updating filters triggers the useEffect. If the resulting string is new, it fetches.
         setFilters(prev => ({ ...prev, from: fromStr, to: toStr }));
     };
 
-    if (loading && appointments.length === 0) {
+    if (loading) {
         return <Loader fullScreen />;
     }
 
