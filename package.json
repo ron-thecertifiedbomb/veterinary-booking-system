@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "expo start",
     "dev:clean": "expo start --clear",
-    "build:web": "dotenv -e .env -- expo export --platform web",
+    "build:web": "dotenv -e .env.staging -- expo export --platform web",
     "build:prebuild": "dotenv -e .env -- npx expo prebuild --platform android --clean",
-    "build:apk": "cd android && dotenv -e ../.env -- ./gradlew clean assembleRelease",
+    "build:apk": "cd android && dotenv -e ../.env.staging -- ./gradlew assembleRelease",
     "install:android:debug": "adb install -r android/app/build/outputs/apk/debug/app-debug.apk",
     "install:apk": "adb install -r android/app/build/outputs/apk/release/app-release.apk",
     "prebuild:ios": "dotenv -e .env-- expo prebuild --platform ios",
