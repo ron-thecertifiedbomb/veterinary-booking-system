@@ -21,7 +21,7 @@ export const ServerTimeBanner: React.FC<ServerTimeBannerProps> = ({ serverTime, 
         
         <View className="flex-1">
           <Text className="text-[9px] font-black tracking-[0.15em] uppercase text-zinc-400 dark:text-zinc-500">
-            System Synchronization
+        Today is
           </Text>
           <Text className="text-xs font-bold font-mono text-zinc-700 dark:text-zinc-300 mt-1" numberOfLines={1}>
             {displayTime}

@@ -19,6 +19,7 @@ import { useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
 import Loader from "../Loader/Loader";
 import { ServerTimeBanner } from "../ServerTimeBanner/ServerTimeBanner";
+import { logger } from "@/utils/logger/logger";
 
 
 export default function Home() {
@@ -37,7 +38,7 @@ export default function Home() {
     const { createAppointment, loading: creating } = useCreateAppointment();
     const { fetchPets, loading: petsLoading, pets } = useGetAllPets();
 
-
+logger.info('Current Time', currentTime)
 useEffect(() => {
     refreshSession();
 }, []); 
@@ -107,8 +108,7 @@ useEffect(() => {
     return (
         <Container>
             <HeaderSection title="Book an Appointment" />
-            <ServerTimeBanner serverTime={currentTime}/>
-            {/* Hide the EmptyState until the initial fetch is actually done */}
+         <ServerTimeBanner serverTime={currentTime}/>
             {!initialFetchDone ? null : pets.length === 0 ? (
                 <EmptyState
                     title="No Registered Pet"

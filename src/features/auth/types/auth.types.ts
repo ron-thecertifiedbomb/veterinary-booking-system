@@ -12,14 +12,12 @@ export type AuthenticatedUser = {
 };
 
  export type Time = {
-  currentTime: {
     iso: string;
     local: string;
-  };
  }
 
 export type AuthenticatedUserResponse = {
   message: string;
   data: UserProfile;
-  time: Time
+  currentTime: Time
 };

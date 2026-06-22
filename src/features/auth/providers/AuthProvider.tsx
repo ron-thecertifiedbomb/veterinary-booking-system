@@ -57,20 +57,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // ----------------------------------
     // SET SESSION (single source of truth)
     // ----------------------------------
-    async function setSession(user: AuthenticatedUser, token: string, time: string) {
+    async function setSession(user: AuthenticatedUser, token: string, time: string | null) { // ✅ 1. Accept string | null
 
-        await Promise.all([
+        // ✅ 2. Build the array of storage promises dynamically
+        const storageTasks = [
             setStorageItem("user", JSON.stringify(user)),
             setStorageItem("access_token", token),
-        ]);
-
+        ];
+    
+        // ✅ 3. Only set the time if it exists, otherwise clean it up
+        if (time) {
+            storageTasks.push(setStorageItem("time", time));
+        } else {
+            storageTasks.push(removeStorageItem("time"));
+        }
+    
+        await Promise.all(storageTasks);
+    
         sessionCache = { user, token, time };
         setUser(user);
         setToken(token);
-        setCurrentTime(time)
+        setCurrentTime(time);
+        
         logger.info("Session set");
     }
-
     // ----------------------------------
     // LOAD SESSION (from storage)
     // ----------------------------------
@@ -89,8 +99,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             sessionCache = { user: parsedUser, token: storedToken, time: storedTime};
 
             setUser(parsedUser);
-            setToken(storedToken);
             setCurrentTime(storedTime)
+            setToken(storedToken);
             logger.info("Session loaded");
         } catch (err) {
             logger.error("Load session error", err);
@@ -114,7 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             const meRes = await fetchMe(storedToken);
 
-            await setSession(meRes.data, storedToken, meRes.time.currentTime.local);
+            await setSession(meRes.data, storedToken, meRes.currentTime.local);
 
             logger.info("Session validated");
         } catch (err) {
@@ -139,13 +149,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await Promise.all([
             removeStorageItem("user"),
             removeStorageItem("access_token"),
+            removeStorageItem("time"),
         ]);
 
         sessionCache = { user: null, token: null, time: null };
 
         setUser(null);
         setToken(null);
-
+        setCurrentTime(null);
         logger.info("Session cleared");
     }
 
@@ -159,11 +170,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const loginRes = await loginApi(payload);
             const access_token = loginRes.data.access_token;
             const meRes = await fetchMe(access_token);
-            const serverTime = meRes.time.currentTime.local
+            const serverTime = meRes.currentTime.iso;
+            logger.info('serverTime', serverTime)
             await setSession(meRes.data, access_token, serverTime);
             return {
                 user: meRes.data,
                 message: loginRes.message,
+            
             };
         } finally {
             setLoading(false);
