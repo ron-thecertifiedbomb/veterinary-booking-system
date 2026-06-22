@@ -12,7 +12,7 @@ type AppointmentCardProps = {
 
 export default function AppointmentCard({ appointments, routerPath }: AppointmentCardProps) {
 
-    const hasStatus = appointments.status === "BOOKED" || appointments.status === "COMPLETED";
+    // const hasStatus = appointments.status === "BOOKED" || appointments.status === "COMPLETED";
 
     return (
         <Pressable

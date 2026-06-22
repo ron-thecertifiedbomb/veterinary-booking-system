@@ -4,25 +4,29 @@ import Container from "@/components/common/Container/Container";
 import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Loader from "@/components/common/Loader/Loader";
 import { useAssignStaff } from "@/features/admin/hooks/useAssignStaff";
+import { useDeleteAppointment } from "@/features/admin/hooks/useDeleteAppointment";
 import { useGetAppointments } from "@/features/appointment/hooks/useGetAppointments";
 import { useStaffOptions } from "@/features/appointment/hooks/useGetStaffOptions";
+
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { useLocalSearchParams } from "expo-router"; 
+import { useLocalSearchParams, useRouter } from "expo-router"; // <-- Added useRouter
 import { useEffect, useState } from "react"; 
-import { View, Alert } from "react-native"; 
+import { View, Alert, Platform } from "react-native"; 
 
 export default function AdminAppointmentDetailedScreen() {
+    const router = useRouter(); // <-- Initialize router
     const { bookingCode } = useLocalSearchParams<{ bookingCode?: string }>();
     const { token, user } = useAuth(); 
+    
+    // Hooks
     const { loading: loadingApt, singleAppointment, fetchAppointments } = useGetAppointments();
     const { fetchStaffOptions, options, loading: loadingStaff, error: staffError } = useStaffOptions();
     const { assignStaff, loading: loadingAssign, error: assignError } = useAssignStaff();
+    const { deleteAppointment, loading: isDeleting } = useDeleteAppointment(); // <-- Initialize Delete Hook
     
     const role = user?.role;
-    console.log('booking code', bookingCode)
     const [selectedStaffId, setSelectedStaffId] = useState<string>("");
 
-    // Sync local selection state immediately whenever the data changes from the network background thread
     useEffect(() => {
         if (singleAppointment?.staff?.id) {
             setSelectedStaffId(singleAppointment.staff.id);
@@ -31,13 +35,11 @@ export default function AdminAppointmentDetailedScreen() {
         }
     }, [singleAppointment]);
 
-    // FIX 1: Restored conditional guards to prevent calling the API with uninitialized route parameters
     useEffect(() => {
         if (!token || !bookingCode || !role) return;
         fetchAppointments({ bookingCode }); 
     }, [token, bookingCode, role]);
 
-    // FIX 2: Re-inserted the missing effect hook to fetch staff option lists when the screen mounts
     useEffect(() => {
         if (!token || !bookingCode) return;
         fetchStaffOptions(bookingCode);
@@ -51,7 +53,6 @@ export default function AdminAppointmentDetailedScreen() {
     }, [assignError, singleAppointment]);
 
     const handleStaffAssignmentSubmit = async (staffId: string) => {
-        // Allowing empty string or null values to enable unassignment operations
         if (!bookingCode) return;
         
         const payloadValue = staffId === "" ? null : staffId;
@@ -66,6 +67,38 @@ export default function AdminAppointmentDetailedScreen() {
         }
     };
 
+    // Refactored handle delete to use Native Alert and proper hook logic
+    const handleDelete = async (code: string) => {
+        if (Platform.OS === 'web') {
+            // WEB BEHAVIOR
+            const isConfirmed = window.confirm(`Are you sure you want to delete appointment ${code}?`);
+            if (isConfirmed) {
+                const success = await deleteAppointment(code);
+                if (success) router.replace("/admin/appointments");
+            }
+        } else {
+            // MOBILE BEHAVIOR (iOS / Android)
+            Alert.alert(
+                "Delete Appointment",
+                `Are you sure you want to delete appointment ${code}? This cannot be undone.`,
+                [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                        text: "Delete",
+                        style: "destructive",
+                        onPress: async () => {
+                            const success = await deleteAppointment(code);
+                            if (success) {
+                                Alert.alert("Deleted", "Appointment successfully deleted.");
+                                router.replace("/admin/appointments"); 
+                            }
+                        }
+                    }
+                ]
+            );
+        }
+    };
+
     if ((loadingApt && !singleAppointment) || loadingAssign) {
         return <Loader fullScreen />;
     }
@@ -73,8 +106,9 @@ export default function AdminAppointmentDetailedScreen() {
     return (
         <Container className="flex-1 max-w-3xl mx-auto w-full px-4">
             <BackButton webRoute="/admin/appointments" className="mb-4 p-1" />
-            
             <AppointmentDetailCard 
+                onDeletePress={bookingCode ? () => handleDelete(bookingCode) : undefined}
+                isDeleting={isDeleting} // <-- Passes loading state to the button
                 appointment={singleAppointment} 
                 staffOptions={options}
                 loadingStaff={loadingStaff}

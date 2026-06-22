@@ -6,21 +6,25 @@ import {
   formatReadableDate 
 } from "@/utils/appointments/formatter";
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Share } from "react-native";
+import { View, Text, TouchableOpacity, Share, ActivityIndicator } from "react-native";
 
 interface AppointmentDetailCardProps {
   appointment: Appointment | null;
   onCancelPress?: () => void;
+  onDeletePress?: () => void;       
+  isDeleting?: boolean;             
   staffOptions?: StaffDropdownItem[];
   loadingStaff?: boolean;
   staffError?: string | null;
   selectedStaffId?: string;
+  onRefresh?: () => void;           // <-- Don't forget this if you need it!
   onAssignStaff?: (staffId: string) => void;
 }
-
 export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
   appointment,
   onCancelPress,
+  onDeletePress,
+  isDeleting = false,
   staffOptions = [],
   loadingStaff = false,
   staffError = null,
@@ -44,7 +48,6 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
     }
   };
 
-  // Helper for dynamic status pill styling
   const getStatusColor = (status: string) => {
     switch(status.toUpperCase()) {
       case 'BOOKED': return 'bg-black text-white';
@@ -70,11 +73,6 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
             {appointment.serviceType}
           </Text>
         </View>
-        {/* <View className={`px-3 py-1.5 rounded-full shadow-sm mt-1 ${getStatusColor(appointment.status)}`}>
-          <Text className="text-[9px] font-black tracking-widest uppercase text-current">
-            {appointment.status}
-          </Text>
-        </View> */}
       </View>
 
       {/* ─── TICKET BLOCK: DATE & TIME ─── */}
@@ -127,13 +125,6 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
           Patient Profile
         </Text>
         <View className="flex-row items-center  rounded-[24px] p-3">
-          {/* Avatar */}
-          {/* <View className="w-12 h-12 bg-zinc-950 rounded-[16px] items-center justify-center mr-3 shadow-sm">
-            <Text className="text-white text-xl font-black tracking-tighter">
-              {petInitial}
-            </Text>
-          </View> */}
-          {/* Info */}
           <View className="flex-1">
             <Text className="text-lg font-black tracking-tight text-zinc-900 uppercase leading-none mb-1">
               {appointment.pet?.petName}
@@ -152,7 +143,6 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
               )}
             </View>
           </View>
-          {/* Weight */}
           <View className="items-end pl-3 border-l border-zinc-100 pr-2">
             <Text className="text-base font-black text-zinc-900 leading-none">
               {appointment.pet?.weight ? `${appointment.pet.weight / 100}` : "—"}
@@ -164,7 +154,7 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
         </View>
       </View>
 
-      {/* ─── CLINICAL ASSIGNMENT (Inline Accordion) ─── */}
+      {/* ─── CLINICAL ASSIGNMENT ─── */}
       <View className="mb-6 px-1">
         <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-2">
          Assigned Doctor:
@@ -199,7 +189,6 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
               </Text>
             </TouchableOpacity>
 
-            {/* Inline Expanding List (Prevents mobile clipping) */}
             {isDropdownOpen && (
               <View className="mt-2 bg-white border border-zinc-200 rounded-xl overflow-hidden shadow-sm">
                 {staffOptions.map((doctor, index) => {
@@ -247,18 +236,42 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
         </View>
       )}
 
-      {/* ─── DESTRUCTIVE ACTION ─── */}
-      {isBooked && onCancelPress && (
-        <View className="pt-2 border-t border-zinc-100">
-          <TouchableOpacity 
-            onPress={onCancelPress}
-            activeOpacity={0.8}
-            className="w-full bg-zinc-50 border border-zinc-200 py-4 rounded-[16px] items-center"
-          >
-            <Text className="text-red-500 text-[10px] font-black tracking-widest uppercase">
-              Cancel Appointment
-            </Text>
-          </TouchableOpacity>
+      {/* ─── DESTRUCTIVE ACTIONS (Cancel / Delete) ─── */}
+      {(onCancelPress || onDeletePress) && (
+        <View className="pt-4 border-t border-zinc-100 flex-row gap-3">
+          
+          {/* Customer Cancel Button (Soft Delete) */}
+          {isBooked && onCancelPress && (
+            <TouchableOpacity 
+              onPress={onCancelPress}
+              activeOpacity={0.8}
+              disabled={isDeleting}
+              className={`flex-1 bg-zinc-50 border border-zinc-200 py-3.5 rounded-[12px] items-center justify-center ${isDeleting ? 'opacity-50' : ''}`}
+            >
+              <Text className="text-zinc-600 text-[10px] font-black tracking-widest uppercase">
+                Cancel
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {/* Admin Delete Button (Hard Delete) */}
+          {onDeletePress && (
+            <TouchableOpacity 
+              onPress={onDeletePress}
+              activeOpacity={0.8}
+              disabled={isDeleting}
+              className={`flex-1 bg-red-50 border border-red-100 py-3.5 rounded-[12px] items-center justify-center flex-row gap-2 ${isDeleting ? 'opacity-50' : ''}`}
+            >
+              {isDeleting ? (
+                <ActivityIndicator size="small" color="#ef4444" />
+              ) : (
+                <Text className="text-red-500 text-[10px] font-black tracking-widest uppercase">
+                  Delete
+                </Text>
+              )}
+            </TouchableOpacity>
+          )}
+
         </View>
       )}
     </View>
