@@ -14,6 +14,7 @@ import {
 import PetCard from "./PetCard";
 
 export default function Pets() {
+    
     const { pets, fetchPets, loading } = useGetAllPets();
     const isEmpty = pets.length === 0;
 
@@ -23,7 +24,7 @@ export default function Pets() {
 
     const handleAddPet = () => {
         const isWeb = Platform.OS === "web";
-        router.push(isWeb ? "/(web)/pets/add" : "(app)/add-pet");
+        router.push(isWeb ? "/(web)/pets/add" : "(app)/pet/add/");
     };
 
     if (loading) return <Loader fullScreen />;
