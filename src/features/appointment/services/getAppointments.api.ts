@@ -13,7 +13,7 @@ export interface GetAppointmentsFilters {
 // Payload interfaces tailored precisely to each distinct endpoint task
 export interface GetAppointmentsPayload {
   token: string;
-  role: string; // Required to eliminate mixed matching array fallbacks
+  role: string | null; // Required to eliminate mixed matching array fallbacks
   filters?: GetAppointmentsFilters | null;
 }
 
