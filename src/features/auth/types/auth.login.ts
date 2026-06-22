@@ -7,10 +7,10 @@ export type LoginResponse = {
   data: {
     access_token: string;
     user: UserProfile
-    serverTime: {
-      iso: string;
-      local: string;
-    };
+  };
+  currentTime: {
+    iso: string;
+    local: string;
   };
 };
 

@@ -9,6 +9,7 @@ import { LogOutResponse } from "./auth.logout";
 
 export type AuthContextType = {
   token: string | null;
+  currentTime: string | null;
   loading: boolean;
   user: AuthenticatedUser | null;
   isAuthenticated: boolean;

@@ -17,7 +17,7 @@ import {
 
 import { logger } from "@/utils/logger/logger";
 import { ApiError, NetworkError } from "@/utils/api/api.client";
-import { AuthenticatedUser } from "@/features/auth/types/auth.types";
+import { AuthenticatedUser, Time } from "@/features/auth/types/auth.types";
 import { AuthContextType } from "@/features/auth/types/auth.context";
 import { fetchMe } from "@/features/auth/services/fetchMe.api";
 import { LoginPayload } from "@/features/auth/types/auth.login";
@@ -25,6 +25,7 @@ import { loginApi } from "@/features/auth/services/login.api";
 import { RegisterPayload } from "@/features/auth/types/auth.registration";
 import { registerApi } from "@/features/auth/services/register.api";
 import { logoutApi } from "../services/logout.api";
+import { Merge } from "lucide-react";
 
 // ----------------------------------
 // MEMORY CACHE (FAST ACCESS)
@@ -32,9 +33,11 @@ import { logoutApi } from "../services/logout.api";
 let sessionCache: {
     user: AuthenticatedUser | null;
     token: string | null;
+    time: string | null
 } = {
     user: null,
     token: null,
+    time: null
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -45,6 +48,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<AuthenticatedUser | null>(null);
     const [token, setToken] = useState<string | null>(null);
+    const [currentTime, setCurrentTime] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
     const hydrated = useRef(false);
@@ -53,17 +57,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // ----------------------------------
     // SET SESSION (single source of truth)
     // ----------------------------------
-    async function setSession(user: AuthenticatedUser, token: string) {
+    async function setSession(user: AuthenticatedUser, token: string, time: string) {
 
         await Promise.all([
-            
             setStorageItem("user", JSON.stringify(user)),
             setStorageItem("access_token", token),
         ]);
-        sessionCache = { user, token };
+
+        sessionCache = { user, token, time };
         setUser(user);
         setToken(token);
-
+        setCurrentTime(time)
         logger.info("Session set");
     }
 
@@ -72,20 +76,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // ----------------------------------
     async function loadSession() {
         try {
-            const [storedUser, storedToken] = await Promise.all([
+            const [storedUser, storedToken, storedTime] = await Promise.all([
                 getStorageItem("user"),
                 getStorageItem("access_token"),
+                getStorageItem("time"),
             ]);
 
-            if (!storedUser || !storedToken) return;
+            if (!storedUser || !storedToken || !storedTime) return;
 
             const parsedUser = JSON.parse(storedUser);
 
-            sessionCache = { user: parsedUser, token: storedToken };
+            sessionCache = { user: parsedUser, token: storedToken, time: storedTime};
 
             setUser(parsedUser);
             setToken(storedToken);
-
+            setCurrentTime(storedTime)
             logger.info("Session loaded");
         } catch (err) {
             logger.error("Load session error", err);
@@ -109,7 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             const meRes = await fetchMe(storedToken);
 
-            await setSession(meRes.data, storedToken);
+            await setSession(meRes.data, storedToken, meRes.time.currentTime.local);
 
             logger.info("Session validated");
         } catch (err) {
@@ -136,7 +141,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             removeStorageItem("access_token"),
         ]);
 
-        sessionCache = { user: null, token: null };
+        sessionCache = { user: null, token: null, time: null };
 
         setUser(null);
         setToken(null);
@@ -154,7 +159,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const loginRes = await loginApi(payload);
             const access_token = loginRes.data.access_token;
             const meRes = await fetchMe(access_token);
-            await setSession(meRes.data, access_token);
+            const serverTime = meRes.time.currentTime.local
+            await setSession(meRes.data, access_token, serverTime);
             return {
                 user: meRes.data,
                 message: loginRes.message,
@@ -246,6 +252,7 @@ async function register(payload: RegisterPayload) {
     // ----------------------------------
     const value: AuthContextType = {
         user,
+        currentTime,
         token,
         loading,
         isAuthenticated: !!user && !!token,

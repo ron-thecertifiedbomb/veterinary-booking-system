@@ -18,13 +18,14 @@ import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
 import Loader from "../Loader/Loader";
+import { ServerTimeBanner } from "../ServerTimeBanner/ServerTimeBanner";
 
 
 export default function Home() {
     const [date, setDate] = useState(getTodayDate());
 
     const [showModal, setShowModal] = useState(false);
-    const { user, token, refreshSession} = useAuth();
+    const { user, token, currentTime, refreshSession} = useAuth();
 
     const [bookingSummary, setBookingSummary] = useState<CreateAppointmentResponse | null>(null);
     const [successModalVisible, setSuccessModalVisible] = useState(false);
@@ -106,7 +107,7 @@ useEffect(() => {
     return (
         <Container>
             <HeaderSection title="Book an Appointment" />
-
+            <ServerTimeBanner serverTime={currentTime}/>
             {/* Hide the EmptyState until the initial fetch is actually done */}
             {!initialFetchDone ? null : pets.length === 0 ? (
                 <EmptyState
