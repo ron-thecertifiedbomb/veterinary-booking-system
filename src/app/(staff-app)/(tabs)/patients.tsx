@@ -68,16 +68,12 @@ export default function AssignedPatientsScreen() {
         }
         renderItem={({ item }) => {
           const formattedWeight = item.weight ? `${(item.weight / 10).toFixed(1)} kg` : 'N/A';
-          const hasPhone = !!item.customer?.user?.phone;
-          const hasEmail = !!item.customer?.user?.email;
-
           return (
             <View className="bg-white dark:bg-zinc-900 rounded-[28px] p-5 border border-zinc-200/60 dark:border-zinc-800/80 shadow-xs">
               
               {/* ─── TOP SECTION: PATIENT OVERVIEW CARD ─── */}
               <View className="flex-row justify-between items-start mb-4">
                 <View className="flex-row items-center flex-1 mr-2">
-             
                   <View className="flex-1">
                     <Text className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50" numberOfLines={1}>
                        Name: {item.petName}
@@ -87,8 +83,6 @@ export default function AssignedPatientsScreen() {
                     </Text>
                   </View>
                 </View>
-
-           
               </View>
 
               <View className="h-[1px] bg-zinc-100 dark:bg-zinc-800/60 my-1" />
@@ -103,40 +97,7 @@ export default function AssignedPatientsScreen() {
                     Client File
                   </Text>
                 </View>
-
-                {/* Fixed blank component variable assignment error from snippet */}
-                <Text className="text-sm font-bold text-zinc-800 dark:text-zinc-200 px-6 mb-4">
-                  {item.customer?.user?.name || "Unknown Client"}
-                </Text>
-
-                {/* ─── MOBILE FIRST BUTTONS PLATFORM ─── */}
-                {/* Replaced absolute padding layout offsets with 50/50 flex splits to increase mobile tap targets */}
-                <View className="flex-row items-center justify-between w-full  gap-4">
-                  {hasPhone && (
-                    <TouchableOpacity 
-                      onPress={() => handleCall(item.customer.user.phone)}
-                     className="flex-1 gap-4 flex-row items-center justify-center bg-zinc-100 dark:bg-zinc-800  rounded-xl border border-zinc-200/40 dark:border-zinc-700/30 min-h-[44px]"
-                    >
-                      <Svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-zinc-700 dark:text-zinc-300 mr-2">
-                        <Path d={ICONS.phone} />
-                      </Svg>
-                      <Text className="text-xs font-bold text-zinc-700 dark:text-zinc-300">Call Client</Text>
-                    </TouchableOpacity>
-                  )}
-
-                  {hasEmail && (
-                    <TouchableOpacity 
-                      onPress={() => handleEmail(item.customer.user.email, item.petName)}
-                      className="flex-1 gap-4 flex-row items-center justify-center bg-zinc-100 dark:bg-zinc-800  rounded-xl border border-zinc-200/40 dark:border-zinc-700/30 min-h-[44px]"
-                    >
-                      <Svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-zinc-700 dark:text-zinc-300 mr-2">
-                        <Path d={ICONS.email} />
-                      </Svg>
-                      <Text className="text-xs font-bold text-zinc-700 dark:text-zinc-300">Email</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              </View>
+              </View> 
 
               {/* ─── BASE FOOTER BLOCK: ASSIGNED CASES COUNTER ─── */}
               <View className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800/60 flex-row justify-between items-center">

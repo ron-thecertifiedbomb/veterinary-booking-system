@@ -13,7 +13,7 @@ export default function ScreenContainer({
 }: ScreenContainerProps) {
 
     return (
-        <SafeAreaView className="flex-1 bg-background items-center px-6">
+        <SafeAreaView className="flex-1 bg-background items-center px-2 lg:px-6">
             <View className="flex-1 w-full  justify-center">
                 {children}
             </View>

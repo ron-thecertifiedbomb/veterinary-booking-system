@@ -39,7 +39,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ profile, onEditPress }
   };
 
   return (
-    <View className="bg-white dark:bg-zinc-950 p-5 rounded-[32px] mb-4 border border-zinc-200/80 dark:border-zinc-800 shadow-sm">
+    <View className="bg-white dark:bg-zinc-950 p-4 lg:p-5 rounded-[32px] mb-4 border border-zinc-200/80 dark:border-zinc-800 shadow-sm">
       
       {/* ─── HEADER: AVATAR & IDENTITY ─── */}
       <View className="flex-row items-center mb-5">

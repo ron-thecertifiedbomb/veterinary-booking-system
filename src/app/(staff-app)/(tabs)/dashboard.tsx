@@ -1,7 +1,7 @@
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { useGetStaffDashBoardMetrics } from "@/features/staff/hook/useGetStaffDashBoardMetrics";
 import { useEffect } from "react";
-import { Text, View, ScrollView, RefreshControl } from "react-native";
+import { Text, View, ScrollView, RefreshControl, ActivityIndicator } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
 export default function Home() {
@@ -14,15 +14,24 @@ export default function Home() {
     }
   }, [token]);
 
+  // ─── INITIAL LOADING STATE ───
+  // Shows a spinner only on the first load before metrics exist
+  if (loading && !metrics) {
+    return (
+      <View className="flex-1 justify-center items-center bg-white dark:bg-zinc-950">
+        <ActivityIndicator size="large" className="text-zinc-900 dark:text-zinc-50" />
+      </View>
+    );
+  }
+
   const data = metrics || {
     totalAssigned: 0,
     completed: 0,
     inProgress: 0,
     upcoming: 0,
-    totalUniquePets: 0, // Injected to support your backend schema upgrade
+    totalUniquePets: 0, 
   };
 
-  // Curated minimalist palette mapping for high-contrast scannability
   const cards = [
     {
       label: "Total Assigned",
@@ -54,7 +63,6 @@ export default function Home() {
     },
   ];
 
-  // Extraction fallback logic for clean name rendering
   const greetingName = user?.name?.split(" ")[0] || "Staff";
 
   return (
@@ -68,20 +76,12 @@ export default function Home() {
       {/* ─── HEADER SECTION ─── */}
       <View className="mb-6 pt-2">
         <Text className="text-[10px] font-black tracking-[0.15em] uppercase text-zinc-400 dark:text-zinc-500 mb-1">
-          Clinical Dashboard
+       Dashboard
         </Text>
         <Text className="text-2xl font-black tracking-tighter text-zinc-950 dark:text-zinc-50 uppercase">
-          Welcome !
+          Welcome!
         </Text>
       </View>
-
-      {/* ─── LIVE SYNC STATUS BANNER ─── */}
-      {/* <View className="flex-row items-center px-4 py-3 bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-100 dark:border-zinc-900 rounded-2xl mb-6">
-        <View className={`h-2 w-2 rounded-full mr-2.5 ${loading ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`} />
-        <Text className="text-[10px] font-bold tracking-wider uppercase text-zinc-500 dark:text-zinc-400 flex-1">
-           {loading ? "Syncing core modules..." : "Metrics synchronized"}
-        </Text>
-      </View> */}
 
       {/* ─── METRICS GRID MATRIX ─── */}
       <View className="flex-row flex-wrap justify-between">
@@ -91,7 +91,6 @@ export default function Home() {
               key={index}
               className="w-[48%] p-4 bg-white dark:bg-zinc-900/30 border border-zinc-100 dark:border-zinc-900 rounded-3xl mb-4 shadow-sm justify-between min-h-[80px]"
             >
-              {/* Top Row: Label and Contextual Icon Container */}
               <View className="flex-row justify-between items-start">
                 <Text className="text-[10px] font-black tracking-wider uppercase text-zinc-400 dark:text-zinc-500 flex-1 mr-2 leading-3">
                   {card.label}
@@ -103,7 +102,6 @@ export default function Home() {
                 </View>
               </View>
 
-              {/* Bottom Row: Large Data Metric Display */}
               <View className="pt-4 flex-row items-baseline justify-between">
                 <Text className="text-2xl font-black tracking-tight text-zinc-950 dark:text-zinc-50">
                   {card.value}

@@ -17,13 +17,22 @@ export default function History() {
     fetchStaffAppointments();
   }, [token]);
 
-  // Handle initialization loading state cleanly
+ 
   if (loading && isEmpty) {
     return <Loader fullScreen />;
   }
-
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-zinc-50 dark:bg-zinc-950" edges={['top']}>
+        <View className="px-5 pt-4 pb-2">
+        <Text className="text-[10px] font-black tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-1">
+          Clinical File
+        </Text>
+        <Text className="text-xl lg:text-3xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
+         My Appointments
+        </Text>
+      </View>
+
+      
       <View className="flex-1 px-4">
         <FlatList
           data={appointments}
@@ -32,14 +41,13 @@ export default function History() {
           contentContainerStyle={{
             paddingBottom: 32,
             paddingTop: 8,
-            // Automatically fills screen height for clean empty-state layout centers
             flexGrow: 1, 
           }}
           ItemSeparatorComponent={() => <View className="h-4" />}
           onRefresh={fetchStaffAppointments}
           refreshing={loading}
           
-          // ─── UTILIZED ISEMPTY RENDER FLAG ───
+  
           ListEmptyComponent={
             !loading && isEmpty ? (
               <EmptyState
@@ -47,12 +55,10 @@ export default function History() {
               /> 
             ) : null
           }
-
-
           renderItem={({ item }) => (
             <AppointmentCard 
             appointments={item} 
-            routerPath={`/appointments/appointment/${item.id}`} 
+            routerPath={`(staff-app)/appointment/${item.id}`} 
           />
         )}
         />
