@@ -1,7 +1,6 @@
 import { BackButton } from "@/components/common/BackButton/BackButton";
 import Container from "@/components/common/Container/Container";
-import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
-import PetCard from "@/components/common/Pets/PetCard";
+import Loader from "@/components/common/Loader/Loader";
 import PetDetailedCard from "@/components/common/Pets/PetDetailedCard";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { useGetPetProfile } from "@/features/pet/hooks/useGetPetProfile";
@@ -23,7 +22,7 @@ const {loading, fetchPet, pet} = useGetPetProfile()
         fetchPet(petId)
     }, [token, petId]); 
 
-  
+    if (loading) return <Loader fullScreen />;
 
     return (
         <Container>
