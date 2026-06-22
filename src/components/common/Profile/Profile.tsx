@@ -46,11 +46,9 @@ if (!token) return
 
   return (
     <Container className="max-w-3xl w-full m-auto">
- 
       <HeaderSection title="My Profile" />
-
       <ProfileCard profile={profile} onEditPress={handleEditRedirect} />
-      {isMobile && (
+      {/* {isMobile && (
         <View className="w-full pt-4 items-center">
           <TouchableOpacity 
             onPress={handleLogout}
@@ -67,7 +65,7 @@ if (!token) return
             </Text>
           </TouchableOpacity>
         </View>
-      )}
+      )} */}
     </Container>
   );
 }
