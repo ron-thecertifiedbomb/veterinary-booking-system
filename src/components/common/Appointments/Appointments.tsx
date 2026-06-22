@@ -5,11 +5,10 @@ import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Loader from "@/components/common/Loader/Loader";
 import { useGetAppointments } from "@/features/appointment/hooks/useGetAppointments";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { router } from "expo-router";
-import { useEffect, useState, useRef } from "react"; 
+import { router, useFocusEffect } from "expo-router"; // ✅ Imported useFocusEffect
+import { useCallback, useState } from "react"; // ✅ Imported useCallback, removed useRef/useEffect
 import { FlatList, Platform, View, TouchableOpacity, Text } from "react-native";
 
-// Helper to reliably format dates as YYYY-MM-DD in local time
 const getLocalDateString = (date: Date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -23,23 +22,18 @@ export default function Appointments() {
     const { token, user } = useAuth(); 
     const { loading, isEmpty, appointments, fetchAppointments, filters, setFilters } = useGetAppointments();
     const [activeTab, setActiveTab] = useState<TabState>("Today");
-    const [activePicker, setActivePicker] = useState<"from" | "to" | null>(null);
   
     const role = user?.role;
 
-    // Store the last fetched parameters to prevent duplicate network calls
-    const lastFetchedParams = useRef<string | null>(null);
-
-    useEffect(() => {
-        if (token && role) {
-            const currentParams = JSON.stringify({ filters, role, token });
-
-            if (lastFetchedParams.current !== currentParams) {
+    // ✅ REPLACED useEffect WITH useFocusEffect
+    useFocusEffect(
+        useCallback(() => {
+            // This runs every time the screen comes into focus OR when dependencies (like filters) change
+            if (token && role) {
                 fetchAppointments({ filters, role });
-                lastFetchedParams.current = currentParams; 
             }
-        }
-    }, [token, filters, role, fetchAppointments]); 
+        }, [token, role, filters, fetchAppointments])
+    );
 
     const handleTabChange = (tab: TabState) => {
         setActiveTab(tab);
@@ -73,19 +67,8 @@ export default function Appointments() {
 
     const handleAddAppointment = () => {
         const isWeb = Platform.OS === "web";
-        router.push(isWeb ? "/(web)/home" : "(app)/(tabs)/home"); // Note: Fixed missing slash in app tabs route
+        router.push(isWeb ? "/(web)/home" : "/(app)/(tabs)/home"); 
     };
-
-    const handleDateSelection = (selectedDate: string) => {
-        if (activePicker === "from") {
-            setFilters(prev => ({ ...prev, from: selectedDate }));
-        } else if (activePicker === "to") {
-            setFilters(prev => ({ ...prev, to: selectedDate }));
-        }
-        setActivePicker(null); 
-    };
-
-    // ✅ FULL SCREEN LOADER REMOVED HERE 
 
     return (
         <Container>
@@ -114,7 +97,11 @@ export default function Appointments() {
             </View>
             
             {/* CONTENT AREA */}
-            {isEmpty && !loading ? (
+            {loading && appointments.length === 0 ? (
+                <View className="flex-1 justify-center items-center">
+                    <Loader />
+                </View>
+            ) : isEmpty ? (
                 <EmptyState
                     title={`No ${activeTab !== "Today" ? activeTab.toLowerCase() : ""} appointments found`}
                     buttonLabel="Book an Appointment"
@@ -131,16 +118,8 @@ export default function Appointments() {
                             paddingTop: 8,
                         }}
                         onRefresh={() => fetchAppointments({ filters, role })}
-                        refreshing={loading}
-                        ListFooterComponent={
-                            loading && appointments.length === 0 ? (
-                                <View className="py-10">
-                                    <Loader />
-                                </View>
-                            ) : (
-                                <View style={{ height: 40 }} />
-                            )
-                        }
+                        refreshing={loading && appointments.length > 0} 
+                        ListFooterComponent={<View style={{ height: 40 }} />} 
                         renderItem={({ item }) => {
                             const webPath = `/appointments/appointment/${item.id}`;
                             const mobilePath = `/(app)/appointment/${item.id}`; 

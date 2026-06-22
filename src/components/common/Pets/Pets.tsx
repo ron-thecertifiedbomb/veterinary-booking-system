@@ -79,7 +79,7 @@ export default function Pets() {
                         onPress={handleAddPet}
                         
                     >
-                        <Text className="text-white text-lg mr-1">
+                        <Text className="text-black text-lg mr-1">
                             +
                         </Text>
                         <Text className="text-white font-semibold text-sm">

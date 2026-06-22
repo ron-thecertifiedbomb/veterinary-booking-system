@@ -78,7 +78,7 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
       </View>
 
       {/* ─── TICKET BLOCK: DATE & TIME ─── */}
-      <View className="flex-row bg-zinc-50 rounded-[20px] p-4 border border-zinc-100 mb-5">
+      <View className="flex-row rounded-[20px] p-4  mb-5">
         <View className="flex-1">
           <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-0.5">
             Date
@@ -106,7 +106,7 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
           <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1.5">
             Reference ID
           </Text>
-          <View className="bg-zinc-100 self-start px-2.5 py-1 rounded-md border border-zinc-200">
+          <View className="self-start px-2.5 py-1 rounded-md ">
             <Text className="text-xs font-mono font-bold tracking-widest text-zinc-700 select-all">
               {formatBookingCode(appointment.bookingCode)}
             </Text>
@@ -115,7 +115,7 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
         <TouchableOpacity 
           onPress={handleShareBooking} 
           activeOpacity={0.8}
-          className="bg-zinc-100 px-4 py-2 rounded-full border border-zinc-200"
+          className="bg-zinc-100 px-4 py-2 rounded-full "
         >
           <Text className="text-zinc-700 text-[10px] font-black tracking-widest uppercase">Share</Text>
         </TouchableOpacity>
@@ -126,13 +126,13 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
         <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-2 px-1">
           Patient Profile
         </Text>
-        <View className="flex-row items-center border border-zinc-200 rounded-[24px] p-3">
+        <View className="flex-row items-center  rounded-[24px] p-3">
           {/* Avatar */}
-          <View className="w-12 h-12 bg-zinc-950 rounded-[16px] items-center justify-center mr-3 shadow-sm">
+          {/* <View className="w-12 h-12 bg-zinc-950 rounded-[16px] items-center justify-center mr-3 shadow-sm">
             <Text className="text-white text-xl font-black tracking-tighter">
               {petInitial}
             </Text>
-          </View>
+          </View> */}
           {/* Info */}
           <View className="flex-1">
             <Text className="text-lg font-black tracking-tight text-zinc-900 uppercase leading-none mb-1">
@@ -167,7 +167,7 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
       {/* ─── CLINICAL ASSIGNMENT (Inline Accordion) ─── */}
       <View className="mb-6 px-1">
         <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-2">
-          Clinical Assignment
+         Assigned Doctor:
         </Text>
         
         {appointment.staff ? (

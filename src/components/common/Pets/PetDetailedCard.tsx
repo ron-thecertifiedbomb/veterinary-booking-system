@@ -35,9 +35,9 @@ export default function PetDetailedCard({ item, onPress }: PetDetailedCardProps)
             {initial}
           </Text>
           {/* Micro-label inside avatar for extreme detail */}
-          <View className="absolute -bottom-2 bg-white px-1.5 py-0.5 rounded border border-zinc-200 shadow-sm">
+          {/* <View className="absolute -bottom-2 bg-white px-1.5 py-0.5 rounded border border-zinc-200 shadow-sm">
             <Text className="text-[6px] font-black text-zinc-900 tracking-widest uppercase">ID:{item.id}</Text>
-          </View>
+          </View> */}
         </View>
 
         {/* Middle: Name & Labeled Tags */}
