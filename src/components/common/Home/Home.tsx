@@ -20,56 +20,49 @@ import { Platform } from "react-native";
 import Loader from "../Loader/Loader";
 import { logger } from "@/utils/logger/logger";
 
-
 export default function Home() {
-
     const [date, setDate] = useState(getTodayDate());
     const [showModal, setShowModal] = useState(false);
-    const { loading, user, refreshSession } = useAuth();
-    const [bookingSummary, setBookingSummary] =
-        useState<CreateAppointmentResponse | null>(null);
-    const [successModalVisible, setSuccessModalVisible] =
-        useState(false);
-    const {
-        fetchSlots,
-        slots,
-        loading: slotsLoading,
-    } = useGetSlots();
+    const { loading, user, token, refreshSession } = useAuth();
 
+    const [bookingSummary, setBookingSummary] = useState<CreateAppointmentResponse | null>(null);
+    const [successModalVisible, setSuccessModalVisible] = useState(false);
+    
     const [initialFetchDone, setInitialFetchDone] = useState(false);
-
     const redirected = useRef(false);
-
-    const {
-        createAppointment,
-        loading: creating,
-    } = useCreateAppointment();
-
-    // 1. Rename loading to petsLoading
+    
+    const { fetchSlots, slots, loading: slotsLoading } = useGetSlots();
+    const { createAppointment, loading: creating } = useCreateAppointment();
     const { fetchPets, loading: petsLoading, pets } = useGetAllPets();
 
- 
-    if (loading && petsLoading && slotsLoading) {
-        return <Loader fullScreen />;
-    }
-    // 3. Update initial fetch to set initialFetchDone when complete
-    useEffect(() => {
-        const loadPets = async () => {
-            await fetchPets(); 
-            setInitialFetchDone(true); 
-        };
-        
-        loadPets();
-    }, []);
 
- 
+// 1. Run once on mount: Try to refresh the user's session
+useEffect(() => {
+    refreshSession();
+}, []); // Empty array = strictly runs once
+
+// 2. Listen for Auth: Fetch pets ONLY when the user is ready
+useEffect(() => {
+    // If no user/token, OR if we already fetched the pets, stop here.
+    if (!user || !token || initialFetchDone) {
+        return;
+    }
+
+    const loadPets = async () => {
+        await fetchPets(); 
+        setInitialFetchDone(true); 
+    };
+
+    loadPets();
+
+}, [user, token, initialFetchDone]);
+
+    // Redirect if no pets
     useEffect(() => {
-      
         if (!user || petsLoading || !initialFetchDone || redirected.current) return;
 
         if (user.role === "CUSTOMER" && pets.length === 0) {
             redirected.current = true;
-
             if (Platform.OS === "web") {
                 router.replace("/(web)/pets/add");
             } else {
@@ -78,7 +71,6 @@ export default function Home() {
         }
     }, [user, pets, petsLoading, initialFetchDone]); 
 
-  
     const handleSelectDate = async (newDate: string) => {
         setDate(newDate);
         setShowModal(true); 
@@ -109,22 +101,26 @@ export default function Home() {
         }
     };
 
+    // ✅ FIX 1: We use OR (||) and only check initial load states, ignoring slotsLoading here
+    if (loading || (petsLoading && !initialFetchDone)) {
+        return <Loader fullScreen />;
+    }
+
     return (
         <Container>
-            <HeaderSection
-                title="Book an Appointment"
-            />
+            <HeaderSection title="Book an Appointment" />
 
-            {/* 5. Hide the EmptyState (or show a loader) until the initial fetch is actually done */}
-            {petsLoading || !initialFetchDone ? null : pets.length === 0 ? (
+            {/* Hide the EmptyState until the initial fetch is actually done */}
+            {!initialFetchDone ? null : pets.length === 0 ? (
                 <EmptyState
                     title="No Registered Pet"
                     buttonLabel="Register your Pet"
                     onPress={() =>
+                        // ✅ FIX 2: Matched these paths to the ones used in the useEffect!
                         router.replace(
                             Platform.OS === "web"
-                                ? "/(web)/web-add-pet"
-                                : "/(app)/add-pet"
+                                ? "/(web)/pets/add" 
+                                : "/(app)/pets/add"
                         )
                     }
                 />
