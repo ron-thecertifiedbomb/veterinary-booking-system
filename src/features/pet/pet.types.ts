@@ -39,4 +39,10 @@ export type GetAllPetsResponse = {
   data: Pet[];
 };
 
+export type GetOnePetResponse = {
+  message: string;
+  data: Pet;
+};
+
+
 export type Pets = Pet[];

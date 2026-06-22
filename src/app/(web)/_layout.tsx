@@ -10,10 +10,9 @@ import { View } from "react-native";
 
 
 export default function WebLayout() {
-  const { user, loading, isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
-  // ✅ loading
-  if (loading) return <Loader fullScreen />;
+
 
   // ✅ BLOCK: not authenticated
   if (!isAuthenticated) {

@@ -1,41 +1,46 @@
-// ..\src\features\pet\hooks\useGetPet.ts
+// ..\src\features\pet\hooks\useGetPets.ts
 
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { Pet } from "@/features/pet/pet.types";
-import { getPetApi } from "@/features/pet/services/getPetsApi";
 import { logger } from "@/utils/logger/logger";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { getPetsApi } from "../services/getPets.api";
+
+
 
 export function useGetPets() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
 
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  const fetchPets = async (): Promise<Pet[] | null> => {
+  const fetchPets = useCallback(async (): Promise<Pet[] | null> => {
     try {
       setLoading(true);
       setMessage(null);
 
-      if (!token) throw new Error("Not authenticated");
-
-      const response = await getPetApi(token);
-
-      const pets = Array.isArray(response.data) ? response.data : [];
-      logger.info('pets',pets)
-      setPets(pets);
+    
+      if (!token || !user?.id) {
+        throw new Error("Not authenticated");
+      }
+      const response = await getPetsApi(token);
+      const fetchedPets = Array.isArray(response.data) ? response.data : [];
+      logger.info('pets', fetchedPets);
+      
+      setPets(fetchedPets);
       setMessage(response.message);
 
-      return pets;
-    } catch (err: any) {
-      const msg = err?.message || "Failed to fetch pets";
+      return fetchedPets;
+    } catch (err: unknown) {
+      // Safely handle the unknown error type
+      const msg = err instanceof Error ? err.message : "Failed to fetch pets";
       setMessage(msg);
       return null;
     } finally {
       setLoading(false);
     }
-  };
+  }, [token, user?.id]);
 
   return {
     pets,

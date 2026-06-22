@@ -20,6 +20,7 @@ type AddPetErrors = Partial<
 >;
 
 export default function AddPetForm() {
+    
     const { addPet, loading } = useAddPet();
 
     const [form, setForm] = useState<CreatePetPayload>({
@@ -98,7 +99,7 @@ export default function AddPetForm() {
             showAlert("Success", response.message, () => {
                 router.replace(
                     Platform.OS === "web"
-                        ? "/(web)/web-pets"
+                        ? "/(web)/pets"
                         : "(app)/(tabs)/pets"
                 );
             });

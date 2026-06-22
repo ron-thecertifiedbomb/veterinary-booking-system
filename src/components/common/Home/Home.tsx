@@ -12,6 +12,7 @@ import {
 } from "@/features/appointment/types/appointment";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { useGetPets } from "@/features/pet/hooks/useGetPet";
+
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { getTodayDate } from "@/utils/appointments/formatter";
 import { router } from "expo-router";
@@ -21,12 +22,23 @@ import { Platform } from "react-native";
 
 export default function Home() {
 
+    const [date, setDate] = useState(getTodayDate());
+    const [showModal, setShowModal] = useState(false);
+    const { user, refreshSession } = useAuth();
+    const [bookingSummary, setBookingSummary] =
+        useState<CreateAppointmentResponse | null>(null);
+    const [successModalVisible, setSuccessModalVisible] =
+        useState(false);
     const {
         fetchSlots,
         slots,
         currentDate,
         loading: slotsLoading,
     } = useGetSlots();
+
+    const [initialFetchDone, setInitialFetchDone] = useState(false);
+
+    const redirected = useRef(false);
 
     const {
         createAppointment,
@@ -36,19 +48,7 @@ export default function Home() {
     // 1. Rename loading to petsLoading
     const { fetchPets, loading: petsLoading, pets } = useGetPets();
 
-    const [date, setDate] = useState(getTodayDate());
-    const [showModal, setShowModal] = useState(false);
-    const { user, refreshSession } = useAuth();
-    const [bookingSummary, setBookingSummary] =
-        useState<CreateAppointmentResponse | null>(null);
-    const [successModalVisible, setSuccessModalVisible] =
-        useState(false);
-
-    // 2. Add state to track if the initial fetch is completely finished
-    const [initialFetchDone, setInitialFetchDone] = useState(false);
-
-    const redirected = useRef(false);
-
+ 
     // 3. Update initial fetch to set initialFetchDone when complete
     useEffect(() => {
         const loadPets = async () => {
@@ -69,7 +69,7 @@ export default function Home() {
             redirected.current = true;
 
             if (Platform.OS === "web") {
-                router.replace("/(web)/web-add-pet");
+                router.replace("/(web)/pets/add");
             } else {
                 router.replace("/(app)/add-pet");
             }
