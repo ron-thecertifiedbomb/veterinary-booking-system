@@ -1,30 +1,28 @@
 import AppTextInput from "@/components/common/AppTextInput/AppTextInput";
 import Loader from "@/components/common/Loader/Loader";
-import { useGetCustomerProfile } from "@/features/customer/hooks/useGetCustomerProfile";
-import { useUpdateCustomerProfile } from "@/features/customer/hooks/useUpdateCustomerProfile";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Platform, Pressable, Text, View } from "react-native";
 import { z } from "zod";
 import { BackButton } from "../BackButton/BackButton";
+import { useUpdateProfile } from "@/features/users/hook/useUpdateProfile";
+import { useGetProfile } from "@/features/users/hook/useGetProfile";
 
-// ✅ ZOD SCHEMA
+// ✅ ZOD SCHEMA FIX: Made phone optional to match your UI label
 const editProfileSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    phone: z.string().min(1, "Phone is required"),
+    phone: z.string().optional(), 
 });
 
 type FormData = z.infer<typeof editProfileSchema>;
 type Errors = Partial<Record<keyof FormData, string | null>>;
 
 export default function EditProfileForm() {
-
+    const { profile, fetchProfile, loading: fetching } = useGetProfile();
+    const { updateProfile, loading } = useUpdateProfile();
 
     const router = useRouter();
-    const { updateProfile, loading } = useUpdateCustomerProfile();
-    const { profile, fetchCustomerProfile, loading: fetching } =
-    useGetCustomerProfile();
 
     const [form, setForm] = useState<FormData>({
         name: "",
@@ -39,7 +37,7 @@ export default function EditProfileForm() {
     const [errors, setErrors] = useState<Errors>({});
 
     useEffect(() => {
-        fetchCustomerProfile ();
+        fetchProfile();
     }, []);
 
     useEffect(() => {
@@ -60,15 +58,29 @@ export default function EditProfileForm() {
     };
 
     const hasChanges =
-        form.name !== original.name ||
-        form.phone !== original.phone;
+        form.name !== original.name || form.phone !== original.phone;
 
-    const isDisabled =
-        !form.name ||  !hasChanges || loading;
+    const isDisabled = !form.name || !hasChanges || loading;
 
-    // ✅ ZOD VALIDATION
+    // ✅ ZOD VALIDATION IMPLEMENTED
     const handleSubmit = async () => {
-        const payload = {name:form.name, phone: form.phone}
+        // 1. Run the safeParse against your form state
+        const validation = editProfileSchema.safeParse(form);
+
+        if (!validation.success) {
+            const formattedErrors: Errors = {};
+            validation.error.issues.forEach((issue) => {
+                const key = issue.path[0] as keyof FormData;
+                formattedErrors[key] = issue.message;
+            });
+            setErrors(formattedErrors);
+            return;
+        }
+
+        const payload = {
+            name: validation.data.name,
+            phone: validation.data.phone ?? "", // ✅ Fallback to an empty string if undefined
+        };
         const res = await updateProfile(payload);
         if (!res) {
             showAlert("Error", "Failed to update profile");
@@ -77,10 +89,9 @@ export default function EditProfileForm() {
         showAlert("Success", res.message, () => {
             router.replace(
                 Platform.OS === "web"
-                    ? "/(web)/web-profile"
+                    ? "/(web)/profile"
                     : "(app)/(tabs)/profile"
             );
-
         });
     };
 
@@ -88,9 +99,13 @@ export default function EditProfileForm() {
 
     return (
         <View className="flex-1 max-w-md bg-white px-6 pt-6">
-<BackButton 
-    onPress={() => {router.replace("/(staff-app)/(tabs)/profile");}} className="mb-4 p-1" />
-    
+            <BackButton
+                onPress={() => {
+                    router.replace("/(web)/profile");
+                }}
+                className="mb-4 p-1"
+            />
+
             <View className="mb-10 items-center">
                 <Text className="text-3xl font-bold text-gray-900">
                     Edit Profile
@@ -102,7 +117,6 @@ export default function EditProfileForm() {
 
             {/* CARD */}
             <View className="bg-white rounded-3xl p-5 shadow-sm">
-
                 <View className="mb-5">
                     <AppTextInput
                         label="Full Name"
@@ -126,17 +140,17 @@ export default function EditProfileForm() {
                 <Pressable
                     onPress={handleSubmit}
                     disabled={isDisabled}
-                    className={`rounded-xl py-4 items-center ${isDisabled
-                            ? "bg-gray-300"
-                            : "bg-black active:opacity-80"
-                        }`}
+                    className={`rounded-xl py-4 items-center ${
+                        isDisabled ? "bg-gray-300" : "bg-black active:opacity-80"
+                    }`}
                 >
                     {loading ? (
                         <ActivityIndicator color="#fff" />
                     ) : (
                         <Text
-                            className={`font-semibold text-base ${isDisabled ? "text-gray-500" : "text-white"
-                                }`}
+                            className={`font-semibold text-base ${
+                                isDisabled ? "text-gray-500" : "text-white"
+                            }`}
                         >
                             Save Changes
                         </Text>

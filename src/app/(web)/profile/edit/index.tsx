@@ -1,12 +1,8 @@
-export const unstable_settings = {
-    initialRouteName: "home",
-};
+import EditProfileForm from "@/components/common/Profile/EditProfileForm";
 
-import UpdateProfileForm from "@/components/common/Profile/UpdateProfileForm";
-
-export default function UpdateProfileScreen() {
+export default function EditProfileScreen() {
 
     return (
-        <UpdateProfileForm />
+        <EditProfileForm />
     );
 }

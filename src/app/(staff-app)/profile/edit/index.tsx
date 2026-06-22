@@ -1,4 +1,4 @@
-import UpdateProfileForm from "@/components/common/Profile/UpdateProfileForm";
+import UpdateProfileForm from "@/components/common/Profile/EditProfileForm";
 
 export default function UpdateProfileScreen() {
 

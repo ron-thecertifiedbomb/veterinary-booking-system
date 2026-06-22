@@ -9,12 +9,15 @@ import { api } from "@/utils/api/api.client";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
 import { UpdateUserProfilePayload, UpdateUserProfileResponse } from "../types/types";
-import { updateProfileApi } from "../services/updateProfile.api";
+
 import { useAuth } from "@/features/auth/providers/AuthProvider";
+import { updateProfileApi } from "../services/updateProfile.api";
 
 // ✅ types
 
 export function useUpdateProfile() {
+  
+  const { token } = useAuth(); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -22,7 +25,6 @@ export function useUpdateProfile() {
   const updateProfile = async ( payload: UpdateUserProfilePayload,
   ): Promise<UpdateUserProfileResponse | null> => {
 
-    const { token } = useAuth(); 
     if (!token ) throw new Error("Not authenticated");
     
     try {

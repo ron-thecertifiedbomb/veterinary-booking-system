@@ -15,7 +15,7 @@ export function useGetProfile() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const { token } = useAuth(); 
 
-  const fetchUserProfile = async (
+  const fetchProfile = async (
   )=> {
     try {
       setLoading(true);
@@ -40,7 +40,7 @@ export function useGetProfile() {
   };
 
   return {
-    fetchUserProfile,
+    fetchProfile,
     loading,
     error,
     message,

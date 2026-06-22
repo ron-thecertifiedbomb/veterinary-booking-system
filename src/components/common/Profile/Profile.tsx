@@ -12,17 +12,17 @@ import { ProfileCard } from "./ProfileCard";
 import { useGetProfile } from "@/features/users/hook/useGetProfile";
 
 export default function Profile() {
+  const { logout, token } = useAuth();
   
   const router = useRouter();
-  const { logout, isAuthenticated } = useAuth();
-  const { loading, profile, fetchUserProfile } = useGetProfile();
+  const { loading, profile, fetchProfile } = useGetProfile();
 
   
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchUserProfile();
-    }
-  }, [isAuthenticated]);
+if (!token) return
+      fetchProfile();
+ 
+  }, [token]);
 
   const handleLogout = async () => {
     try {
@@ -41,19 +41,15 @@ export default function Profile() {
   };
 
   if (loading) return <Loader />;
-  if (!isAuthenticated) return null;
 
   const isMobile = Platform.OS === "android" || Platform.OS === "ios";
 
   return (
     <Container className="max-w-3xl w-full m-auto">
-      {/* ─── TITLE HEADLINE ─── */}
+ 
       <HeaderSection title="My Profile" />
 
-      {/* ─── FLEXIBLE PROFILE HERO CARD ─── */}
       <ProfileCard profile={profile} onEditPress={handleEditRedirect} />
-
-      {/* ─── PREMIUM MINIMALIST LOGOUT TRIGGER ─── */}
       {isMobile && (
         <View className="w-full pt-4 items-center">
           <TouchableOpacity 
