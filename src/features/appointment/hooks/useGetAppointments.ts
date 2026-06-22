@@ -11,8 +11,8 @@ import { getAppointmentByBookingCodeApi, getAppointmentByIdApi, getAppointmentsA
 export interface FetchAppointmentsOptions {
   appointmentId?: string;
   bookingCode?: string;
-  filters?: GetAppointmentsFilters; // Added explicit support for screen overrides
-  role?: string;                     // Added explicit support for screen roles
+  filters?: GetAppointmentsFilters; 
+  role?: string;                     
 }
 
 export function useGetAppointments() {
@@ -23,6 +23,9 @@ export function useGetAppointments() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   
+  // ✅ NEW: Track if we have completed at least one network request
+  const [hasFetched, setHasFetched] = useState(false);
+  
   const [filters, setFilters] = useState<GetAppointmentsFilters>({
     from: todayStr,
     to: todayStr,
@@ -30,7 +33,6 @@ export function useGetAppointments() {
     sortOrder: "desc",
   });
 
-  // Keep an active mutable reference of the filters to prevent infinite re-render loop cycles
   const filtersRef = useRef(filters);
   useEffect(() => {
     filtersRef.current = filters;
@@ -45,7 +47,6 @@ export function useGetAppointments() {
     const appointmentId = options?.appointmentId;
     const bookingCode = options?.bookingCode;
     
-    // Fallback prioritizations: explicit screen parameter -> latest hook ref state closure
     const activeFilters = options?.filters !== undefined ? options.filters : filtersRef.current;
     const activeRole = options?.role !== undefined ? options.role : authRole;
 
@@ -54,13 +55,11 @@ export function useGetAppointments() {
       setError(null);
       let response: any = null;
 
-      // 1. Route directly to your distinct separated individual endpoints
       if (appointmentId && appointmentId !== "null" && appointmentId !== "undefined") {
         response = await getAppointmentByIdApi({ token, appointmentId });
       } else if (bookingCode && bookingCode !== "null" && bookingCode !== "undefined") {
         response = await getAppointmentByBookingCodeApi({ token, bookingCode });
       } else {
-        // Broad lists collection fetches require validation checks on the role payload strings
         if (!activeRole || activeRole === "null" || activeRole === "undefined") {
           logger.warn("fetchAppointments listing called before user role metadata has mounted");
           return;
@@ -78,7 +77,6 @@ export function useGetAppointments() {
         } else {
           let fetchedList: Appointment[] = [];
           
-          // Unpack array data variations safely
           if (Array.isArray(response)) {
             fetchedList = response;
           } else if (Array.isArray(resData)) {
@@ -88,7 +86,7 @@ export function useGetAppointments() {
           }
   
           setAppointments(fetchedList);
-          setSingleAppointment(null); // Clear lookup trackers safely upon navigating to lists
+          setSingleAppointment(null); 
         }
       }
     } catch (err: any) {
@@ -96,16 +94,19 @@ export function useGetAppointments() {
       logger.error("Fetching appointments failed", parsedError);
       setError(parsedError);
       
-      // Wipe broad collections arrays securely upon execution failures
       if (!appointmentId && !bookingCode) {
         setAppointments([]);
       }
+
     } finally {
       setLoading(false);
+      // ✅ Mark as fetched so the UI knows it's safe to evaluate isEmpty
+      setHasFetched(true); 
     }
-  }, [token, authRole]); // Keeps function identity stable to break infinite effect loops
+  }, [token, authRole]); 
 
-  const isEmpty = appointments.length === 0;
+  // ✅ UPDATED: Only return true if the array is empty AND we've actually checked the database
+  const isEmpty = hasFetched && appointments.length === 0;
 
   return {
     fetchAppointments,
