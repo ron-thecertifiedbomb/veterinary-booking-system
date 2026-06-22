@@ -6,7 +6,7 @@ import Loader from "@/components/common/Loader/Loader";
 import { useGetAppointments } from "@/features/appointment/hooks/useGetAppointments";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { router } from "expo-router";
-import { useEffect, useState, useRef } from "react"; // Added useRef
+import { useEffect, useState, useRef } from "react"; 
 import { FlatList, Platform, View, TouchableOpacity, Text } from "react-native";
 
 // Helper to reliably format dates as YYYY-MM-DD in local time
@@ -27,18 +27,16 @@ export default function Appointments() {
   
     const role = user?.role;
 
-    // ✅ NEW: Store the last fetched parameters to prevent duplicate network calls
+    // Store the last fetched parameters to prevent duplicate network calls
     const lastFetchedParams = useRef<string | null>(null);
 
     useEffect(() => {
         if (token && role) {
-            // Stringify the dependencies we care about for a deep-equality check
             const currentParams = JSON.stringify({ filters, role, token });
 
-            // Only trigger the API call if the parameters are actually different
             if (lastFetchedParams.current !== currentParams) {
                 fetchAppointments({ filters, role });
-                lastFetchedParams.current = currentParams; // Update our memory bank
+                lastFetchedParams.current = currentParams; 
             }
         }
     }, [token, filters, role, fetchAppointments]); 
@@ -73,13 +71,9 @@ export default function Appointments() {
         setFilters(prev => ({ ...prev, from: fromStr, to: toStr }));
     };
 
-    if (loading) {
-        return <Loader fullScreen />;
-    }
-
     const handleAddAppointment = () => {
         const isWeb = Platform.OS === "web";
-        router.push(isWeb ? "/(web)/home" : "(app)(tabs)/home");
+        router.push(isWeb ? "/(web)/home" : "(app)/(tabs)/home"); // Note: Fixed missing slash in app tabs route
     };
 
     const handleDateSelection = (selectedDate: string) => {
@@ -91,10 +85,13 @@ export default function Appointments() {
         setActivePicker(null); 
     };
 
+    // ✅ FULL SCREEN LOADER REMOVED HERE 
+
     return (
         <Container>
             <HeaderSection title="My Appointments" />
 
+            {/* TAB NAVIGATION */}
             <View className="flex-row items-center justify-between px-4 mb-4 mt-2">
                 {(["Previous", "Today", "Upcoming"] as TabState[]).map((tab) => {
                     const isActive = activeTab === tab;
@@ -116,6 +113,7 @@ export default function Appointments() {
                 })}
             </View>
             
+            {/* CONTENT AREA */}
             {isEmpty && !loading ? (
                 <EmptyState
                     title={`No ${activeTab !== "Today" ? activeTab.toLowerCase() : ""} appointments found`}
@@ -132,13 +130,11 @@ export default function Appointments() {
                             paddingBottom: 32,
                             paddingTop: 8,
                         }}
-                        // Note: User-initiated pull-to-refresh will still bypass the ref check 
-                        // because we are explicitly calling the function here. This is exactly what we want.
                         onRefresh={() => fetchAppointments({ filters, role })}
                         refreshing={loading}
                         ListFooterComponent={
-                            loading ? (
-                                <View className="py-4">
+                            loading && appointments.length === 0 ? (
+                                <View className="py-10">
                                     <Loader />
                                 </View>
                             ) : (
