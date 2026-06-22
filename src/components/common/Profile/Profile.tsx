@@ -36,11 +36,11 @@ if (!token) return
 
   const handleEditRedirect = () => {
     router.push(
-      Platform.OS === "web" ? "/(web)/profile/edit" : "(app)/profile/edit"
+      Platform.OS === "web" ? "/profile/edit/" : "/(app)/profile/edit/"
     );
   };
 
-  if (loading) return <Loader />;
+  if (loading) return <Loader />;   
 
   const isMobile = Platform.OS === "android" || Platform.OS === "ios";
 

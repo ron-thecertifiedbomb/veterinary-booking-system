@@ -1,5 +1,6 @@
 
 import { UserProfile, UserRole } from "@/features/users/types/types";
+import { logger } from "@/utils/logger/logger";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
@@ -29,7 +30,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ profile, onEditPress }
         return "Pet Owner";
     }
   };
-
+logger.info('role', role)
   const getSubProfileMeta = (): string => {
     // FIXED: Changed getRoleLabel to profile
     if (profile?.role === "ADMIN") return "System Admin Control Channel";
