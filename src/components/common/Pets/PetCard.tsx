@@ -11,9 +11,8 @@ interface PetItem {
 }
 
 interface PetCardProps {
-  item: PetItem;
-
-  onPress: () => void;
+  item?: PetItem | null;
+  onPress?: () => void;
 }
 
 export default function PetCard({ item, onPress }: PetCardProps) {
@@ -28,14 +27,12 @@ export default function PetCard({ item, onPress }: PetCardProps) {
     >
       {/* ─── LEFT: PRIMARY CORE DATA ─── */}
       <View className="flex-1 mr-4">
-        <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
-          Name
-        </Text>
+  
         <Text className="text-xl font-black tracking-tighter text-black uppercase">
-          {item.petName}
+          {item?.petName}
         </Text>
         <Text className="text-xs font-bold text-zinc-500 mt-1 uppercase tracking-wide">
-          {item.species} {item.breed ? `/ ${item.breed}` : "/ UNKNOWN"}
+          {item?.species} 
         </Text>
       </View>
 

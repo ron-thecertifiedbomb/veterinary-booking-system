@@ -8,7 +8,7 @@ import { getPetsApi } from "../services/getPets.api";
 
 
 
-export function useGetPets() {
+export function useGetAllPets() {
   const { token, user } = useAuth();
 
   const [pets, setPets] = useState<Pet[]>([]);

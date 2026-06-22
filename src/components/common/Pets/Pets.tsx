@@ -1,21 +1,20 @@
-import EmptyState from "@/components/common/EmptyState/EmptyState";
-import Loader from "@/components/common/Loader/Loader";
-import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
 import Container from "@/components/common/Container/Container";
+import EmptyState from "@/components/common/EmptyState/EmptyState";
+import HeaderSection from "@/components/common/HeaderSection/HeaderSection";
+import Loader from "@/components/common/Loader/Loader";
+import { useGetAllPets } from "@/features/pet/hooks/useGetAllPets";
 import { router } from "expo-router";
+import { useEffect } from "react";
 import {
     FlatList,
     Platform,
     Pressable,
-    Text,
-    View,
+    Text
 } from "react-native";
-import { useEffect } from "react";
-import { useGetPets } from "@/features/pet/hooks/useGetPet";
-import PetCard from "../PetCard/PetCard";
+import PetCard from "./PetCard";
 
 export default function Pets() {
-    const { pets, fetchPets, loading } = useGetPets();
+    const { pets, fetchPets, loading } = useGetAllPets();
     const isEmpty = pets.length === 0;
 
     useEffect(() => {
@@ -57,13 +56,21 @@ export default function Pets() {
                             paddingTop: 8,
                             paddingBottom: 140,
                         }}
-                        
-                        renderItem={({ item }) => (
-                            <PetCard
-                                item={item}
-                                onPress={() => router.push(`/pets/profile/${item.id}`)}
-                            />
-                        )}
+                        renderItem={({ item }) => {
+                            // Changed to { } to allow variable declarations
+                            const webPath = `/pets/profile/${item.id}`;
+                            const mobilePath = `/(app)/pets/profile/${item.id}`; 
+                            
+                            return (
+                                <PetCard
+                                    item={item}
+                                    onPress={() => {
+                                        const destination = Platform.OS === 'web' ? webPath : mobilePath;
+                                        router.push(destination as any);
+                                    }}
+                                />
+                            );
+                        }}
                     />
 
                     {/* ✅ FLOATING BUTTON */}
@@ -105,4 +112,4 @@ export default function Pets() {
             )}
         </Container>
     );
-}
+} 

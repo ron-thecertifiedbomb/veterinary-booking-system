@@ -11,8 +11,7 @@ import {
     CreateAppointmentResponse,
 } from "@/features/appointment/types/appointment";
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { useGetPets } from "@/features/pet/hooks/useGetPet";
-
+import { useGetAllPets } from "@/features/pet/hooks/useGetAllPets";
 import { showAlert } from "@/hooks/crossPlatformAlert";
 import { getTodayDate } from "@/utils/appointments/formatter";
 import { router } from "expo-router";
@@ -46,7 +45,7 @@ export default function Home() {
     } = useCreateAppointment();
 
     // 1. Rename loading to petsLoading
-    const { fetchPets, loading: petsLoading, pets } = useGetPets();
+    const { fetchPets, loading: petsLoading, pets } = useGetAllPets();
 
  
     // 3. Update initial fetch to set initialFetchDone when complete
