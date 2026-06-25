@@ -9,7 +9,11 @@ export type UserRole = "CUSTOMER" | "ADMIN" | "STAFF";
     isActive: boolean;
   };
 
-
+  export type GetAllUsersResponse = {
+    message: string;
+    users: UserProfile[];
+  };
+  
 
   export type UpdateUserProfileResponse = {
     message: string;

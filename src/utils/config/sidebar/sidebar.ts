@@ -3,9 +3,9 @@
 export const adminNav = [
   { label: "Dashboard", href: "/admin/dashboard" },
 
-  { label: "Staff Management", href: "/admin/staff" },
-  { label: "Customer Management", href: "/admin/customers" },
-
+  // { label: "Staff Management", href: "/admin/staff" },
+  // { label: "Customer Management", href: "/admin/customers" },
+  { label: "Users Management", href: "/admin/users" },
   { label: "Appointments", href: "/admin/appointments" },
   { label: "Patients", href: "/(admin-web)/patients" },
 
