@@ -9,18 +9,21 @@ import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
 import { ProfileCard } from "./ProfileCard";
-import { useGetProfile } from "@/features/users/hook/useGetProfile";
+import { useGetUser } from "@/features/users/hook/useGetProfile";
+import { UserProfileCard } from "../AppUsers/UserProfileCard";
+import { logger } from "@/utils/logger/logger";
+
 
 export default function Profile() {
   const { logout, token } = useAuth();
   
   const router = useRouter();
-  const { loading, profile, fetchProfile } = useGetProfile();
+  const { loading, user, getUserProfile } = useGetUser();
 
-  
+  logger.info('user', user)
   useEffect(() => {
 if (!token) return
-      fetchProfile();
+getUserProfile();
  
   }, [token]);
 
@@ -47,7 +50,7 @@ if (!token) return
   return (
     <Container className="max-w-3xl w-full m-auto">
       <HeaderSection title="My Profile" />
-      <ProfileCard profile={profile} onEditPress={handleEditRedirect} />
+      <UserProfileCard profile={user} onEditPress={handleEditRedirect} />
       {/* {isMobile && (
         <View className="w-full pt-4 items-center">
           <TouchableOpacity 

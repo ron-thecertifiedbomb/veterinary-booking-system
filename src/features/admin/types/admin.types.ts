@@ -12,9 +12,9 @@ export type AdminPosition = "MANAGER" | "ACCOUNTANT" | "RECEPTIONIST";
 
 
 export interface AdminProfile {
-  specialization: string;
+  id: string;
   position: AdminPosition;
-  licenseNumber: string;
+  department: string;
 }
 
 export type CreateAdminResponse = {

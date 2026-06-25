@@ -11,11 +11,11 @@ export interface GetAllStaffResponse {
 
 export interface StaffProfile {
   id: string;
-  userId: string;
-  name: string;
-  position: StaffPosition;
   specialization: string;
   licenseNumber?: string;
+  position: StaffPosition;
+  userId: string;
+  totalAssignedAppointments: number;
 }
 
 
