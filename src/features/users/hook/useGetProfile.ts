@@ -2,20 +2,20 @@
 import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { logger } from "@/utils/logger/logger";
 import { useState } from "react";
-import { fetchProfileApi } from "../services/fetchProfileApi.api";
+import { getUser } from "../services/getUser.api";
 import { UserProfile } from "../types/types";
 
 
 
-export function useGetProfile() {
+export function useGetUser() {
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
   const { token } = useAuth(); 
 
-  const fetchProfile = async (
+  const getUserProfile = async (
   )=> {
     try {
       setLoading(true);
@@ -25,8 +25,8 @@ export function useGetProfile() {
       if (!token) {
         throw new Error("Not authenticated");
       }
-      const response = await fetchProfileApi(token);
-      setProfile(response.data)
+      const response = await getUser(token);
+      setUser(response.data)
       setMessage(response.message);
       return response;
     } catch (err: any) {
@@ -40,10 +40,10 @@ export function useGetProfile() {
   };
 
   return {
-    fetchProfile,
+    getUserProfile,
     loading,
     error,
     message,
-    profile
+    user
   };
 }

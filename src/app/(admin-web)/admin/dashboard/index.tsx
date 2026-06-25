@@ -37,7 +37,7 @@ export default function AdminDashboardScreen() {
   return (
     <ScrollView 
       className="flex-1 max-w-3xl mx-auto w-full " 
-      contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 20, paddingBottom: 40 }}
+      contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 10, paddingBottom: 40 }}
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl refreshing={loading} onRefresh={fetchMetrics} tintColor="#18181B" />
@@ -50,24 +50,14 @@ export default function AdminDashboardScreen() {
       <TouchableOpacity 
         activeOpacity={0.9}
         onPress={() => onCardPress('appointments')}
-        className="w-full  p-6 rounded-[32px] mb-5 relative overflow-hidden"
+        className="w-full rounded-[32px]  relative overflow-hidden mb-1 mt-1 lg:mb-4 lg:mt-4"
       >
-        <View className="flex-row justify-between items-start z-10">
-          <View className="flex-1 mr-4">
-            <Text className="text-[10px] font-black tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-1">
-              Today's Operations
-            </Text>
-            <Text className="text-3xl font-black tracking-tighter ">
-              {metrics?.todayAppointments} SCHEDULES
+          <View className="flex-1 pl-2">
+            <Text className="text-lg lg:text-3xl font-black tracking-tighter ">
+              {metrics?.todayAppointments} BOOKED SCHEDULES
             </Text>
           </View>
           
-          <View className="p-3 rounded-2xl bg-zinc-800 dark:bg-zinc-200">
-            <Svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-white dark:text-zinc-900">
-              <Path d={ICONS.calendar} />
-            </Svg>
-          </View>
-        </View>
       </TouchableOpacity>
 
       {/* ─── GRID TITLE LINE ─── */}

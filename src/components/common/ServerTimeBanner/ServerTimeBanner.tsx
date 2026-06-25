@@ -14,10 +14,10 @@ export const ServerTimeBanner: React.FC<ServerTimeBannerProps> = ({ serverTime, 
   const displayTime = serverTime || "Retrieving network timestamp...";
   
   return (
-    <View className="w-full px-4 py-3  border border-zinc-100 dark:border-zinc-900 rounded-2xl mb-5 flex-row items-center justify-between">
+    <View className="w-full border border-zinc-100 dark:border-zinc-900 rounded-2xl flex-row items-center justify-between pl-2">
       <View className="flex-row items-center flex-1 mr-3">
         {/* Dynamic Pulse Sync State Circle Anchor */}
-        <View className={`h-1.5 w-1.5 rounded-full mr-2.5 ${loading ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`} />
+        {/* <View className={`h-1.5 w-1.5 rounded-full mr-2.5 ${loading ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`} /> */}
         
         <View className="flex-1">
           <Text className="text-[9px] font-black tracking-[0.15em] uppercase text-zinc-400 dark:text-zinc-500">
@@ -30,11 +30,11 @@ export const ServerTimeBanner: React.FC<ServerTimeBannerProps> = ({ serverTime, 
       </View>
 
       {/* Clean high-contrast clock icon container */}
-      <View className="p-1.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-xs">
+      {/* <View className="p-1.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-xs">
         <Svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-zinc-500 dark:text-zinc-400">
           <Path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </Svg>
-      </View>
+      </View> */}
     </View>
   );
 };

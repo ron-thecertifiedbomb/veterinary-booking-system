@@ -1,7 +1,6 @@
 // ..\src\features\admin\hooks\useGetAllAppointments.ts
 
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { todayStr } from "@/utils/appointments/formatter";
 import { logger } from "@/utils/logger/logger";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Appointment } from "@/features/appointment/types/appointment";
@@ -12,6 +11,12 @@ export interface UseGetAllAppointmentsProps {
   role?: string; 
 }
 
+// ==========================================
+// IN-MEMORY CACHE
+// This survives screen unmounts/remounts!
+// ==========================================
+let cachedFilters: GetAppointmentsFilters | null = null;
+
 export function useGetAllAppointments({ initialFilters, role: customRole }: UseGetAllAppointmentsProps = {}) {
   const { token, user } = useAuth();
 
@@ -19,16 +24,30 @@ export function useGetAllAppointments({ initialFilters, role: customRole }: UseG
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   
-  // Explicitly defined target date string for Philippines (June 20, 2026)
-  const fallbackToday = "2026-06-20";
+  const fallbackToday = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'Asia/Manila',
+    dateStyle: 'short',
+  }).format(new Date());
 
-  const [filters, setFilters] = useState<GetAppointmentsFilters>(() => ({
-    from: fallbackToday, // Overridden from todayStr
-    to: fallbackToday,   // Overridden from todayStr
-    sortBy: "appointmentDate",
-    sortOrder: "desc",
-    ...initialFilters,
-  }));
+  // Initialize state using the cache if it exists, otherwise use fallbackToday
+  const [filters, setFilters] = useState<GetAppointmentsFilters>(() => {
+    if (cachedFilters) {
+      return { ...cachedFilters, ...initialFilters };
+    }
+    
+    return {
+      from: fallbackToday, 
+      to: fallbackToday,   
+      sortBy: "appointmentDate",
+      sortOrder: "desc",
+      ...initialFilters,
+    };
+  });
+
+  // Sync current filters to the cache every time they change
+  useEffect(() => {
+    cachedFilters = filters;
+  }, [filters]);
 
   // FIX 1: Use a ref to track initialFilters to prevent infinite re-render loops from object reference shifts
   const initialFiltersRef = useRef(initialFilters);
@@ -64,8 +83,8 @@ export function useGetAllAppointments({ initialFilters, role: customRole }: UseG
       
       const response = await getAppointmentsApi({
         token,
-        filters, // Stays in dependencies safely now
-        role: activeRole,
+        filters, 
+        role: activeRole || null, 
       });
       
       const resData = (response as any).data;
