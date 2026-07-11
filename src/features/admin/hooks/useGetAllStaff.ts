@@ -23,7 +23,7 @@ export function useAllGetStaff() {
       
       return fetchedStaff;
     } catch (err: any) {
-      const msg = err?.message || "Failed to fetch pets";
+      const msg = err?.message || "Failed to fetch staff";
       setMessage(msg);
       return null;
     } finally {

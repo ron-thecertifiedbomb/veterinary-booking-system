@@ -1,87 +1,153 @@
-
-
-
+import StatusBadge from "@/components/ui/StatusBadge";
 import { Appointment } from "@/features/appointment/types/appointment";
-import { formatAppointmentSchedule, formatBookingCode } from "@/utils/appointments/formatter";
+import { useIsCompactScreen } from "@/hooks/useIsCompactScreen";
+import { colors, iconSize } from "@/theme/tokens";
+import {
+  formatAppointmentTimeOnly,
+  formatBookingCode,
+} from "@/utils/appointments/formatter";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
-import { Pressable, Text, View } from "react-native";
+import React, { useMemo } from "react";
+import { Platform, Pressable, Text, View } from "react-native";
 
 type AppointmentCardProps = {
-    appointments: Appointment;
+  appointment: Appointment;
 };
 
-export default function AppointmentCard({ appointments }: AppointmentCardProps) {
-    const hasStatus = appointments.status === "BOOKED" || appointments.status === "COMPLETED";
+function statusVariant(status: string) {
+  switch (status) {
+    case "BOOKED":
+    case "CONFIRMED":
+      return "success" as const;
+    case "COMPLETED":
+      return "default" as const;
+    case "CANCELLED":
+      return "danger" as const;
+    default:
+      return "muted" as const;
+  }
+}
 
-    return (
-        <Pressable
-            onPress={() => router.push(`/appointments/${appointments.id}`)}
-            style={({ pressed }) => ({
-                opacity: pressed ? 0.85 : 1,
-                transform: [{ scale: pressed ? 0.99 : 1 }],
-            })}
-            className="bg-white p-5 rounded-3xl mb-4 border border-zinc-100 relative"
+function formatServiceLabel(service: string) {
+  return service
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function dateParts(dateString: string) {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    return { month: "—", day: "—", weekday: "" };
+  }
+
+  return {
+    month: date.toLocaleDateString("en-US", { month: "short" }),
+    day: date.toLocaleDateString("en-US", { day: "numeric" }),
+    weekday: date.toLocaleDateString("en-US", { weekday: "short" }),
+  };
+}
+
+export default function AppointmentCard({ appointment }: AppointmentCardProps) {
+  const parts = useMemo(() => dateParts(appointment.appointmentDate), [appointment.appointmentDate]);
+  const { isCompact, isNarrow } = useIsCompactScreen();
+  const isWeb = Platform.OS === "web";
+
+  const openDetail = () => {
+    if (isWeb) {
+      router.push(`/(web)/appointments/${appointment.id}`);
+      return;
+    }
+    router.push(`/(app)/appointments/${appointment.id}`);
+  };
+
+  const petLine = [appointment.pet?.species, appointment.pet?.breed].filter(Boolean).join(" · ");
+
+  return (
+    <Pressable
+      onPress={openDetail}
+      className="bg-surface border border-border rounded-xl mb-3 overflow-hidden"
+      style={({ pressed }) => ({
+        opacity: pressed ? 0.94 : 1,
+        borderColor: pressed ? colors.borderStrong : colors.border,
+      })}
+    >
+      <View className="flex-row items-stretch">
+        <View
+          className={`${
+            isNarrow ? "w-14" : isCompact ? "w-16" : "w-[72px]"
+          } items-center justify-center bg-surfaceMuted border-r border-border py-4 px-1.5 shrink-0`}
         >
-            {/* ─── HEADER ROW ─── */}
-            <View className="flex-row justify-between items-start mb-4 pr-6">
-                <View>
-                    <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
-                   Schedule
-                    </Text>
-                    <Text className="text-sm font-black text-black uppercase">
-                        {formatAppointmentSchedule(appointments.appointmentDate)} 
-                    </Text>
-                </View>
+          <Text className="text-xs font-medium text-text-muted capitalize font-sans">{parts.month}</Text>
+          <Text
+            className={`${
+              isNarrow ? "text-xl" : "text-2xl"
+            } font-bold text-text-primary leading-7 font-sans`}
+          >
+            {parts.day}
+          </Text>
+          {parts.weekday ? (
+            <Text className="text-[10px] text-text-muted mt-0.5 font-sans">{parts.weekday}</Text>
+          ) : null}
+        </View>
 
-                {/* Pill Status Badge to match Profile screen active state flags */}
-                {/* <View className={`px-2.5 py-0.5 border rounded-full ${hasStatus ? 'bg-black border-black' : 'border-zinc-200'}`}>
-                    <Text className={`text-[8px] font-black tracking-widest uppercase ${hasStatus ? 'text-white' : 'text-zinc-400'}`}>
-                        {appointments.status}
-                    </Text>
-                </View> */}
+        <View className="flex-1 p-3.5 sm:p-4 min-w-0">
+          <View
+            className={
+              isCompact
+                ? "gap-2 mb-2"
+                : "flex-row items-start justify-between gap-3 mb-2"
+            }
+          >
+            <View className="flex-1 min-w-0">
+              <Text className="text-body font-semibold text-text-primary font-sans" numberOfLines={2}>
+                {appointment.pet?.petName || "Unknown pet"}
+              </Text>
+              <Text className="text-sm text-text-secondary mt-0.5 font-sans" numberOfLines={2}>
+                {formatServiceLabel(appointment.serviceType)}
+              </Text>
             </View>
+            {!isCompact ? (
+              <StatusBadge label={appointment.status} variant={statusVariant(appointment.status)} />
+            ) : null}
+          </View>
 
-            {/* ─── PATIENT BODY INFORMATION ─── */}
-            <View className="mb-4">
-                <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-0.5">
-                    Pet Name
-                </Text>
-                <Text className="text-base font-black tracking-tight text-black uppercase">
-                    {appointments.pet?.petName || "Unknown Patient"}
-                </Text>
-                {appointments.pet?.species && (
-                    <Text className="text-xs text-zinc-500 font-medium mt-0.5">
-                        {appointments.pet.species} {appointments.pet.breed ? `/ ${appointments.pet.breed}` : ''}
-                    </Text>
-                )}
+          {isCompact ? (
+            <View className="self-start mb-2">
+              <StatusBadge label={appointment.status} variant={statusVariant(appointment.status)} />
             </View>
+          ) : null}
 
-            {/* ─── BOTTOM METADATA GRID (UNCOMMENTED & STYLED) ─── */}
-            {/* <View className="flex-row justify-between items-end pt-3 border-t border-zinc-100 mt-2">
-                <View>
-                    <Text className="text-[8px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-0.5">
-                        Booked on
-                    </Text>
-                    <Text className="text-xs font-bold text-zinc-800 uppercase">
-                        {formatAppointmentSchedule(appointments.createdAt)}   
-                    </Text>
-                </View>
-
-                <View className="items-end">
-                    <Text className="text-[8px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-0.5">
-                        Ref Code
-                    </Text>
-                    <Text className="text-xs font-mono font-bold tracking-tight text-zinc-600">
-                        {formatBookingCode(appointments.bookingCode)}
-                    </Text>
-                </View>
-            </View> */}
-
-            {/* ─── STARK HINT ARROW INDICATOR ─── */}
-            <View className="absolute right-5 top-[26px]">
-                <Text className="text-zinc-300 text-xl font-black">›</Text>
+          <View className="flex-row flex-wrap items-center gap-x-3 gap-y-1.5 mt-1">
+            <View className="flex-row items-center gap-1.5">
+              <Ionicons name="time-outline" size={iconSize.sm} color={colors.text.muted} />
+              <Text className="text-xs text-text-secondary font-sans">
+                {formatAppointmentTimeOnly(appointment.appointmentDate)}
+              </Text>
             </View>
-        </Pressable>
-    );
+            <View className="flex-row items-center gap-1.5">
+              <Ionicons name="document-text-outline" size={iconSize.sm} color={colors.text.muted} />
+              <Text className="text-xs text-text-muted font-sans">
+                {formatBookingCode(appointment.bookingCode)}
+              </Text>
+            </View>
+          </View>
+
+          {petLine ? (
+            <Text className="text-xs text-text-muted mt-2.5 font-sans" numberOfLines={1}>
+              {petLine}
+            </Text>
+          ) : null}
+        </View>
+
+        {!isNarrow ? (
+          <View className="justify-center pr-2 shrink-0">
+            <Ionicons name="chevron-forward" size={iconSize.md} color={colors.text.muted} />
+          </View>
+        ) : null}
+      </View>
+    </Pressable>
+  );
 }

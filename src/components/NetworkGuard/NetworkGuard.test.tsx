@@ -41,7 +41,7 @@ describe("NetworkGuard", () => {
   it("should initially show a verifying state, then children on successful connection", async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ timestamp: mockDateNow }),
+      json: async () => ({ data: { timestamp: mockDateNow } }),
     });
 
     const { getByText, queryByText } = render(
@@ -99,7 +99,7 @@ describe("NetworkGuard", () => {
     // Max diff is 60000ms. We mock server time to be 120000ms behind.
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ timestamp: mockDateNow - 120000 }),
+      json: async () => ({ data: { timestamp: mockDateNow - 120000 } }),
     });
 
     const { getByText } = render(

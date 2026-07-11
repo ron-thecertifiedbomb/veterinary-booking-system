@@ -10,9 +10,12 @@ import { useAuth } from "@/features/auth/providers/AuthProvider";
 import { adminNav } from "@/utils/config/sidebar/sidebar";
 import { Redirect, Slot } from "expo-router";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import TopBar from "@/components/layout/TopBar";
+import AppButton from "@/components/ui/AppButton";
+import { showAlert } from "@/hooks/crossPlatformAlert";
 
+
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type ModalType = "staff" | "admin" | null;
 
@@ -49,7 +52,7 @@ export default function AdminWebLayout() {
         try {
             setSubmitting(true);
 
-            const payload = {
+            const response = await addStaff({
                 email: data.email,
                 password: data.password,
                 name: data.name,
@@ -57,12 +60,17 @@ export default function AdminWebLayout() {
                 position: data.position,
                 specialization: data.specialization,
                 licenseNumber: data.licenseNumber,
-            };
+            });
 
-            addStaff(payload)
+            if (!response) {
+                showAlert("Error", "Failed to create staff member");
+                return;
+            }
+
+            showAlert("Success", response.message);
             setModalType(null);
-        } catch (err) {
-            console.error(err);
+        } catch (err: any) {
+            showAlert("Error", err?.message || "Failed to create staff member");
         } finally {
             setSubmitting(false);
         }
@@ -72,20 +80,24 @@ export default function AdminWebLayout() {
         try {
             setSubmitting(true);
 
-            const payload = {
+            const response = await addAdmin({
                 email: data.email,
                 password: data.password,
                 name: data.name,
                 phone: data.phone,
                 position: data.position,
                 department: data.department,
+            });
 
-            };
+            if (!response) {
+                showAlert("Error", "Failed to create admin");
+                return;
+            }
 
-            addAdmin(payload)
+            showAlert("Success", response.message);
             setModalType(null);
-        } catch (err) {
-            console.error(err);
+        } catch (err: any) {
+            showAlert("Error", err?.message || "Failed to create admin");
         } finally {
             setSubmitting(false);
         }
@@ -97,31 +109,28 @@ export default function AdminWebLayout() {
         <SafeAreaView className="flex-1">
 
             <DashboardShell navItems={adminNav}>
+                <TopBar
+                    title="Admin"
+                    description="Manage staff, customers, and clinic operations."
+                    actions={
+                        <>
+                            <AppButton
+                                label="Add staff"
+                                onPress={() => setModalType("staff")}
+                                fullWidth={false}
+                                size="sm"
+                            />
+                            <AppButton
+                                label="Add admin"
+                                variant="outline"
+                                onPress={() => setModalType("admin")}
+                                fullWidth={false}
+                                size="sm"
+                            />
+                        </>
+                    }
+                />
 
-                {/* ✅ ACTION BUTTONS */}
-                <View className="flex-row gap-2 justify-end mr-4 lg:mt-4">
-
-                    <Pressable
-                        onPress={() => setModalType("staff")}
-                        className="bg-black px-4 py-2 rounded-xl"
-                    >
-                        <Text className="text-white font-semibold">
-                            + Staff
-                        </Text>
-                    </Pressable>
-
-                    <Pressable
-                        onPress={() => setModalType("admin")}
-                        className="bg-black px-4 py-2 rounded-xl"
-                    >
-                        <Text className="text-white font-semibold">
-                            + Admin
-                        </Text>
-                    </Pressable>
-
-                </View>
-
-                {/* ✅ PAGE CONTENT */}
                 <Slot />
 
             </DashboardShell>

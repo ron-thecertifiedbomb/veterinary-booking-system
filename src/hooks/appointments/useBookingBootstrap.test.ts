@@ -4,15 +4,20 @@ import { useBookingBootstrap } from "./useBookingBootstrap";
 import { renderHook, waitFor } from "@testing-library/react-native";
 import { useRouter } from "expo-router";
 
+jest.mock("@/features/auth/providers/AuthProvider", () => ({
+  useAuth: () => ({ token: "test-token", user: null, loading: false }),
+}));
+
 jest.mock("expo-router", () => ({
   useRouter: jest.fn(),
   usePathname: jest.fn(() => "/home"),
 }));
 
-jest.mock("@/utils/logger", () => ({
+jest.mock("@/utils/logger/logger", () => ({
   logger: {
     info: jest.fn(),
     error: jest.fn(),
+    warn: jest.fn(),
   },
 }));
 
@@ -40,8 +45,10 @@ describe("useBookingBootstrap", () => {
 
   it("should fetch slots successfully without throwing errors", async () => {
     const mockResponse = {
-      slots: [{ time: "10:00 AM", available: true }],
-      now: "May 22, 2026, 10:00:00 AM", // Mock server time
+      data: {
+        slots: [{ time: "10:00", available: true }],
+        meta: { date: "2026-05-22" },
+      },
     };
 
     (global.fetch as jest.Mock).mockResolvedValueOnce({
@@ -55,7 +62,7 @@ describe("useBookingBootstrap", () => {
       expect(result.current.loading).toBe(false);
     });
 
-    expect(result.current.slots).toEqual(mockResponse.slots);
+    expect(result.current.slots).toEqual(mockResponse.data.slots);
     expect(result.current.error).toBeNull();
   });
 
@@ -63,7 +70,8 @@ describe("useBookingBootstrap", () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
       status: 400,
-      text: async () => JSON.stringify({ message: "Invalid date format." }),
+      statusText: "Bad Request",
+      json: async () => ({ message: "Invalid date format." }),
     });
 
     const { result } = renderHook(() => useBookingBootstrap("invalid-date"));
@@ -81,7 +89,7 @@ describe("useBookingBootstrap", () => {
     const { result } = renderHook(() => useBookingBootstrap("2026-05-22"));
 
     await waitFor(() => {
-      expect(result.current.error).toBe("Unable to connect to the server. Please check your internet connection.");
+      expect(result.current.error).toBe("Server cannot be reached");
     });
   });
 });

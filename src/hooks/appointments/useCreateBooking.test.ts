@@ -4,10 +4,11 @@ import { act, renderHook } from "@testing-library/react-native";
 import { useCreateBooking } from "./useCreateBooking";
 
 // Mock the logger so it doesn't clutter the test output
-jest.mock("@/utils/logger", () => ({
+jest.mock("@/utils/logger/logger", () => ({
   logger: {
     info: jest.fn(),
     error: jest.fn(),
+    warn: jest.fn(),
   },
 }));
 
@@ -60,9 +61,9 @@ describe("useCreateBooking", () => {
   it("should handle specific API failures and parse the server JSON error message", async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
-      status: 409, // Conflict
-      text: async () =>
-        JSON.stringify({ message: "This slot is no longer available." }),
+      status: 409,
+      statusText: "Conflict",
+      json: async () => ({ message: "This slot is no longer available." }),
     });
 
     const { result } = renderHook(() => useCreateBooking());
@@ -88,6 +89,6 @@ describe("useCreateBooking", () => {
       await expect(result.current.createBooking({} as any)).rejects.toThrow();
     });
 
-    expect(result.current.error).toBe("Network connection lost");
+    expect(result.current.error).toBe("Server cannot be reached");
   });
 });

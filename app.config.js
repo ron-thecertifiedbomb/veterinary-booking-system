@@ -6,6 +6,16 @@ export default ({ config }) => {
   // Safely catches "staging" or "test"
   const isStaging = currentEnv === "staging" || currentEnv === "test";
 
+  // Demo prod web uses staging API until api.rondev.com.ph has TLS on origin.
+  const apiWeb =
+    currentEnv === "production"
+      ? "https://staging-api.rondev.com.ph"
+      : process.env.EXPO_PUBLIC_API_WEB || "";
+  const apiMobile =
+    currentEnv === "production"
+      ? "https://staging-api.rondev.com.ph"
+      : process.env.EXPO_PUBLIC_API_MOBILE || "";
+
   return {
     ...config,
 
@@ -76,8 +86,8 @@ export default ({ config }) => {
       },
       appNode: currentEnv,
       appEnv: currentEnv,
-      apiWeb: process.env.EXPO_PUBLIC_API_WEB || "",
-      apiMobile: process.env.EXPO_PUBLIC_API_MOBILE || "",
+      apiWeb,
+      apiMobile,
     },
   };
 };

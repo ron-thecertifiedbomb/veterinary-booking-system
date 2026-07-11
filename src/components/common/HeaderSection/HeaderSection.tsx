@@ -1,38 +1,28 @@
+import { useIsCompactScreen } from "@/hooks/useIsCompactScreen";
 import { Text, View } from "react-native";
 
-
 type Props = {
-    title: string;
-    description?: string;
-    date?: string | null;
-
+  title: string;
+  description?: string;
 };
 
-export default function HeaderSection({
-    title,
-    description,
-    date,
+export default function HeaderSection({ title, description }: Props) {
+  const { isCompact } = useIsCompactScreen();
 
-}: Props) {
-    return (
-        
-
-        <View className="w-full mb-0 lg:mb-4">
-                <View>
-                    <Text className="text-xl lg:text-3xl font-bold tracking-tight text-text-primary">
-                        {title}
-                    </Text>
-                    {description && (
-                        <Text className="text-sm text-text-secondary mt-[0.8px] leading-relaxed">
-                            {description}
-                        </Text>
-                )}
-             
-                <Text className="text-2xl lg:text-3xl font-bold tracking-tight text-text-primary">
-                    {date}
-                    </Text>
-            
-                </View>
-            </View>  
-    );
+  return (
+    <View className={`w-full ${isCompact ? "mb-6" : "mb-8"}`}>
+      <Text
+        className={`${
+          isCompact ? "text-2xl" : "text-pageTitle"
+        } text-text-primary font-bold font-sans`}
+      >
+        {title}
+      </Text>
+      {description ? (
+        <Text className="text-sm text-text-secondary mt-2 leading-5 max-w-xl font-sans">
+          {description}
+        </Text>
+      ) : null}
+    </View>
+  );
 }

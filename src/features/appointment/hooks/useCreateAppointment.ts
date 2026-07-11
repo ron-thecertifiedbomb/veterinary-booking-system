@@ -39,7 +39,9 @@ export const useCreateAppointment = () => {
       return response;
     } catch (err: any) {
       const message =
-        err?.response?.data?.message 
+        err?.message ||
+        (typeof err?.data === "object" && err?.data?.message) ||
+        "Failed to create appointment";
       setError(message);
       logger.error("Create appointment failed", message);
 

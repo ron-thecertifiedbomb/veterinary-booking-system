@@ -1,5 +1,8 @@
+import SectionLabel from "@/components/ui/SectionLabel";
+import { colors, iconSize } from "@/theme/tokens";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Text, View, Pressable } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 interface PetItem {
   id: string;
@@ -15,35 +18,27 @@ interface PetCardProps {
 }
 
 export default function PetCard({ item, onPress }: PetCardProps) {
+  const subtitle = [item.species, item.breed].filter(Boolean).join(" · ");
+
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => ({
-        opacity: pressed ? 0.85 : 1,
-        transform: [{ scale: pressed ? 0.99 : 1 }],
-      })}
-      className="bg-white border border-zinc-100 p-5 rounded-3xl flex-row items-center justify-between mb-4"
+      className="bg-surface border border-border rounded-xl p-5 flex-row items-center mb-3"
+      style={({ pressed }) => ({ opacity: pressed ? 0.94 : 1 })}
     >
-      {/* ─── LEFT: PRIMARY CORE DATA ─── */}
-      <View className="flex-1 mr-4">
-        <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
-          Name
-        </Text>
-        <Text className="text-xl font-black tracking-tighter text-black uppercase">
-          {item.petName}
-        </Text>
-        <Text className="text-xs font-bold text-zinc-500 mt-1 uppercase tracking-wide">
-          {item.species} {item.breed ? `/ ${item.breed}` : "/ UNKNOWN"}
-        </Text>
+      <View className="w-10 h-10 rounded-lg bg-surfaceMuted items-center justify-center mr-4">
+        <Ionicons name="paw-outline" size={iconSize.lg} color={colors.text.primary} />
       </View>
 
-      {/* Dynamic Structural Partition Line aligned to the global zinc profile style */}
-      <View className="w-[1px] h-10 bg-zinc-100 mx-4" />
-
-      {/* ─── RIGHT: STARK INDICATOR ARROW ─── */}
-      <View className="pl-2">
-        <Text className="text-zinc-300 text-xl font-black">›</Text>
+      <View className="flex-1 mr-3 min-w-0">
+        <SectionLabel>Pet</SectionLabel>
+        <Text className="text-body font-semibold text-text-primary mt-1 font-sans">{item.petName}</Text>
+        {subtitle ? (
+          <Text className="text-sm text-text-secondary mt-0.5 font-sans">{subtitle}</Text>
+        ) : null}
       </View>
+
+      <Ionicons name="chevron-forward" size={iconSize.md} color={colors.text.muted} />
     </Pressable>
   );
 }

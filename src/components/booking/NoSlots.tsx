@@ -1,16 +1,12 @@
-
 import { Text, View } from "react-native";
 
 export default function NoSlots() {
-    return (
-        <View className="py-10 items-center">
-            <Text className="text-lg font-semibold mb-2">
-                No Available Slots
-            </Text>
-            <Text className="text-gray-500 text-center">
-                There are no available time slots for this date.
-                Please select another date.
-            </Text>
-        </View>
-    );
+  return (
+    <View className="py-8 items-center px-4">
+      <Text className="text-h2 text-text-primary mb-2">No slots available</Text>
+      <Text className="text-sm text-text-secondary text-center leading-5">
+        There are no open time slots for this date. Try selecting another day.
+      </Text>
+    </View>
+  );
 }

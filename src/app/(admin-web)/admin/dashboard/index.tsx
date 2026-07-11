@@ -1,7 +1,9 @@
+import HeaderSection from '@/components/common/HeaderSection/HeaderSection';
 import Loader from '@/components/common/Loader/Loader';
 import { ServerTimeBanner } from '@/components/common/ServerTimeBanner/ServerTimeBanner';
 import { useGetDashBoardMetrics } from '@/features/admin/hooks/useGetDashBoardMetrics';
 import { useAuth } from '@/features/auth/providers/AuthProvider';
+import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { RefreshControl, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
@@ -14,6 +16,7 @@ const ICONS = {
 };
 
 export default function AdminDashboardScreen() {
+  const router = useRouter();
   const { token } = useAuth();
   const { metrics, loading, fetchMetrics, serverTime } = useGetDashBoardMetrics();
   const { width } = useWindowDimensions();
@@ -27,7 +30,19 @@ export default function AdminDashboardScreen() {
 
 
   const onCardPress = (target: string) => {
-    console.log(`Navigating directly to database entity segment: ${target}`);
+    switch (target) {
+      case "customers":
+        router.push("/(admin-web)/admin/customers");
+        break;
+      case "staff":
+        router.push("/(admin-web)/admin/staff");
+        break;
+      case "appointments":
+        router.push("/(admin-web)/admin/appointments");
+        break;
+      default:
+        break;
+    }
   };
 
   if (loading && !metrics) {
@@ -36,34 +51,36 @@ export default function AdminDashboardScreen() {
 
   return (
     <ScrollView 
-      className="flex-1 max-w-3xl mx-auto w-full " 
+      className="flex-1 max-w-3xl mx-auto w-full bg-canvas" 
       contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 20, paddingBottom: 40 }}
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl refreshing={loading} onRefresh={fetchMetrics} tintColor="#18181B" />
       }
     >
-      {/* ─── LIVE SERVER TIME SYNCHRONIZATION HUD ─── */}
-      <ServerTimeBanner serverTime={serverTime} loading={loading} />
+      <HeaderSection
+        title="Dashboard"
+        description="Clinic overview and today's activity."
+      />
 
-      {/* ─── HERO SECTION: ACTION DRIVEN BANNER ─── */}
+      <ServerTimeBanner serverTime={serverTime} loading={loading} />
       <TouchableOpacity 
         activeOpacity={0.9}
         onPress={() => onCardPress('appointments')}
-        className="w-full  p-6 rounded-[32px] mb-5 relative overflow-hidden"
+        className="w-full p-5 rounded-xl mb-5 bg-surface border border-border"
       >
-        <View className="flex-row justify-between items-start z-10">
+        <View className="flex-row justify-between items-start">
           <View className="flex-1 mr-4">
-            <Text className="text-[10px] font-black tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-1">
-              Today's Operations
+            <Text className="text-xs font-medium text-text-muted uppercase tracking-label mb-1">
+              Today
             </Text>
-            <Text className="text-3xl font-black tracking-tighter ">
-              {metrics?.todayAppointments} SCHEDULES
+            <Text className="text-2xl font-semibold text-text-primary">
+              {metrics?.todayAppointments ?? 0} appointments
             </Text>
           </View>
           
-          <View className="p-3 rounded-2xl bg-zinc-800 dark:bg-zinc-200">
-            <Svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-white dark:text-zinc-900">
+          <View className="p-2.5 rounded-lg bg-surfaceMuted border border-border">
+            <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#71717A" strokeWidth="2">
               <Path d={ICONS.calendar} />
             </Svg>
           </View>
@@ -71,20 +88,18 @@ export default function AdminDashboardScreen() {
       </TouchableOpacity>
 
       {/* ─── GRID TITLE LINE ─── */}
-      <View className="flex-row items-center space-x-2">
-  {/* Live User Count Indicator Pill */}
-  <View className="flex-row items-center bg-zinc-200/60 dark:bg-zinc-900 px-2.5 py-1 rounded-full">
-    <View className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-1" />
-    <Text className="text-[9px] font-extrabold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-      {metrics?.activeUsers ?? 0} / {(metrics?.totalCustomers ?? 0) + (metrics?.totalStaff ?? 0)} Live
+      <View className="flex-row items-center gap-2 mb-4">
+  <View className="flex-row items-center bg-surfaceMuted border border-border px-2.5 py-1 rounded-md">
+    <View className="h-1.5 w-1.5 rounded-full bg-success mr-1.5" />
+    <Text className="text-xs text-text-secondary">
+      {metrics?.activeUsers ?? 0} / {(metrics?.totalCustomers ?? 0) + (metrics?.totalStaff ?? 0)} active
     </Text>
   </View>
 
-  {/* New: Unbooked Remaining Slot Pill */}
-  <View className="flex-row items-center bg-zinc-200/60 dark:bg-zinc-900 px-2.5 py-1 rounded-full">
-    <View className={`h-1.5 w-1.5 rounded-full mr-1 ${metrics?.todayUnbookedCount ? 'bg-amber-500' : 'bg-zinc-400'}`} />
-    <Text className="text-[9px] font-extrabold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-      {metrics?.todayUnbookedCount ?? 0} Vacant
+  <View className="flex-row items-center bg-surfaceMuted border border-border px-2.5 py-1 rounded-md">
+    <View className={`h-1.5 w-1.5 rounded-full mr-1.5 ${metrics?.todayUnbookedCount ? 'bg-warning' : 'bg-text-muted'}`} />
+    <Text className="text-xs text-text-secondary">
+      {metrics?.todayUnbookedCount ?? 0} open slots
     </Text>
   </View>
 </View>
@@ -108,20 +123,20 @@ export default function AdminDashboardScreen() {
         <TouchableOpacity 
           activeOpacity={0.85}
           onPress={() => onCardPress('customers')}
-          className="w-[48.5%] bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/80 shadow-xs justify-between min-h-[140px] mb-4"
+          className="w-[48.5%] bg-surface p-4 rounded-xl border border-border justify-between min-h-[130px] mb-4"
         >
           <View className="flex-row justify-between items-start">
-            <Text className="text-[10px] font-black tracking-wider uppercase text-zinc-400 dark:text-zinc-500 flex-1 mr-1" numberOfLines={2}>
+            <Text className="text-xs font-medium text-text-muted uppercase tracking-label flex-1 mr-1" numberOfLines={2}>
               Total Customers
             </Text>
-            <View className="p-1.5 rounded-xl bg-zinc-50 dark:bg-zinc-800">
-              <Svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-zinc-500 dark:text-zinc-400">
+            <View className="p-1.5 rounded-md bg-surfaceMuted border border-border">
+              <Svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#71717A" strokeWidth="2">
                 <Path d={ICONS.users} />
               </Svg>
             </View>
           </View>
           <View className="mt-4">
-            <Text className="text-3xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
+            <Text className="text-2xl font-semibold text-text-primary">
               {metrics?.totalCustomers ?? 0}
             </Text>
             <View className="flex-row items-center mt-1">
@@ -136,20 +151,20 @@ export default function AdminDashboardScreen() {
         <TouchableOpacity 
           activeOpacity={0.85}
           onPress={() => onCardPress('staff')}
-          className="w-[48.5%] bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/80 shadow-xs justify-between min-h-[140px] mb-4"
+          className="w-[48.5%] bg-surface p-4 rounded-xl border border-border justify-between min-h-[130px] mb-4"
         >
           <View className="flex-row justify-between items-start">
-            <Text className="text-[10px] font-black tracking-wider uppercase text-zinc-400 dark:text-zinc-500 flex-1 mr-1" numberOfLines={2}>
+            <Text className="text-xs font-medium text-text-muted uppercase tracking-label flex-1 mr-1" numberOfLines={2}>
               Clinical Staff
             </Text>
-            <View className="p-1.5 rounded-xl bg-zinc-50 dark:bg-zinc-800">
-              <Svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-zinc-500 dark:text-zinc-400">
+            <View className="p-1.5 rounded-md bg-surfaceMuted border border-border">
+              <Svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#71717A" strokeWidth="2">
                 <Path d={ICONS.briefcase} />
               </Svg>
             </View>
           </View>
           <View className="mt-4">
-            <Text className="text-3xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
+            <Text className="text-2xl font-semibold text-text-primary">
               {metrics?.totalStaff ?? 0}
             </Text>
             <View className="flex-row items-center mt-1">
@@ -164,20 +179,20 @@ export default function AdminDashboardScreen() {
         <TouchableOpacity 
           activeOpacity={0.85}
           onPress={() => onCardPress('appointments')}
-          className="w-[48.5%] bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/80 shadow-xs justify-between min-h-[140px] mb-4"
+          className="w-[48.5%] bg-surface p-4 rounded-xl border border-border justify-between min-h-[130px] mb-4"
         >
           <View className="flex-row justify-between items-start">
-            <Text className="text-[10px] font-black tracking-wider uppercase text-zinc-400 dark:text-zinc-500 flex-1 mr-1" numberOfLines={2}>
+            <Text className="text-xs font-medium text-text-muted uppercase tracking-label flex-1 mr-1" numberOfLines={2}>
               Vacant Hours
             </Text>
-            <View className="p-1.5 rounded-xl bg-zinc-50 dark:bg-zinc-800">
-              <Svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-zinc-500 dark:text-zinc-400">
+            <View className="p-1.5 rounded-md bg-surfaceMuted border border-border">
+              <Svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#71717A" strokeWidth="2">
                 <Path d={ICONS.calendar} />
               </Svg>
             </View>
           </View>
           <View className="mt-4">
-            <Text className="text-3xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
+            <Text className="text-2xl font-semibold text-text-primary">
               {metrics?.todayUnbookedCount ?? 0}
             </Text>
             <View className="flex-row items-center mt-1">
@@ -191,15 +206,15 @@ export default function AdminDashboardScreen() {
         <TouchableOpacity 
           activeOpacity={0.85}
           onPress={() => onCardPress('pets')}
-          className="w-[48.5%] bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200/60 dark:border-zinc-800/80 shadow-xs justify-between min-h-[140px] mb-4"
+          className="w-[48.5%] bg-surface p-4 rounded-xl border border-border justify-between min-h-[130px] mb-4"
         >
           {/* Header Row: Title & Vector Graphic Icon Box */}
           <View className="flex-row justify-between items-start">
-            <Text className="text-[10px] font-black tracking-wider uppercase text-zinc-400 dark:text-zinc-500 flex-1 mr-1" numberOfLines={2}>
+            <Text className="text-xs font-medium text-text-muted uppercase tracking-label flex-1 mr-1" numberOfLines={2}>
               Registered Pets
             </Text>
-            <View className="p-1.5 rounded-xl bg-zinc-50 dark:bg-zinc-800">
-              <Svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-zinc-500 dark:text-zinc-400">
+            <View className="p-1.5 rounded-md bg-surfaceMuted border border-border">
+              <Svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#71717A" strokeWidth="2">
                 <Path d={ICONS.paw} />
               </Svg>
             </View>
@@ -207,7 +222,7 @@ export default function AdminDashboardScreen() {
 
           {/* Metric Counter & Sub-Label Status Indicator */}
           <View className="mt-4">
-            <Text className="text-3xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
+            <Text className="text-2xl font-semibold text-text-primary">
               {metrics?.totalPets ?? 0}
             </Text>
             <View className="flex-row items-center mt-1">

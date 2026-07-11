@@ -1,134 +1,71 @@
-import { Modal, View, Text, TouchableOpacity } from "react-native";
+import AppButton from "@/components/ui/AppButton";
+import SectionLabel from "@/components/ui/SectionLabel";
+import StatusBadge from "@/components/ui/StatusBadge";
 import { CreateAppointmentResponse } from "@/features/appointment/types/appointment";
+import { Modal, View, Text } from "react-native";
 
 type Props = {
-    visible: boolean;
-    items?: CreateAppointmentResponse | null;
-    onClose: () => void;
+  visible: boolean;
+  items?: CreateAppointmentResponse | null;
+  onClose: () => void;
 };
 
-function getStatusStyle(status: string) {
-    switch (status) {
-        case "APPROVED":
-            return "bg-emerald-100 text-emerald-700";
-        case "PENDING":
-            return "bg-amber-100 text-amber-700";
-        case "CANCELLED":
-            return "bg-rose-100 text-rose-600";
-        default:
-            return "bg-gray-100 text-gray-600";
-    }
+function statusVariant(status: string) {
+  switch (status?.toUpperCase()) {
+    case "BOOKED":
+    case "APPROVED":
+      return "success" as const;
+    case "PENDING":
+      return "warning" as const;
+    case "CANCELLED":
+      return "danger" as const;
+    default:
+      return "default" as const;
+  }
 }
 
-export default function BookingSuccessModal({
-    visible,
-    items,
-    onClose,
-}: Props) {
-    if (!items) return null;
+function DetailRow({ label, value }: { label: string; value?: string }) {
+  if (!value) return null;
+  return (
+    <View className="mb-3">
+      <SectionLabel>{label}</SectionLabel>
+      <Text className="text-body text-text-primary mt-1">{value}</Text>
+    </View>
+  );
+}
 
-    return (
-        <Modal
-            visible={visible}
-            transparent
-            animationType="fade"
-            onRequestClose={onClose}
-        >
-            {/* ✅ BACKDROP */}
-            <View className="flex-1 bg-black/50 justify-center items-center px-4">
+export default function BookingSuccessModal({ visible, items, onClose }: Props) {
+  if (!items) return null;
 
-                {/* ✅ MODAL CARD */}
-                <View className="bg-white w-full max-w-2xl rounded-3xl p-6">
+  const { data } = items;
 
-                    {/* ✅ HEADER */}
-                    <View className="items-center mb-6">
-                        <Text className="text-2xl font-bold mb-1">
-                            Booking Confirmed 
-                        </Text>
-                        <Text className="text-gray-500 text-center">
-                            {items.message}
-                        </Text>
-                    </View>
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <View className="flex-1 bg-black/30 justify-center items-center px-4">
+        <View className="bg-surface border border-border w-full max-w-md rounded-xl p-6">
+          <Text className="text-h2 text-text-primary text-center">Booking confirmed</Text>
+          <Text className="text-sm text-text-secondary text-center mt-1 mb-5">
+            {items.message}
+          </Text>
 
-                    {/* ✅ STATUS BADGE */}
-                    <View className="items-center mb-6">
-                        <View className={`px-4 py-1 rounded-full ${getStatusStyle(items.data.status)}`}>
-                            <Text className="text-xs font-semibold">
-                                {items.data.status}
-                            </Text>
-                        </View>
-                    </View>
+          <View className="items-center mb-5">
+            <StatusBadge label={data.status} variant={statusVariant(data.status)} />
+          </View>
 
-                    {/* ✅ GRID CONTENT */}
-                    <View className="flex-row flex-wrap gap-y-4">
+          <View className="border-t border-border pt-4">
+            <DetailRow label="Pet" value={data.pet} />
+            <DetailRow label="Date" value={data.appointmentDisplay?.date} />
+            <DetailRow label="Time" value={data.appointmentDisplay?.time} />
+            <DetailRow label="Service" value={data.serviceType} />
+            <DetailRow label="Reference" value={data.bookingCode} />
+            <DetailRow label="Booked on" value={data.bookedAt} />
+          </View>
 
-                        {/* LEFT COLUMN */}
-                        <View className="w-1/2 pr-2 space-y-3">
-
-                            <View>
-                                <Text className="text-xs text-gray-500">Name</Text>
-                                <Text className="font-semibold">
-                                    {items.data.pet}
-                                </Text>
-                            </View>
-                            <View>
-                                <Text className="text-xs text-gray-500">Date</Text>
-                                <Text className="font-semibold">
-                                    {items.data.appointmentDisplay?.date}
-                                </Text>
-                            </View>
-                     
-
-                            <View>
-                                <Text className="text-xs text-gray-500">Service</Text>
-                                <Text className="font-semibold">
-                                    {items.data.serviceType}
-                                </Text>
-                            </View>
-
-                        </View>
-
-                        {/* RIGHT COLUMN */}
-                        <View className="w-1/2 pl-2 space-y-3">
-
-                        <View>
-                                <Text className="text-xs text-gray-500">Booked On</Text>
-                                <Text className="font-semibold">
-                                    {items.data.bookedAt}
-                                </Text>
-                            </View>
-                            <View>
-                                <Text className="text-xs text-gray-500">Time</Text>
-                                <Text className="font-semibold">
-                                    {items.data.appointmentDisplay?.time}
-                                </Text>
-                            </View>
-
-                            <View>
-                                <Text className="text-xs text-gray-500">Reference Code</Text>
-                                <Text className="font-semibold font-mono tracking-wider">
-                                    {items.data.bookingCode}
-                                </Text>
-                            </View>
-
-                        </View>
-
-                    </View>
-
-                    {/* ✅ DIVIDER */}
-                    <View className="border-t border-gray-200 my-6" />
-
-                    {/* ✅ ACTION BUTTON */}
-                    <TouchableOpacity
-                        onPress={onClose}
-                        className="bg-black py-4 rounded-xl"
-                    >
-                        <Text className="text-white text-center font-semibold text-base">
-                            Go to your Appointment
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </Modal>
-    );
+          <View className="mt-6">
+            <AppButton label="View appointments" onPress={onClose} />
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
 }

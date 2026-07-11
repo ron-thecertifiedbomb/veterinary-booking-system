@@ -1,57 +1,53 @@
 import { formatReadableDate } from "@/utils/appointments/formatter";
-import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-// Adjust import path based on your layout
+import { colors, iconSize } from "@/theme/tokens";
+import { Ionicons } from "@expo/vector-icons";
+import { Pressable, Text, View } from "react-native";
 
-interface DateField {
-  label: string;
-  value?: string; 
-  type: "from" | "to";
-}
-
-interface DateRangePickerProps {
-  fromValue?: string; 
-  toValue?: string;   
+type Props = {
+  fromValue?: string;
+  toValue?: string;
   onPress: (type: "from" | "to") => void;
-}
+  onClear?: () => void;
+};
 
-export const DateRangePicker: React.FC<DateRangePickerProps> = ({
-  fromValue,
-  toValue,
-  onPress,
-}) => {
-  const fields: DateField[] = [
-    { label: "From Date", value: fromValue, type: "from" },
-    { label: "To Date", value: toValue, type: "to" },
-  ];
+export function DateRangePicker({ fromValue, toValue, onPress, onClear }: Props) {
+  const hasCustomRange = Boolean(fromValue || toValue);
 
   return (
-    <View className="flex-row items-center justify-between px-4 mb-4 gap-x-3">
-      {fields.map((field) => {
-        // Change text color slightly if the value is null to indicate an empty state
-        const isSelected = field.value !== null;
-        const textColor = isSelected 
-          ? "text-gray-800 dark:text-gray-100" 
-          : "text-gray-400 dark:text-zinc-500";
-
-        return (
-          <View key={field.type} className="flex-1">
-            <Text className="text-xs text-gray-500 font-medium mb-1 pl-1">
-              {field.label}
+    <View className="mb-5">
+      <View className="flex-row gap-3">
+        <View className="flex-1">
+          <Text className="text-xs font-medium text-text-secondary mb-2 font-sans">From</Text>
+          <Pressable
+            onPress={() => onPress("from")}
+            className="bg-surface border border-border rounded-lg px-4 py-3 flex-row items-center justify-between min-h-[48px]"
+          >
+            <Text className="text-sm text-text-primary font-sans">
+              {fromValue ? formatReadableDate(fromValue) : "Any date"}
             </Text>
-            <TouchableOpacity
-              onPress={() => onPress(field.type)}
-              className="flex-row items-center justify-between bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 p-3 rounded-xl"
-              activeOpacity={0.7}
-            >
-              <Text className={`text-sm font-medium ${textColor}`}>
-                {formatReadableDate(field.value)}
-              </Text>
-              <Text className="text-base text-gray-400">📅</Text>
-            </TouchableOpacity>
-          </View>
-        );
-      })}
+            <Ionicons name="calendar-outline" size={iconSize.md} color={colors.text.muted} />
+          </Pressable>
+        </View>
+
+        <View className="flex-1">
+          <Text className="text-xs font-medium text-text-secondary mb-2 font-sans">To</Text>
+          <Pressable
+            onPress={() => onPress("to")}
+            className="bg-surface border border-border rounded-lg px-4 py-3 flex-row items-center justify-between min-h-[48px]"
+          >
+            <Text className="text-sm text-text-primary font-sans">
+              {toValue ? formatReadableDate(toValue) : "Any date"}
+            </Text>
+            <Ionicons name="calendar-outline" size={iconSize.md} color={colors.text.muted} />
+          </Pressable>
+        </View>
+      </View>
+
+      {hasCustomRange && onClear ? (
+        <Pressable onPress={onClear} className="mt-3 self-start">
+          <Text className="text-sm font-medium text-text-secondary font-sans">Clear custom range</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
-};
+}

@@ -1,75 +1,43 @@
-// src/components/common/EmptyState/EmptyState.tsx
-
-import {
-    Pressable,
-    Text,
-    View,
-} from "react-native";
+import AppButton from "@/components/ui/AppButton";
+import { useIsCompactScreen } from "@/hooks/useIsCompactScreen";
+import { colors, iconSize } from "@/theme/tokens";
+import { Ionicons } from "@expo/vector-icons";
+import { Text, View } from "react-native";
 
 type Props = {
-    title: string;
-    description?: string;
-    buttonLabel?: string;
-    onPress?: () => void;
+  title: string;
+  description?: string;
+  buttonLabel?: string;
+  onPress?: () => void;
 };
 
-export default function EmptyState({
-    title,
-    description,
-    buttonLabel,
-    onPress,
-}: Props) {
-    return (
-        <View className="flex-1 justify-center lg:px-14">
+export default function EmptyState({ title, description, buttonLabel, onPress }: Props) {
+  const { isCompact } = useIsCompactScreen();
 
-            {/* ✅ CARD */}
-            <View className="w-full  bg-surface border border-border rounded-2xl p-8 shadow-sm">
-
-                {/* ✅ TITLE */}
-                <Text className="text-xl font-semibold text-text-primary text-center tracking-tight">
-                    {title}
-                </Text>
-
-                {/* ✅ DESCRIPTION */}
-                {description && (
-                    <Text className="text-sm text-text-secondary text-center mt-2 leading-5">
-                        {description}
-                    </Text>
-                )}
-
-                {buttonLabel && onPress && (
-                    <Pressable
-                        onPress={onPress}
-                        className="mt-6 w-full rounded-xl py-3 bg-black border border-white/10"
-                        style={({ pressed }) => ({
-                            transform: [{ scale: pressed ? 0.97 : 1 }],
-                            shadowColor: "#000",
-                            shadowOpacity: 0.28,
-                            shadowRadius: 10,
-                            shadowOffset: { width: 0, height: 6 },
-                            elevation: 6,
-                            opacity: pressed ? 0.9 : 1,
-                        })}
-                    >
-                        {/* ✅ Button Content */}
-                        <View className="flex-row items-center justify-center gap-2">
-                            {/* OPTIONAL ICON — remove if ayaw */}
-                            {/* <Text className="text-white text-sm">✨</Text> */}
-
-                            <Text className="text-white text-center font-semibold text-sm tracking-wide">
-                                {buttonLabel}
-                            </Text>
-                        </View>
-
-                        {/* ✅ Glossy highlight (premium effect) */}
-                        <View
-                            pointerEvents="none"
-                            className="absolute top-0 left-0 right-0 h-1 rounded-t-xl bg-white/10"
-                        />
-                    </Pressable>
-                )}
-
-            </View>
+  return (
+    <View className={isCompact ? "py-8 px-1" : "py-10 px-2"}>
+      <View
+        className={`bg-surface border border-border rounded-xl items-center ${
+          isCompact ? "px-6 py-8" : "px-8 py-10"
+        }`}
+      >
+        <View className="w-12 h-12 rounded-full bg-surfaceMuted items-center justify-center mb-5">
+          <Ionicons name="calendar-outline" size={iconSize.xl} color={colors.text.muted} />
         </View>
-    );
+        <Text className="text-h2 text-text-primary text-center font-semibold font-sans">{title}</Text>
+
+        {description ? (
+          <Text className="text-sm text-text-secondary text-center mt-2 leading-5 max-w-sm font-sans">
+            {description}
+          </Text>
+        ) : null}
+
+        {buttonLabel && onPress ? (
+          <View className="mt-8 w-full max-w-xs">
+            <AppButton label={buttonLabel} onPress={onPress} />
+          </View>
+        ) : null}
+      </View>
+    </View>
+  );
 }

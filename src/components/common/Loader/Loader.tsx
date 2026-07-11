@@ -1,15 +1,16 @@
+import { colors } from "@/theme/tokens";
 import { ActivityIndicator, View, StyleSheet } from "react-native";
 
 type LoaderProps = {
     size?: "small" | "large";
     color?: string;
     fullScreen?: boolean;
-    transparent?: boolean; // ✅ NEW
+    transparent?: boolean;
 };
 
 export default function Loader({
     size = "large",
-    color = "#6b7280",
+    color = colors.text.muted,
     fullScreen = true,
     transparent = false,
 }: LoaderProps) {
@@ -20,7 +21,7 @@ export default function Loader({
                 fullScreen && styles.fullScreen,
                 transparent && styles.transparentOverlay,
             ]}
-            className={!transparent && fullScreen ? "bg-background" : ""}
+            className={!transparent && fullScreen ? "bg-canvas" : ""}
         >
             <ActivityIndicator size={size} color={color} />
         </View>
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: "rgba(0,0,0,0.3)", // ✅ dimmed transparent bg
+        backgroundColor: "rgba(24,24,27,0.2)",
         justifyContent: "center",
         alignItems: "center",
         zIndex: 999,

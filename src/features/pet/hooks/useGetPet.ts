@@ -10,6 +10,7 @@ export function useGetPets() {
 
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState(false);
+  const [fetched, setFetched] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   const fetchPets = async (): Promise<Pet[] | null> => {
@@ -32,6 +33,7 @@ export function useGetPets() {
       return null;
     } finally {
       setLoading(false);
+      setFetched(true);
     }
   };
 
@@ -39,6 +41,7 @@ export function useGetPets() {
     pets,
     fetchPets,
     loading,
+    fetched,
     message,
   };
 }

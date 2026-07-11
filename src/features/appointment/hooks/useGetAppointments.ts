@@ -4,7 +4,6 @@ import { Appointment } from "@/features/admin/types/admin.types";
 import { getAppointmentsApi, GetAppointmentsFilters } from "@/features/appointment/services/getAppointments.api";
 
 import { useAuth } from "@/features/auth/providers/AuthProvider";
-import { todayStr } from "@/utils/appointments/formatter";
 import { logger } from "@/utils/logger/logger";
 import { useState, useCallback } from "react";
 
@@ -17,8 +16,6 @@ export function useGetAppointments() {
   const [loading, setLoading] = useState(false);
   
   const [filters, setFilters] = useState<GetAppointmentsFilters>({
-    from: todayStr,
-    to: todayStr,
     sortBy: "appointmentDate",
     sortOrder: "desc",
   });

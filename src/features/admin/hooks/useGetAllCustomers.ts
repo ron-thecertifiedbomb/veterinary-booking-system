@@ -24,7 +24,7 @@ export function useGetAllCustomers() {
       
       return fetchedCustomers;
     } catch (err: any) {
-      const msg = err?.message || "Failed to fetch pets";
+      const msg = err?.message || "Failed to fetch customers";
       setMessage(msg);
       return null;
     } finally {

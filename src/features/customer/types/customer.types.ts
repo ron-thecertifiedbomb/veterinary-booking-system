@@ -7,8 +7,9 @@ import { StaffProfile } from "@/features/staff/types/staff.types";
 
 export interface CustomerProfile {
   id: string;
-  pets: Pet[];
-  appointments: Appointment[];
+  pets?: Pet[];
+  appointments?: Appointment[];
+  totalPets?: number;
 }
 
 export type userProfile = {

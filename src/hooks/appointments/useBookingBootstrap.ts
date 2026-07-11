@@ -1,51 +1,39 @@
-// ..\src\hooks\appointments\useBookingBootstrap.ts
-
 import { useGetSlots } from "@/features/appointment/hooks/useGetSlots";
-import { parseServerNow } from "@/utils/dateandtime/serverTime";
+import { parseServerNow } from "@/utils/appointments/formatter";
 import { logger } from "@/utils/logger/logger";
 import { useCallback, useEffect, useRef } from "react";
 
 export const useBookingBootstrap = (date: string) => {
-  const { slots, getSlots, loading, error, serverNow, setSelectedTime } =
-    useGetSlots();
+  const { slots, fetchSlots, loading, error } = useGetSlots();
 
   const lastFetchedDate = useRef<string | null>(null);
 
-  const fetchSlots = useCallback(async () => {
+  const refreshSlots = useCallback(async () => {
     try {
       logger.info("Bootstrap start", { date });
-
-      const res = await getSlots(date);
-      if (!res) return;
+      await fetchSlots(date);
     } catch (err: any) {
       logger.error("Bootstrap failed", err);
     }
-  }, [date, getSlots]);
+  }, [date, fetchSlots]);
 
   useEffect(() => {
     if (!date || date.trim() === "") return;
-
     if (lastFetchedDate.current === date) return;
 
     lastFetchedDate.current = date;
+    refreshSlots();
+  }, [date, refreshSlots]);
 
-    setSelectedTime(null);
-    fetchSlots();
-  }, [date, fetchSlots]);
-
-  // ✅ ✅ ✅ ADD THIS
-  const { formattedDate, formattedTime } = parseServerNow(serverNow);
+  const { today: formattedDate, time: formattedTime } = parseServerNow(null);
 
   return {
     slots,
-    serverNow,
-
-    formattedDate, // ✅ NEW
-    formattedTime, // ✅ NEW
-
+    serverNow: null,
+    formattedDate,
+    formattedTime,
     loading,
     error,
-    refreshSlots: fetchSlots,
+    refreshSlots,
   };
 };
-``;

@@ -1,182 +1,156 @@
-import React, { useState } from "react";
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
-
-
 import AppTextInput from "@/components/common/AppTextInput/AppTextInput";
+import AppButton from "@/components/ui/AppButton";
+import FormCard from "@/components/ui/FormCard";
+import FormFields from "@/components/ui/FormFields";
+import FormSection from "@/components/ui/FormSection";
+import FormSelect from "@/components/ui/FormSelect";
 import { adminSchema } from "@/features/admin/schemas/adminSchema";
 import { AdminFormData, AdminPosition } from "@/features/admin/types/admin.types";
-import { Picker } from "@react-native-picker/picker";
-
-/* ---------------- TYPES ---------------- */
-
+import { colors } from "@/theme/tokens";
+import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
+import { View } from "react-native";
 
 type AdminErrors = Partial<Record<keyof AdminFormData, string | null>>;
 
 type Props = {
-    loading?: boolean;
-    onSubmit: (data: AdminFormData) => void;
+  loading?: boolean;
+  onSubmit: (data: AdminFormData) => void;
 };
 
-
 const ADMIN_POSITIONS: { label: string; value: AdminPosition }[] = [
-    { label: "Manager", value: "MANAGER" },
-    { label: "Accountant", value: "ACCOUNTANT" },
-    { label: "Receptionist", value: "RECEPTIONIST" },
+  { label: "Manager", value: "MANAGER" },
+  { label: "Accountant", value: "ACCOUNTANT" },
+  { label: "Receptionist", value: "RECEPTIONIST" },
 ];
 
-
-/* ---------------- COMPONENT ---------------- */
-
 export default function AddAdminForm({ loading, onSubmit }: Props) {
-    const [form, setForm] = useState<AdminFormData>({
-        email: "",
-        password: "",
-        name: "",
-        phone: "",
-        position: "MANAGER",
-        department: "",
-    });
+  const [form, setForm] = useState<AdminFormData>({
+    email: "",
+    password: "",
+    name: "",
+    phone: "",
+    position: "MANAGER",
+    department: "",
+  });
 
-    const [errors, setErrors] = useState<AdminErrors>({});
+  const [errors, setErrors] = useState<AdminErrors>({});
+  const [showPassword, setShowPassword] = useState(false);
 
-    /* ✅ FIXED typed update */
-    const updateField = <K extends keyof AdminFormData>(
-        key: K,
-        value: AdminFormData[K]
-    ) => {
-        setForm((prev) => ({ ...prev, [key]: value }));
-        setErrors((prev) => ({ ...prev, [key]: null }));
-    };
-    const handlePositionChange = (value: AdminPosition) => {
-        updateField("position", value);
+  const updateField = <K extends keyof AdminFormData>(key: K, value: AdminFormData[K]) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+    setErrors((prev) => ({ ...prev, [key]: null }));
+  };
 
-        if (value === "MANAGER") {
-            updateField("department", "Operations");
-        } else if (value === "ACCOUNTANT") {
-            updateField("department", "Finance");
-        } else if (value === "RECEPTIONIST") {
-            updateField("department", "Front Desk");
-        }
-    };
-    const handleSubmit = () => {
-        const cleanedForm = {
-            ...form,
-            name: form.name.trim(),
-            email: form.email.trim(),
-        };
+  const handlePositionChange = (value: AdminPosition) => {
+    updateField("position", value);
 
-        const result = adminSchema.safeParse(cleanedForm);
+    if (value === "MANAGER") {
+      updateField("department", "Operations");
+    } else if (value === "ACCOUNTANT") {
+      updateField("department", "Finance");
+    } else if (value === "RECEPTIONIST") {
+      updateField("department", "Front Desk");
+    }
+  };
 
-        if (!result.success) {
-            const fieldErrors = result.error.flatten().fieldErrors;
-
-            const formattedErrors = Object.keys(fieldErrors).reduce(
-                (acc, key) => {
-                    acc[key as keyof AdminFormData] =
-                        fieldErrors[key as keyof AdminFormData]?.[0] || null;
-                    return acc;
-                },
-                {} as AdminErrors
-            );
-
-            setErrors(formattedErrors);
-            return;
-        }
-
-        onSubmit(result.data);
+  const handleSubmit = () => {
+    const cleanedForm = {
+      ...form,
+      name: form.name.trim(),
+      email: form.email.trim(),
     };
 
-    return (
-        <View className="w-full px-6 py-4">
+    const result = adminSchema.safeParse(cleanedForm);
 
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
 
-            <AppTextInput
-                label="Full Name"
-                value={form.name}
-                onChangeText={(text) => updateField("name", text)}
-                error={errors.name}
-            />
+      const formattedErrors = Object.keys(fieldErrors).reduce((acc, key) => {
+        acc[key as keyof AdminFormData] =
+          fieldErrors[key as keyof AdminFormData]?.[0] || null;
+        return acc;
+      }, {} as AdminErrors);
 
-            <AppTextInput
-                label="Email"
-                value={form.email}
-                onChangeText={(text) => updateField("email", text)}
-                keyboardType="email-address"
-                error={errors.email}
-            />
+      setErrors(formattedErrors);
+      return;
+    }
 
-            <AppTextInput
-                label="Phone"
-                value={form.phone}
-                onChangeText={(text) =>
-                    updateField("phone", text.replace(/\D/g, "").slice(0, 11))
-                }
-                error={errors.phone}
-            />
+    onSubmit(result.data);
+  };
 
-            <AppTextInput
-                label="Password"
-                value={form.password}
-                onChangeText={(text) => updateField("password", text)}
-                secureTextEntry
-                error={errors.password}
-            />
+  return (
+    <FormCard
+      embedded
+      compact
+      title="Add administrator"
+      lead="Create a new admin account for clinic operations."
+    >
+      <FormFields>
+        <FormSection title="Account">
+          <AppTextInput
+            label="Full name"
+            value={form.name}
+            onChangeText={(text) => updateField("name", text)}
+            placeholder="Maria Santos"
+            error={errors.name}
+          />
+          <AppTextInput
+            label="Email"
+            value={form.email}
+            onChangeText={(text) => updateField("email", text)}
+            placeholder="admin@vetclinic.com"
+            keyboardType="email-address"
+            error={errors.email}
+          />
+          <AppTextInput
+            label="Phone"
+            value={form.phone}
+            onChangeText={(text) =>
+              updateField("phone", text.replace(/\D/g, "").slice(0, 11))
+            }
+            placeholder="09123456789"
+            error={errors.phone}
+          />
+          <AppTextInput
+            label="Password"
+            value={form.password}
+            onChangeText={(text) => updateField("password", text)}
+            placeholder="Temporary password"
+            secureTextEntry={!showPassword}
+            error={errors.password}
+            rightIcon={
+              <Ionicons
+                name={showPassword ? "eye-off-outline" : "eye-outline"}
+                size={20}
+                color={colors.text.muted}
+              />
+            }
+            onRightIconPress={() => setShowPassword((prev) => !prev)}
+          />
+        </FormSection>
 
-            <View className="mb-2">
-                <Text className="text-xs lg:text-xs font-medium text-text-primary mb-1">
-                    Position
-                </Text>
+        <FormSection title="Role">
+          <FormSelect
+            label="Position"
+            value={form.position}
+            onValueChange={handlePositionChange}
+            options={ADMIN_POSITIONS}
+            error={errors.position}
+          />
+          <AppTextInput
+            label="Department"
+            value={form.department}
+            onChangeText={(text) => updateField("department", text)}
+            placeholder="e.g. Operations"
+            error={errors.department}
+          />
+        </FormSection>
+      </FormFields>
 
-                <View className="border border-slate-200 rounded-xl bg-white px-1 py-2">
-                    <Picker
-                        selectedValue={form.position}
-                        onValueChange={(value) =>
-                            handlePositionChange(value as AdminPosition)
-                        }
-
-                    >
-                        {ADMIN_POSITIONS.map((pos) => (
-                            <Picker.Item
-                                key={pos.value}
-                                label={pos.label}
-                                value={pos.value}
-                            />
-                        ))}
-                    </Picker>
-                </View>
-
-                {errors.position && (
-                    <Text className="text-red-500 text-xs mt-1">
-                        {errors.position}
-                    </Text>
-                )}
-            </View>
-
-            <AppTextInput
-                label="Department"
-                value={form.department}
-                onChangeText={(text) =>
-                    updateField("department", text)
-                }
-                placeholder="e.g. Operations"
-                error={errors.department}
-            />
-
-            {/* Submit */}
-            <Pressable
-                onPress={handleSubmit}
-                disabled={loading}
-                className={`rounded-2xl py-3 items-center mt-4 ${loading ? "bg-gray-300" : "bg-black active:opacity-80"
-                    }`}
-            >
-                {loading ? (
-                    <ActivityIndicator color="#fff" />
-                ) : (
-                    <Text className="text-white font-semibold">
-                        Add Admin
-                    </Text>
-                )}
-            </Pressable>
-        </View>
-    );
+      <View className="mt-8">
+        <AppButton label="Add administrator" onPress={handleSubmit} loading={loading} />
+      </View>
+    </FormCard>
+  );
 }

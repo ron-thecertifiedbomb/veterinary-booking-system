@@ -1,82 +1,80 @@
+import { colors } from "@/theme/tokens";
 import { Platform, Pressable, Text, TextInput, TextInputProps, View } from "react-native";
 
 type AppTextInputProps = {
-    label: string;
-    value: string;
-    onChangeText: (text: string) => void;
-    placeholder?: string;
-    error?: string | null;
-    keyboardType?: "default" | "email-address";
-    secureTextEntry?: boolean;
-    autoComplete?: TextInputProps["autoComplete"];
-    name?: string;
-    rightIcon?: React.ReactNode;
-    onRightIconPress?: () => void;
+  label: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder?: string;
+  error?: string | null;
+  keyboardType?: "default" | "email-address";
+  secureTextEntry?: boolean;
+  autoComplete?: TextInputProps["autoComplete"];
+  name?: string;
+  rightIcon?: React.ReactNode;
+  onRightIconPress?: () => void;
 };
 
 export default function AppTextInput({
-    label,
-    value,
-    onChangeText,
-    placeholder,
-    error,
-    keyboardType = "default",
-    secureTextEntry = false,
-    autoComplete,
-    name,
-    rightIcon,
-    onRightIconPress,
+  label,
+  value,
+  onChangeText,
+  placeholder,
+  error,
+  keyboardType = "default",
+  secureTextEntry = false,
+  autoComplete,
+  name,
+  rightIcon,
+  onRightIconPress,
 }: AppTextInputProps) {
-    return (
-        <View >
-            <Text className="text-xs lg:text-xs font-medium text-text-primary mb-1">
-                {label}
-            </Text>
-            <View className="bg-transparent border border-gray-300 rounded-2xl  flex-row items-center">
-                <TextInput
-                    value={value}
-                    onChangeText={onChangeText}
-                    placeholder={placeholder}
-                    keyboardType={keyboardType}
-                    secureTextEntry={secureTextEntry}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-
-                    // ✅ WEB FIXES
-                    {...(Platform.OS === "web"
-                        ? ({
-                            autoComplete:
-                                autoComplete ||
-                                (secureTextEntry
-                                    ? "current-password"
-                                    : keyboardType === "email-address"
-                                        ? "email"
-                                        : "on"),
-                            name: name || label.toLowerCase(),
-                        } as any)
-                        : {})}
-
-                    className="flex-1 px-2 py-2 lg:px-2 lg:py-2 text-text-secondary "
-                    style={
-                        Platform.OS === "web"
-                            ? ({
-                                outlineStyle: "none",
-                                WebkitBoxShadow: "0 0 0px 1000px transparent inset",
-                                boxShadow: "0 0 0px 1000px transparent inset",
-                                transition: "background-color 5000s ease-in-out 0s",
-                            } as any)
-                            : undefined
-                    }
-                />
-                {rightIcon && (
-                    <Pressable onPress={onRightIconPress} className="px-4">
-                        {rightIcon}
-                    </Pressable>
-                )}
-            </View>
-            <Text className="text-red-500 text-xs min-h-[12px]">
-                {error ?? ""}
-            </Text>
-        </View>
-    );
+  return (
+    <View>
+      <Text className="text-xs font-medium text-text-secondary mb-2 font-sans">{label}</Text>
+      <View
+        className={`bg-surface border rounded-lg flex-row items-center min-h-[48px] ${
+          error ? "border-danger" : "border-border"
+        }`}
+      >
+        <TextInput
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          placeholderTextColor={colors.text.muted}
+          keyboardType={keyboardType}
+          secureTextEntry={secureTextEntry}
+          autoCapitalize="none"
+          autoCorrect={false}
+          {...(Platform.OS === "web"
+            ? ({
+                autoComplete:
+                  autoComplete ||
+                  (secureTextEntry
+                    ? "current-password"
+                    : keyboardType === "email-address"
+                      ? "email"
+                      : "on"),
+                name: name || label.toLowerCase(),
+              } as any)
+            : {})}
+          className="flex-1 px-4 py-3 text-body text-text-primary font-sans"
+          style={
+            Platform.OS === "web"
+              ? ({
+                  outlineStyle: "none",
+                  WebkitBoxShadow: "0 0 0px 1000px transparent inset",
+                  boxShadow: "0 0 0px 1000px transparent inset",
+                } as any)
+              : undefined
+          }
+        />
+        {rightIcon ? (
+          <Pressable onPress={onRightIconPress} className="px-4" hitSlop={8}>
+            {rightIcon}
+          </Pressable>
+        ) : null}
+      </View>
+      {error ? <Text className="text-danger text-xs mt-1.5 font-sans">{error}</Text> : null}
+    </View>
+  );
 }

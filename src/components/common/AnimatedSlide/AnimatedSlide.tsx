@@ -27,6 +27,7 @@ export default function AnimatedSlide({ children }: any) {
                 transform: [{ translateY }],
                 opacity,
                 width: "100%",
+                alignItems: "center",
             }}
         >
             {children}

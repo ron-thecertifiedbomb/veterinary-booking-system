@@ -51,7 +51,7 @@ export default function History() {
 
           renderItem={({ item }) => (
             // Swapped plural mapping prop to singular for strict card layout sync
-            <AppointmentCard appointments={item} />
+            <AppointmentCard appointment={item} />
           )}
         />
       </View>

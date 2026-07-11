@@ -74,10 +74,7 @@ export type DashboardMetricsResponse = {
 
 export interface GetAllAppointmentsResponse {
   message: string;
-  data: {
-    appointments: Appointment[];
-    staffDoctors: StaffDoctor[];
-  };
+  data: Appointment[];
 }
 
 export interface Appointment {
@@ -109,7 +106,12 @@ export interface Pet {
 }
 
 export interface Customer {
-  user: User;
+  id?: string;
+  userId?: string;
+  name?: string | null;
+  email?: string;
+  phone?: string | null;
+  user?: User;
 }
 
 export interface User {

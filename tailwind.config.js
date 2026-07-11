@@ -9,42 +9,70 @@ module.exports = {
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["Inter_400Regular", "Inter", "system-ui", "sans-serif"],
+        medium: ["Inter_500Medium", "Inter", "system-ui", "sans-serif"],
+        semibold: ["Inter_600SemiBold", "Inter", "system-ui", "sans-serif"],
+        bold: ["Inter_700Bold", "Inter", "system-ui", "sans-serif"],
+      },
       colors: {
-        background: "#ffffff", // ✅ pure white
+        sidebar: "#0a0a0a",
+        sidebarHover: "#171717",
+        sidebarActive: "#1f1f1f",
+        sidebarText: "#a3a3a3",
+        sidebarTextActive: "#ffffff",
+        sidebarSection: "#737373",
+
+        accent: "#0a0a0a",
+        accentDark: "#000000",
+        accentSoft: "#f5f5f5",
+        accentText: "#ffffff",
+
+        canvas: "#fafafa",
         surface: "#ffffff",
-        surfaceSoft: "#f3f4f6",
-        border: "#e5e7eb",
+        surfaceMuted: "#f7f7f7",
+        border: "#ebebeb",
+        borderStrong: "#d4d4d4",
+
+        clinical: "#0a0a0a",
 
         text: {
-          primary: "#111827",
-          secondary: "#6b7280",
-          muted: "#9ca3af",
+          primary: "#0a0a0a",
+          secondary: "#525252",
+          muted: "#737373",
+          inverse: "#ffffff",
         },
 
-        accent: "#2563eb",
-        accentSoft: "#eff6ff",
-        accentBorder: "#dbeafe",
-
-        success: "#10b981",
-        warning: "#f59e0b",
-        danger: "#ef4444",
+        success: "#166534",
+        successBg: "#f0fdf4",
+        warning: "#a16207",
+        warningBg: "#fffbeb",
+        danger: "#b91c1c",
+        dangerBg: "#fef2f2",
       },
       borderRadius: {
+        sm: "6px",
+        md: "8px",
         lg: "10px",
-        xl: "14px",
-        "2xl": "18px",
+        xl: "12px",
       },
-
+      spacing: {
+        4.5: "18px",
+        13: "52px",
+        15: "60px",
+        18: "72px",
+      },
       fontSize: {
-        hero: ["30px", { lineHeight: "36px" }],
-        h1: ["24px", { lineHeight: "30px" }],
-        h2: ["20px", { lineHeight: "26px" }],
-        base: ["16px", { lineHeight: "22px" }],
-        sm: ["14px", { lineHeight: "20px" }],
+        pageTitle: ["24px", { lineHeight: "30px", fontWeight: "700", letterSpacing: "-0.025em" }],
+        h2: ["16px", { lineHeight: "22px", fontWeight: "600", letterSpacing: "-0.015em" }],
+        body: ["15px", { lineHeight: "22px" }],
+        sm: ["13px", { lineHeight: "19px" }],
+        xs: ["12px", { lineHeight: "17px" }],
+        micro: ["11px", { lineHeight: "15px", fontWeight: "600", letterSpacing: "0.06em" }],
       },
-
       letterSpacing: {
-        widePlus: "0.05em",
+        label: "0.05em",
+        clinical: "0.06em",
       },
     },
   },

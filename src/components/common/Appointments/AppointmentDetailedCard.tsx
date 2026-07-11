@@ -1,16 +1,31 @@
+import AppButton from "@/components/ui/AppButton";
+import SectionLabel from "@/components/ui/SectionLabel";
+import StatusBadge from "@/components/ui/StatusBadge";
 import { Appointment } from "@/features/appointment/types/appointment";
-import { 
-  formatAppointmentDateOnly, 
-  formatAppointmentTimeOnly, 
-  formatBookingCode, 
-  formatReadableDate 
+import {
+  formatAppointmentDateOnly,
+  formatAppointmentTimeOnly,
+  formatBookingCode,
 } from "@/utils/appointments/formatter";
 import React from "react";
-import { View, Text, TouchableOpacity, Share } from "react-native";
+import { View, Text, Share } from "react-native";
 
 interface AppointmentDetailCardProps {
   appointment: Appointment | null;
   onCancelPress?: () => void;
+}
+
+function statusVariant(status: string) {
+  switch (status) {
+    case "BOOKED":
+      return "success" as const;
+    case "COMPLETED":
+      return "default" as const;
+    case "CANCELLED":
+      return "danger" as const;
+    default:
+      return "muted" as const;
+  }
 }
 
 export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
@@ -24,131 +39,76 @@ export const AppointmentDetailCard: React.FC<AppointmentDetailCardProps> = ({
   const handleShareBooking = async () => {
     try {
       await Share.share({
-        message: `Appointment: ${formatBookingCode(appointment.bookingCode)}\nService: ${appointment.serviceType}\nDate: ${formatReadableDate(appointment.appointmentDate)}`,
+        message: `Ref: ${formatBookingCode(appointment.bookingCode)}\n${appointment.serviceType}\n${formatAppointmentDateOnly(appointment.appointmentDate)}`,
       });
-    } catch (error) {
-      console.error("Error sharing booking details", error);
+    } catch {
+      /* ignore */
     }
   };
 
   return (
-    <View className="bg-white p-6 rounded-3xl space-y-6 border border-zinc-200">
-      
-      {/* ─── HEADER ROW ─── */}
-      <View className="flex-row justify-between items-center pb-4 border-b border-zinc-200">
-        <View>
-          <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
-            Service Type
-          </Text>
-          <Text className="text-2xl font-black tracking-tighter text-black uppercase">
-            {appointment.serviceType}
-          </Text>
+    <View>
+      <View className="flex-row justify-between items-start mb-4">
+        <View className="flex-1 mr-3">
+          <SectionLabel>Service</SectionLabel>
+          <Text className="text-h2 text-text-primary mt-1">{appointment.serviceType}</Text>
         </View>
-        
-        <View className="bg-transparent px-3 py-1 border border-black rounded-full">
-          <Text className="text-[9px] font-black tracking-widest uppercase text-black">
-            {appointment.status}
-          </Text>
-        </View>
+        <StatusBadge label={appointment.status} variant={statusVariant(appointment.status)} />
       </View>
 
-      {/* ─── SCHEDULE BLOCK ─── */}
-      <View className="flex-row justify-between items-center py-1">
+      <View className="flex-row gap-4 py-3 border-y border-border mb-4">
         <View className="flex-1">
-          <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
-            Date
-          </Text>
-          <Text className="text-sm font-bold text-black uppercase">
+          <SectionLabel>Date</SectionLabel>
+          <Text className="text-body text-text-primary mt-1">
             {formatAppointmentDateOnly(appointment.appointmentDate)}
           </Text>
         </View>
-        <View className="w-[1px] h-8 bg-zinc-200 mx-6" />
         <View className="flex-1">
-          <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
-            Time
-          </Text>
-          <Text className="text-sm font-bold text-black uppercase">
+          <SectionLabel>Time</SectionLabel>
+          <Text className="text-body text-text-primary mt-1">
             {formatAppointmentTimeOnly(appointment.appointmentDate)}
           </Text>
         </View>
       </View>
 
-      {/* ─── REF CODE CARD ─── */}
-      <View className="bg-zinc-100 rounded-2xl p-4 flex-row justify-between items-center">
-        <View className="flex-1 mr-4">
-          <Text className="text-[8px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
-            Reference ID
-          </Text>
-          <Text className="text-xs font-mono font-bold tracking-tight text-zinc-800 select-all" numberOfLines={1}>
+      <View className="bg-surfaceMuted border border-border rounded-lg p-3 flex-row justify-between items-center mb-4">
+        <View className="flex-1">
+          <SectionLabel>Reference</SectionLabel>
+          <Text className="text-sm font-medium text-text-primary mt-1">
             {formatBookingCode(appointment.bookingCode)}
           </Text>
         </View>
-        <TouchableOpacity 
-          onPress={handleShareBooking} 
-          activeOpacity={0.8}
-          className="bg-black px-4 py-2 rounded-full"
-        >
-          <Text className="text-white text-[10px] font-black tracking-widest uppercase">Share</Text>
-        </TouchableOpacity>
+        <AppButton label="Share" onPress={handleShareBooking} fullWidth={false} variant="secondary" />
       </View>
 
-      {/* ─── PATIENT PROFILE ─── */}
-      <View className="pt-1">
-        <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-3">
-          Patient Profile
+      <View className="mb-4">
+        <SectionLabel>Patient</SectionLabel>
+        <Text className="text-body font-medium text-text-primary mt-1">
+          {appointment.pet?.petName}
         </Text>
-        <View className="border border-zinc-200 rounded-2xl p-4 flex-row justify-between items-center">
-          <View>
-            <Text className="text-base font-black tracking-tight text-black uppercase">
-              {appointment.pet?.petName}
-            </Text>
-            <Text className="text-xs text-zinc-500 mt-0.5 font-medium">
-              {appointment.pet?.species} / {appointment.pet?.breed}
-            </Text>
-          </View>
-          <View className="border-l border-zinc-200 pl-4 py-1">
-            <Text className="text-xs font-black text-black">
-              {appointment.pet?.weight ? `${appointment.pet.weight / 100} KG` : "—"}
-            </Text>
-          </View>
+        <Text className="text-sm text-text-secondary mt-0.5">
+          {[appointment.pet?.species, appointment.pet?.breed].filter(Boolean).join(" · ")}
+          {appointment.pet?.weight ? ` · ${appointment.pet.weight / 100} kg` : ""}
+        </Text>
+      </View>
+
+      <View className="mb-4">
+        <SectionLabel>Assigned staff</SectionLabel>
+        <Text className="text-body text-text-primary mt-1">
+          {appointment.staff?.name || "Awaiting assignment"}
+        </Text>
+      </View>
+
+      {appointment.notes ? (
+        <View className="mb-4">
+          <SectionLabel>Notes</SectionLabel>
+          <Text className="text-sm text-text-secondary mt-1 leading-5">{appointment.notes}</Text>
         </View>
-      </View>
+      ) : null}
 
-      {/* ─── CLINICAL ASSIGNMENT ─── */}
-      <View className="pt-1">
-        <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1">
-          Clinical Assignment
-        </Text>
-        <Text className="text-sm font-bold text-zinc-800 uppercase">
-          {appointment.staff ? appointment.staff.name : "Awaiting Assignment"}
-        </Text>
-      </View>
-
-      {/* ─── OWNER REMARKS ─── */}
-      {appointment.notes && (
-        <View className="pt-1">
-          <Text className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400 mb-1.5">
-            Remarks
-          </Text>
-          <Text className="text-xs font-medium leading-relaxed text-zinc-600 border-l-2 border-zinc-200 pl-3">
-            {appointment.notes}
-          </Text>
-        </View>
-      )}
-
-      {/* ─── ACTION TRIGGER ─── */}
-      {isBooked && onCancelPress && (
-        <TouchableOpacity 
-          onPress={onCancelPress}
-          activeOpacity={0.9}
-          className="w-full bg-black py-4 rounded-full items-center mt-2"
-        >
-          <Text className="text-white text-xs font-black tracking-[0.2em] uppercase">
-            Cancel Appointment
-          </Text>
-        </TouchableOpacity>
-      )}
-      
+      {isBooked && onCancelPress ? (
+        <AppButton label="Cancel appointment" onPress={onCancelPress} variant="secondary" />
+      ) : null}
     </View>
   );
 };

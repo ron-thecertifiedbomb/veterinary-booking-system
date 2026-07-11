@@ -78,3 +78,31 @@ export function getRouteByRole(
   const routeKey = roleRouteKeyMap[role];
   return routes[routeKey][platform];
 }
+
+type ProfileRoutes = {
+  profile: Href;
+  edit: Href;
+};
+
+export function getProfileRoutes(role: Role | undefined): ProfileRoutes {
+  const platform: PlatformType = Platform.OS === "web" ? "web" : "app";
+
+  if (role === "ADMIN") {
+    return {
+      profile: "/(admin-web)/admin/profile",
+      edit: "/(admin-web)/admin/profile/edit",
+    };
+  }
+
+  if (role === "STAFF") {
+    return {
+      profile: "/(staff-app)/(tabs)/profile",
+      edit: "/(staff-app)/edit-profile",
+    };
+  }
+
+  return {
+    profile: platform === "web" ? "/(web)/profile" : "/(app)/(tabs)/profile",
+    edit: platform === "web" ? "/(web)/profile/edit" : "/(app)/edit-profile",
+  };
+}

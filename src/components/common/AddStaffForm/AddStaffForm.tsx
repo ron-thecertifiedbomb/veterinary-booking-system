@@ -1,196 +1,156 @@
-import React, { useState } from "react";
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import { z } from "zod";
-
 import AppTextInput from "@/components/common/AppTextInput/AppTextInput";
+import AppButton from "@/components/ui/AppButton";
+import FormCard from "@/components/ui/FormCard";
+import FormFields from "@/components/ui/FormFields";
+import FormSection from "@/components/ui/FormSection";
+import FormSelect from "@/components/ui/FormSelect";
 import { staffSchema } from "@/features/admin/schemas/staffSchema";
-import { StaffPosition } from "@/features/staff/types/staff.types";
 import { StaffFormData } from "@/features/admin/types/admin.types";
-
+import { StaffPosition } from "@/features/staff/types/staff.types";
+import { colors } from "@/theme/tokens";
+import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
+import { View } from "react-native";
 
 type StaffErrors = Partial<Record<keyof StaffFormData, string | null>>;
 
 type Props = {
-    loading?: boolean;
-    onSubmit: (data: StaffFormData) => void;
+  loading?: boolean;
+  onSubmit: (data: StaffFormData) => void;
 };
 
-/* ---------------- CONSTANTS ---------------- */
-
 const STAFF_POSITIONS: { label: string; value: StaffPosition }[] = [
-    { label: "Veterinarian", value: "VETERINARIAN" },
-    { label: "Vet Technician", value: "VET_TECHNICIAN" },
-    { label: "Groomer", value: "GROOMER" },
+  { label: "Veterinarian", value: "VETERINARIAN" },
+  { label: "Vet technician", value: "VET_TECHNICIAN" },
+  { label: "Groomer", value: "GROOMER" },
 ];
 
-/* ---------------- COMPONENT ---------------- */
-
 export default function AddStaffForm({ loading, onSubmit }: Props) {
-    const [form, setForm] = useState<StaffFormData>({
-        email: "",
-        password: "",
-        name: "",
-        phone: "",
-        position: "VETERINARIAN", // default
-        specialization: "",
-        licenseNumber: "",
-    });
+  const [form, setForm] = useState<StaffFormData>({
+    email: "",
+    password: "",
+    name: "",
+    phone: "",
+    position: "VETERINARIAN",
+    specialization: "",
+    licenseNumber: "",
+  });
 
-    const [errors, setErrors] = useState<StaffErrors>({});
+  const [errors, setErrors] = useState<StaffErrors>({});
+  const [showPassword, setShowPassword] = useState(false);
 
-    // ✅ FIXED (important bug fixed here)
-    const updateField = <K extends keyof StaffFormData>(
-        key: K,
-        value: StaffFormData[K]
-    ) => {
-        setForm((prev) => ({ ...prev, [key]: value }));
-        setErrors((prev) => ({ ...prev, [key]: null }));
+  const updateField = <K extends keyof StaffFormData>(key: K, value: StaffFormData[K]) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+    setErrors((prev) => ({ ...prev, [key]: null }));
+  };
+
+  const handlePositionChange = (value: StaffPosition) => {
+    updateField("position", value);
+
+    if (value === "VETERINARIAN") {
+      updateField("specialization", "Small Animals");
+    }
+  };
+
+  const handleSubmit = () => {
+    const cleanedForm = {
+      ...form,
+      name: form.name.trim(),
+      email: form.email.trim(),
     };
 
-    const handleSubmit = () => {
-        // ✅ clean inputs
-        const cleanedForm = {
-            ...form,
-            name: form.name.trim(),
-            email: form.email.trim(),
-        };
+    const result = staffSchema.safeParse(cleanedForm);
 
-        const result = staffSchema.safeParse(cleanedForm);
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
 
-        if (!result.success) {
-            const fieldErrors = result.error.flatten().fieldErrors;
+      const formattedErrors = Object.keys(fieldErrors).reduce((acc, key) => {
+        acc[key as keyof StaffFormData] =
+          fieldErrors[key as keyof StaffFormData]?.[0] || null;
+        return acc;
+      }, {} as StaffErrors);
 
-            const formattedErrors = Object.keys(fieldErrors).reduce(
-                (acc, key) => {
-                    acc[key as keyof StaffFormData] =
-                        fieldErrors[key as keyof StaffFormData]?.[0] || null;
-                    return acc;
-                },
-                {} as StaffErrors
-            );
+      setErrors(formattedErrors);
+      return;
+    }
 
-            setErrors(formattedErrors);
-            return;
-        }
+    onSubmit(result.data);
+  };
 
-        onSubmit(result.data);
-    };
+  return (
+    <FormCard embedded compact title="Add staff member" lead="Create a clinic staff account with role details.">
+      <FormFields>
+        <FormSection title="Account">
+          <AppTextInput
+            label="Full name"
+            value={form.name}
+            onChangeText={(text) => updateField("name", text)}
+            placeholder="Dr. Ana Reyes"
+            error={errors.name}
+          />
+          <AppTextInput
+            label="Email"
+            value={form.email}
+            onChangeText={(text) => updateField("email", text)}
+            placeholder="staff@vetclinic.com"
+            keyboardType="email-address"
+            error={errors.email}
+          />
+          <AppTextInput
+            label="Phone"
+            value={form.phone}
+            onChangeText={(text) =>
+              updateField("phone", text.replace(/\D/g, "").slice(0, 11))
+            }
+            placeholder="09123456789"
+            error={errors.phone}
+          />
+          <AppTextInput
+            label="Password"
+            value={form.password}
+            onChangeText={(text) => updateField("password", text)}
+            placeholder="Temporary password"
+            secureTextEntry={!showPassword}
+            error={errors.password}
+            rightIcon={
+              <Ionicons
+                name={showPassword ? "eye-off-outline" : "eye-outline"}
+                size={20}
+                color={colors.text.muted}
+              />
+            }
+            onRightIconPress={() => setShowPassword((prev) => !prev)}
+          />
+        </FormSection>
 
-    // ✅ Optional smart UX
-    const handlePositionChange = (value: StaffPosition) => {
-        updateField("position", value);
+        <FormSection title="Professional details">
+          <FormSelect
+            label="Position"
+            value={form.position}
+            onValueChange={handlePositionChange}
+            options={STAFF_POSITIONS}
+            error={errors.position}
+          />
+          <AppTextInput
+            label="Specialization"
+            value={form.specialization}
+            onChangeText={(text) => updateField("specialization", text)}
+            placeholder="Small Animals"
+            error={errors.specialization}
+          />
+          <AppTextInput
+            label="License number"
+            value={form.licenseNumber}
+            onChangeText={(text) => updateField("licenseNumber", text)}
+            placeholder="VET-12345"
+            error={errors.licenseNumber}
+          />
+        </FormSection>
+      </FormFields>
 
-        if (value === "VETERINARIAN") {
-            updateField("specialization", "Small Animals");
-        }
-    };
-
-    return (
-        <View className="w-full px-6 py-2">
-
-
-            {/* Name */}
-            <AppTextInput
-                label="Full Name"
-                value={form.name}
-                onChangeText={(text) => updateField("name", text)}
-                error={errors.name}
-            />
-
-            {/* Email */}
-            <AppTextInput
-                label="Email"
-                value={form.email}
-                onChangeText={(text) => updateField("email", text)}
-                keyboardType="email-address"
-                error={errors.email}
-            />
-
-            {/* Phone */}
-            <AppTextInput
-                label="Phone"
-                value={form.phone}
-                onChangeText={(text) =>
-                    updateField("phone", text.replace(/\D/g, "").slice(0, 11))
-                }
-                error={errors.phone}
-            />
-
-            {/* Password */}
-            <AppTextInput
-                label="Password"
-                value={form.password}
-                onChangeText={(text) => updateField("password", text)}
-                secureTextEntry
-                error={errors.password}
-            />
-
-            {/* ✅ Position Dropdown */}
-            <View className="mb-2">
-                <Text className="text-xs lg:text-xs font-medium text-text-primary mb-1">
-                    Position
-                </Text>
-
-                <View className="border border-slate-200 rounded-xl bg-white px-1 py-1">
-                    <Picker
-                        selectedValue={form.position}
-                        onValueChange={(value) =>
-                            handlePositionChange(value as StaffPosition)
-                        }
-                    >
-                        {STAFF_POSITIONS.map((pos) => (
-                            <Picker.Item
-                                key={pos.value}
-                                label={pos.label}
-                                value={pos.value}
-                            />
-                        ))}
-                    </Picker>
-                </View>
-
-                {errors.position && (
-                    <Text className="text-red-500 text-xs mt-1">
-                        {errors.position}
-                    </Text>
-                )}
-            </View>
-
-            {/* Specialization */}
-            <AppTextInput
-                label="Specialization"
-                value={form.specialization}
-                onChangeText={(text) =>
-                    updateField("specialization", text)
-                }
-                error={errors.specialization}
-            />
-
-            {/* License */}
-            <AppTextInput
-                label="License Number"
-                value={form.licenseNumber}
-                onChangeText={(text) =>
-                    updateField("licenseNumber", text)
-                }
-                error={errors.licenseNumber}
-            />
-
-            {/* Submit */}
-            <Pressable
-                onPress={handleSubmit}
-                disabled={loading}
-                className={`rounded-2xl py-3 items-center mt-4 ${loading ? "bg-gray-300" : "bg-black active:opacity-80"
-                    }`}
-            >
-                {loading ? (
-                    <ActivityIndicator color="#fff" />
-                ) : (
-                    <Text className="text-white font-semibold">
-                        Add Staff
-                    </Text>
-                )}
-            </Pressable>
-        </View>
-    );
+      <View className="mt-8">
+        <AppButton label="Add staff member" onPress={handleSubmit} loading={loading} />
+      </View>
+    </FormCard>
+  );
 }

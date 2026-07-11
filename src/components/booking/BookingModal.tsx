@@ -1,67 +1,47 @@
-import {
-    Modal,
-    ScrollView,
-    TouchableOpacity,
-    useWindowDimensions,
-    View,
-} from "react-native";
+import { Modal, ScrollView, Pressable, useWindowDimensions, View } from "react-native";
 
-export default function BookingModal({
-    visible,
-    onClose,
-    children,
-}: any) {
-    const { width } = useWindowDimensions();
+type Props = {
+  visible: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+};
 
-    // ✅ breakpoint (you can adjust)
-    const isLargeScreen = width >= 768; // tablet / web
+export default function BookingModal({ visible, onClose, children }: Props) {
+  const { width } = useWindowDimensions();
+  const isLargeScreen = width >= 768;
 
-    return (
+  return (
+    <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
+      <View
+        className={`flex-1 bg-black/30 ${
+          isLargeScreen ? "justify-center items-center px-4" : "justify-end"
+        }`}
+      >
+        <Pressable
+          className={isLargeScreen ? "absolute inset-0" : "flex-1"}
+          onPress={onClose}
+        />
 
-        <Modal
-            visible={visible}
-            animationType="none" // ✅ disable default animation
-            transparent
+        <View
+          className={`bg-surface border border-border ${
+            isLargeScreen
+              ? "w-full max-w-lg rounded-xl p-3"
+              : "rounded-t-2xl px-4 pt-4 pb-8 max-h-[90%] border-b-0"
+          }`}
         >
+          {!isLargeScreen && (
+            <View className="w-10 h-1 bg-border rounded-full self-center mb-4" />
+          )}
 
-            {/* ✅ BACKDROP */}
-            <View
-                className={`flex-1 bg-black/40 ${isLargeScreen
-                    ? "justify-center items-center"
-                    : "justify-end"
-                    }`}
-            >
-                {/* ✅ TAP OUTSIDE */}
-                <TouchableOpacity
-                    className={`${isLargeScreen ? "absolute inset-0" : "flex-1"
-                        }`}
-                    activeOpacity={1}
-                    onPress={onClose}
-                />
-
-                {/* ✅ MODAL CARD */}
-                <View
-                    className={`bg-white ${isLargeScreen
-                        ? "w-full max-w-md rounded-2xl p-6"
-                        : "rounded-t-3xl px-4 pt-4 pb-6 max-h-[85%]"
-                        }`}
-                >
-                    {/* ✅ HANDLE (mobile only) */}
-                    {!isLargeScreen && (
-                        <View className="w-12 h-1.5 bg-gray-300 rounded-full self-center mb-4" />
-                    )}
-
-                    {/* ✅ CONTENT */}
-                    <ScrollView
-                        showsVerticalScrollIndicator={false}
-                        contentContainerStyle={{
-                            paddingBottom: 24,
-                        }}
-                    >
-                        {children}
-                    </ScrollView>
-                </View>
-            </View>
-        </Modal>
-    );
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 20, paddingTop: 4 }}
+            keyboardShouldPersistTaps="handled"
+          >
+            {children}
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  );
 }
